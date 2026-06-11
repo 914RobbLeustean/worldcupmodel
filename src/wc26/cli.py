@@ -51,8 +51,10 @@ def add_result(
     away_score: int = typer.Option(..., prompt=True, min=0),
     corners_home: int = typer.Option(-1, prompt="Home corners (-1 if unknown)"),
     corners_away: int = typer.Option(-1, prompt="Away corners (-1 if unknown)"),
-    cards_home: int = typer.Option(-1, prompt="Home cards (-1 if unknown)"),
-    cards_away: int = typer.Option(-1, prompt="Away cards (-1 if unknown)"),
+    yellows_home: int = typer.Option(-1, prompt="Home yellow cards (-1 if unknown)"),
+    yellows_away: int = typer.Option(-1, prompt="Away yellow cards (-1 if unknown)"),
+    reds_home: int = typer.Option(-1, prompt="Home red cards (-1 if unknown)"),
+    reds_away: int = typer.Option(-1, prompt="Away red cards (-1 if unknown)"),
     referee: str = typer.Option("", prompt="Referee (blank if unknown)"),
     tournament: str = typer.Option("FIFA World Cup", prompt=True),
     neutral: bool = typer.Option(True, prompt="Neutral venue?"),
@@ -73,8 +75,10 @@ def add_result(
         away_score=away_score,
         corners_home=corners_home,
         corners_away=corners_away,
-        cards_home=cards_home,
-        cards_away=cards_away,
+        yellows_home=yellows_home,
+        yellows_away=yellows_away,
+        reds_home=reds_home,
+        reds_away=reds_away,
         referee=referee,
         tournament=tournament,
         neutral=neutral,
@@ -132,6 +136,47 @@ def data_ingest() -> None:
 
     for name, path in ingest().items():
         typer.echo(f"wrote {name}: {path}")
+
+
+@data_app.command(name="scrape")
+def data_scrape(
+    tournament: str = typer.Option(
+        "", help="One of wc2018, wc2022, euro2024, copa2024, wc2026; empty = all"
+    ),
+) -> None:
+    """Fetch match stats (corners, cards, referee) from ESPN into parquet.
+
+    Fully cached: finished matches are never re-fetched, so re-runs are cheap
+    and the command is safe to interrupt and resume.
+    """
+    from wc26.data.espn import TOURNAMENTS, build_match_stats, build_referees
+
+    keys = [tournament] if tournament else list(TOURNAMENTS)
+    for key in keys:
+        if key not in TOURNAMENTS:
+            typer.echo(f"unknown tournament {key!r}; choose from {list(TOURNAMENTS)}")
+            raise typer.Exit(code=2)
+    stats = build_match_stats(keys if tournament else None)
+    refs = build_referees(stats)
+    typer.echo(f"match_stats: {len(stats)} matches; referees: {len(refs)}")
+
+
+@data_app.command(name="sync")
+def data_sync() -> None:
+    """Write finished WC26 results from ESPN stats into the results patch,
+    then rebuild the processed tables."""
+    from wc26.data.results import ingest
+    from wc26.data.sync import sync_wc26_results
+
+    report = sync_wc26_results()
+    for line in report.appended:
+        typer.echo(f"new result: {line}")
+    if report.swapped_home_away:
+        typer.echo(f"note: home/away swapped vs ESPN for {report.swapped_home_away}")
+    typer.echo(f"appended {len(report.appended)}, already known {report.skipped_already_known}")
+    if report.appended:
+        ingest()
+        typer.echo("re-ingested processed tables")
 
 
 @data_app.command(name="status")

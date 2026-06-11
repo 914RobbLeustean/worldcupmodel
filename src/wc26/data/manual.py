@@ -15,14 +15,18 @@ from wc26.data.results import PATCH_RESULTS
 from wc26.data.teams import registry
 
 STATS_PATCH = REPO_ROOT / "data" / "manual" / "stats_patch.csv"
+# Column names intentionally match data/processed/match_stats.parquet so the
+# overlay in espn._apply_stats_patch needs no translation.
 STATS_PATCH_COLUMNS = [
     "date",
     "home_id",
     "away_id",
     "corners_home",
     "corners_away",
-    "cards_home",
-    "cards_away",
+    "yellows_home",
+    "yellows_away",
+    "reds_home",
+    "reds_away",
     "referee",
 ]
 
@@ -36,8 +40,10 @@ def append_result(
     away_score: int,
     corners_home: int = -1,
     corners_away: int = -1,
-    cards_home: int = -1,
-    cards_away: int = -1,
+    yellows_home: int = -1,
+    yellows_away: int = -1,
+    reds_home: int = -1,
+    reds_away: int = -1,
     referee: str = "",
     tournament: str = "FIFA World Cup",
     neutral: bool = True,
@@ -61,24 +67,14 @@ def append_result(
         )
     written.append(PATCH_RESULTS)
 
-    has_stats = referee.strip() or max(corners_home, corners_away, cards_home, cards_away) >= 0
+    counts = [corners_home, corners_away, yellows_home, yellows_away, reds_home, reds_away]
+    has_stats = bool(referee.strip()) or max(counts) >= 0
     if has_stats:
         is_new = not STATS_PATCH.exists()
         with STATS_PATCH.open("a", newline="") as f:
             writer = csv.writer(f)
             if is_new:
                 writer.writerow(STATS_PATCH_COLUMNS)
-            writer.writerow(
-                [
-                    when,
-                    home_id,
-                    away_id,
-                    corners_home,
-                    corners_away,
-                    cards_home,
-                    cards_away,
-                    referee.strip(),
-                ]
-            )
+            writer.writerow([when, home_id, away_id, *counts, referee.strip()])
         written.append(STATS_PATCH)
     return written

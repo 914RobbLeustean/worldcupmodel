@@ -22,8 +22,10 @@ def test_append_result_writes_both_patches(tmp_path: Path, monkeypatch: pytest.M
         away_score=1,
         corners_home=7,
         corners_away=3,
-        cards_home=2,
-        cards_away=4,
+        yellows_home=2,
+        yellows_away=3,
+        reds_home=0,
+        reds_away=1,
         referee="Some Ref",
         neutral=False,
     )
@@ -31,7 +33,8 @@ def test_append_result_writes_both_patches(tmp_path: Path, monkeypatch: pytest.M
     lines = results_patch.read_text().strip().splitlines()
     assert lines[-1] == "2026-06-11,Mexico,South Africa,2,1,FIFA World Cup,FALSE"
     stats_lines = (tmp_path / "stats_patch.csv").read_text().strip().splitlines()
-    assert stats_lines[-1] == "2026-06-11,mexico,south_africa,7,3,2,4,Some Ref"
+    assert stats_lines[0] == ",".join(manual.STATS_PATCH_COLUMNS)
+    assert stats_lines[-1] == "2026-06-11,mexico,south_africa,7,3,2,3,0,1,Some Ref"
 
 
 def test_append_result_rejects_unknown_team(

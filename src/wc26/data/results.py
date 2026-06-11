@@ -171,14 +171,24 @@ def ingest() -> dict[str, Path]:
 
 def freshness() -> dict[str, str]:
     """Human-readable status per processed table (for `wc26 data status`)."""
+    builders = {
+        "results": "wc26 data ingest",
+        "fixtures": "wc26 data ingest",
+        "match_stats": "wc26 data scrape",
+        "referees": "wc26 data scrape",
+    }
     status: dict[str, str] = {}
-    for name in ("results", "fixtures"):
+    for name, builder in builders.items():
         path = PROCESSED_DIR / f"{name}.parquet"
         if not path.exists():
-            status[name] = "MISSING — run `wc26 data ingest`"
+            status[name] = f"MISSING — run `{builder}`"
             continue
         df = pd.read_parquet(path)
-        max_date = pd.Timestamp(df["date"].max()).date()
         mtime = datetime.fromtimestamp(path.stat().st_mtime, tz=UTC).date()
-        status[name] = f"{len(df)} rows, latest match {max_date}, built {mtime}"
+        detail = (
+            f"latest match {pd.Timestamp(df['date'].max()).date()}, "
+            if "date" in df.columns
+            else ""
+        )
+        status[name] = f"{len(df)} rows, {detail}built {mtime}"
     return status

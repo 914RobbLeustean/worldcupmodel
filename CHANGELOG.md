@@ -7,6 +7,18 @@ Every working session must add at least one entry under `[Unreleased]`.
 ## [Unreleased]
 
 ### Added
+- 2026-06-12: Match-stats pipeline — ESPN JSON API ingest (corners, cards,
+  fouls, shots, possession, referee) for WC 2018/2022, Euro 2024, Copa 2024
+  and WC 2026 live, with permanent finished-only caching and strict parsers
+  (unknown status enums and unmatched teams raise); referee card-rate table;
+  `wc26 data scrape|sync` commands; automatic syncing of finished WC26
+  results into the patch layer with ±1-day UTC-date tolerance. Manual stats
+  entry now records yellows/reds separately.
+
+### Changed
+- 2026-06-12: FBref dropped as the stats source (Cloudflare-blocked, needs
+  Chrome+Selenium) in favor of ESPN — D011. Extra-time contamination (D012)
+  and cross-source date drift (D013) are now explicit, flagged invariants.
 - 2026-06-11: Phase 1 data layer (most of it) — team registry for all 48
   qualified teams (groups verified vs the Dec 2025 final draw) with strict +
   lenient alias resolution; results ingest from the martj42 GitHub mirror

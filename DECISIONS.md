@@ -62,3 +62,32 @@ Altitude flag derived from city (Mexico City, Zapopan/Guadalajara).
 Download results.csv from raw.githubusercontent.com/martj42/international_results
 rather than Kaggle (no API key needed, same maintained data, found to be
 current through yesterday's matches).
+
+## D011 — 2026-06-12 — ESPN JSON API replaces FBref for match stats
+FBref now sits behind Cloudflare (plain HTTP gets 403) and soccerdata's FBref
+reader requires a real Chrome install + Selenium. ESPN's site API
+(site.api.espn.com) serves the same match-level fields we need — corners,
+yellows/reds, fouls, shots, possession, referee — as plain JSON for
+internationals back to 2018, no key, no browser. Implemented in
+src/wc26/data/espn.py with permanent caching (finished matches/days only) and
+a 1.2 s request pause. Supersedes the FBref plan in docs/PLAN.md Phase 1.4;
+the "scrape only via soccerdata" rule in CLAUDE.md is amended accordingly.
+Trade-off: ESPN team-stat coverage for smaller qualifiers is spottier than
+FBref; acceptable — the prop models train on majors.
+
+## D012 — 2026-06-12 — Extra-time contamination flagged at ingest
+ESPN scores/stat totals for knockout matches include extra time (verified:
+WC22 final stored as 3-3, which is the 120' score; the 90' score was 2-2).
+The martj42 results CSV has the same property. Every match_stats row carries
+`extra_time` (derived from ESPN's final-status enum; unknown enums raise).
+RULE for Phase 2/3: models that price 90-minute markets must exclude or
+explicitly adjust `extra_time` rows — never train on them as-is. Elo is
+unaffected (outcome after pens counts as a draw, which our pipeline already
+produces since shootout matches carry level scores).
+
+## D013 — 2026-06-12 — Match keys must tolerate ±1 day across sources
+ESPN match dates are UTC kickoff dates; the results CSV uses local dates.
+Late-evening kickoffs in the Americas land on the next UTC day, so joining
+match_stats to results on exact (date, home, away) will silently drop
+matches. Any cross-source join goes through a tolerant matcher (team pair +
+date within ±1 day). Applies to Phase 2/3 feature joins and result syncing.

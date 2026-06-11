@@ -56,8 +56,9 @@ raw sources → src/wc26/data (ingest, normalize) → data/processed/*.parquet
   not corrupt a prediction silently.
 - Use penaltyblog for Dixon-Coles fits and odds conversion — never hand-roll
   Poisson likelihoods or de-vig math.
-- Scraping: only via soccerdata's cached interface; respect FBref's ~1 req/6s;
-  raw responses are cached in data/raw forever and never re-fetched.
+- Match stats come from ESPN's JSON API via src/wc26/data/espn.py (D011 —
+  FBref is Cloudflare-blocked). Keep the 1.2 s request pause; finished
+  matches/days are cached in data/raw/espn forever and never re-fetched.
 - Every fitted model is saved with: fit date, git SHA, data cutoff date, and
   params (data/processed/models/). Predictions record which model version
   produced them.
@@ -68,12 +69,17 @@ raw sources → src/wc26/data (ingest, normalize) → data/processed/*.parquet
   functions over classes; no I/O inside model code.
 - No new dependencies without a DECISIONS.md entry.
 
-## Gotchas already hit or anticipated (check before "fixing")
-- Kaggle results CSV lags days behind live results → use `wc26 add-result`,
-  patches live in data/manual/results_patch.csv (in git).
-- FBref international match reports are sparse for friendlies; corners/cards
-  training data comes from majors + qualifiers (2018→). Don't silently train
-  on club data.
+## Gotchas already hit (check before "fixing")
+- Upstream results CSV lags live results → `wc26 add-result` or `wc26 data
+  scrape` (ESPN picks up finals same day); patches live in data/manual/.
+- EXTRA TIME (D012): knockout scores/stats in BOTH sources include ET. Use
+  the `extra_time` flag; never train 90'-market models on flagged rows as-is.
+- Dates differ across sources (D013): ESPN uses UTC kickoff dates, results
+  CSV uses local dates. Cross-source joins must match team pair ±1 day.
+- FBref is Cloudflare-blocked (403 to plain HTTP, needs Chrome via
+  soccerdata) — don't re-attempt it casually; ESPN is the source (D011).
+- Corners/cards training data = majors 2018→ (ESPN coverage of small
+  qualifiers is spotty). Don't silently train on club data.
 - Referee assignments appear ~2 days before kickoff; cards predictions
   without a known ref must say so and widen uncertainty.
 - penaltyblog's Dixon-Coles defaults assume club football's home advantage —

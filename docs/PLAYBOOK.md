@@ -3,7 +3,9 @@
 > The exact match-day routine, for the user or an agent. Finalized in Phase 4;
 > draft below reflects the target flow.
 
-1. `wc26 add-result` — enter yesterday's finals (score, corners, cards, ref).
+1. `wc26 data scrape --tournament wc2026 && wc26 data sync` — pull yesterday's
+   finals (score, corners, cards, ref) from ESPN automatically. Fallback if
+   ESPN is down or wrong: `wc26 add-result` manual entry.
 2. `wc26 refit` — per refit policy (see DECISIONS.md once decided).
 3. `wc26 predict --date <today>` — model probabilities for today's matches.
 4. `wc26 rankings --diff` — updated tournament rankings, movement vs yesterday.
