@@ -3,22 +3,29 @@
 > One section per source: exact URL, schema, refresh trigger, failure modes,
 > and what to do when it breaks. Filled in as each ingest lands (Phase 1).
 
-## International results (Kaggle, martj42)
-- URL: https://www.kaggle.com/datasets/martj42/international-football-results-from-1872-to-2017
-- What: ~49k men's full internationals 1872→present; `results.csv` with
-  date, home_team, away_team, home_score, away_score, tournament, city,
-  country, neutral.
-- Refresh: one-time download + occasional re-download; **lags days behind live
-  results** → recent matches come from data/manual/results_patch.csv instead.
-- Failure modes: name spellings differ from FBref/Elo (handled by
-  config/teams.yaml); dataset update cadence not guaranteed mid-tournament.
-- Status: NOT YET INGESTED.
+## International results (martj42, GitHub mirror)
+- URL: https://raw.githubusercontent.com/martj42/international_results/master/results.csv
+  (same data as the Kaggle dataset, no API key needed — D010)
+- What: ~49.5k men's full internationals 1872→present, incl. WC26 fixture rows
+  with NA scores; columns: date, home_team, away_team, home_score, away_score,
+  tournament, city, country, neutral.
+- Refresh: `curl` re-download into data/raw/results.csv, then
+  `wc26 data ingest`. Found current through the previous day in June 2026, but
+  never rely on it intra-tournament → `wc26 add-result` writes
+  data/manual/results_patch.csv which overrides on (date, home, away).
+- Failure modes: name spellings differ across sources (config/teams.yaml
+  aliases; strict resolution for WC26 rows fails loudly); upstream cadence
+  not guaranteed.
+- Status: INGESTED 2026-06-11 → results.parquet (49,405 played) +
+  fixtures.parquet (72 WC26 group matches, venue + altitude flag).
 
 ## Elo ratings (computed in-repo)
 - Source: derived from the results table; eloratings.net used only as a
   validation reference (top-10 sanity test with documented tolerance).
 - Key property: snapshot **as of any date** for leak-free backtests.
-- Status: NOT YET BUILT.
+- Formula: eloratings.net-style (home adv +100 unless neutral, goal-diff
+  multiplier, K by tier from settings.yaml). `wc26 data elo` prints top N.
+- Status: BUILT 2026-06-11; top-12 sanity test in tests/test_results_elo.py.
 
 ## FBref match stats (corners, cards, fouls, shots, referee)
 - Access: soccerdata's FBref scraper, local permanent cache in data/raw/.
@@ -30,11 +37,12 @@
   loop must never depend on live scraping.
 - Status: NOT YET INGESTED.
 
-## Tournament schedule (manual, in git)
-- File: data/manual/schedule.csv — all 104 matches, canonical team IDs,
-  knockout placeholder slots, venue, altitude flag, kickoff UTC.
-- Source: official FIFA fixture list, entered once.
-- Status: NOT YET ENTERED.
+## Tournament schedule
+- Group stage: derived automatically from the results CSV into
+  fixtures.parquet (D009) — no manual entry needed.
+- Knockout slots + kickoff times: manual entry deferred to Phase 5 when the
+  simulator needs the bracket mapping.
+- Status: GROUP STAGE DERIVED 2026-06-11.
 
 ## Sportsbook lines (manual, in git)
 - File: data/manual/lines.csv — typed from the user's book before betting.

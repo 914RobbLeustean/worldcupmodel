@@ -1,0 +1,72 @@
+# Canonical team registry for WC 2026.
+# - id: canonical snake_case identifier; the ONLY form allowed across module
+#   boundaries (CLAUDE.md invariant).
+# - aliases: every spelling seen in any source (kaggle results, FBref, Elo
+#   sites, sportsbooks). Resolution is case-insensitive and accent-insensitive.
+#   Unknown name => UnknownTeamError with a hint to add an alias here.
+# Groups per the Dec 5, 2025 final draw (verified vs Wikipedia + FIFA).
+
+teams:
+  # Group A
+  - {id: mexico, name: Mexico, group: A, host: true, aliases: [México]}
+  - {id: south_africa, name: South Africa, group: A, aliases: []}
+  - {id: south_korea, name: South Korea, group: A, aliases: [Korea Republic, Korea Rep]}
+  - {id: czechia, name: Czechia, group: A, aliases: [Czech Republic]}
+  # Group B
+  - {id: canada, name: Canada, group: B, host: true, aliases: []}
+  - {id: bosnia_herzegovina, name: Bosnia and Herzegovina, group: B,
+     aliases: [Bosnia-Herzegovina, Bosnia & Herzegovina, Bosnia]}
+  - {id: qatar, name: Qatar, group: B, aliases: []}
+  - {id: switzerland, name: Switzerland, group: B, aliases: []}
+  # Group C
+  - {id: brazil, name: Brazil, group: C, aliases: []}
+  - {id: morocco, name: Morocco, group: C, aliases: []}
+  - {id: haiti, name: Haiti, group: C, aliases: []}
+  - {id: scotland, name: Scotland, group: C, aliases: []}
+  # Group D
+  - {id: united_states, name: United States, group: D, host: true,
+     aliases: [USA, US, United States of America]}
+  - {id: paraguay, name: Paraguay, group: D, aliases: []}
+  - {id: australia, name: Australia, group: D, aliases: []}
+  - {id: turkey, name: Turkey, group: D, aliases: [Türkiye, Turkiye]}
+  # Group E
+  - {id: germany, name: Germany, group: E, aliases: [West Germany]}
+  - {id: curacao, name: Curaçao, group: E, aliases: [Curacao]}
+  - {id: ivory_coast, name: Ivory Coast, group: E, aliases: [Côte d'Ivoire, Cote d'Ivoire, Cote dIvoire]}
+  - {id: ecuador, name: Ecuador, group: E, aliases: []}
+  # Group F
+  - {id: netherlands, name: Netherlands, group: F, aliases: [Holland]}
+  - {id: japan, name: Japan, group: F, aliases: []}
+  - {id: sweden, name: Sweden, group: F, aliases: []}
+  - {id: tunisia, name: Tunisia, group: F, aliases: []}
+  # Group G
+  - {id: belgium, name: Belgium, group: G, aliases: []}
+  - {id: egypt, name: Egypt, group: G, aliases: []}
+  - {id: iran, name: Iran, group: G, aliases: [IR Iran, Iran IR]}
+  - {id: new_zealand, name: New Zealand, group: G, aliases: []}
+  # Group H
+  - {id: spain, name: Spain, group: H, aliases: []}
+  - {id: cape_verde, name: Cape Verde, group: H, aliases: [Cabo Verde, Cape Verde Islands]}
+  - {id: saudi_arabia, name: Saudi Arabia, group: H, aliases: []}
+  - {id: uruguay, name: Uruguay, group: H, aliases: []}
+  # Group I
+  - {id: france, name: France, group: I, aliases: []}
+  - {id: senegal, name: Senegal, group: I, aliases: []}
+  - {id: iraq, name: Iraq, group: I, aliases: []}
+  - {id: norway, name: Norway, group: I, aliases: []}
+  # Group J
+  - {id: argentina, name: Argentina, group: J, aliases: []}
+  - {id: algeria, name: Algeria, group: J, aliases: []}
+  - {id: austria, name: Austria, group: J, aliases: []}
+  - {id: jordan, name: Jordan, group: J, aliases: []}
+  # Group K
+  - {id: portugal, name: Portugal, group: K, aliases: []}
+  - {id: dr_congo, name: DR Congo, group: K,
+     aliases: [Congo DR, Democratic Republic of the Congo, Congo Kinshasa, Zaire, Zaïre]}
+  - {id: uzbekistan, name: Uzbekistan, group: K, aliases: []}
+  - {id: colombia, name: Colombia, group: K, aliases: []}
+  # Group L
+  - {id: england, name: England, group: L, aliases: []}
+  - {id: croatia, name: Croatia, group: L, aliases: []}
+  - {id: ghana, name: Ghana, group: L, aliases: []}
+  - {id: panama, name: Panama, group: L, aliases: [Panamá]}

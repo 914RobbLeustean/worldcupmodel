@@ -43,9 +43,48 @@ def clv_report() -> None:
 
 
 @app.command(name="add-result")
-def add_result() -> None:
-    """Append a finished match (score, corners, cards, referee)."""
-    _stub("Phase 1")
+def add_result(
+    date: str = typer.Option(..., prompt=True, help="Match date YYYY-MM-DD"),
+    home: str = typer.Option(..., prompt=True, help="Home team (any known alias)"),
+    away: str = typer.Option(..., prompt=True, help="Away team (any known alias)"),
+    home_score: int = typer.Option(..., prompt=True, min=0),
+    away_score: int = typer.Option(..., prompt=True, min=0),
+    corners_home: int = typer.Option(-1, prompt="Home corners (-1 if unknown)"),
+    corners_away: int = typer.Option(-1, prompt="Away corners (-1 if unknown)"),
+    cards_home: int = typer.Option(-1, prompt="Home cards (-1 if unknown)"),
+    cards_away: int = typer.Option(-1, prompt="Away cards (-1 if unknown)"),
+    referee: str = typer.Option("", prompt="Referee (blank if unknown)"),
+    tournament: str = typer.Option("FIFA World Cup", prompt=True),
+    neutral: bool = typer.Option(True, prompt="Neutral venue?"),
+) -> None:
+    """Append a finished match (score, corners, cards, referee) and re-ingest.
+
+    Score goes to data/manual/results_patch.csv (overrides the lagging Kaggle
+    CSV); corners/cards/ref go to data/manual/stats_patch.csv for the prop
+    models. Both files are in git — review the diff before committing.
+    """
+    from wc26.data.manual import append_result
+
+    paths = append_result(
+        date=date,
+        home=home,
+        away=away,
+        home_score=home_score,
+        away_score=away_score,
+        corners_home=corners_home,
+        corners_away=corners_away,
+        cards_home=cards_home,
+        cards_away=cards_away,
+        referee=referee,
+        tournament=tournament,
+        neutral=neutral,
+    )
+    for path in paths:
+        typer.echo(f"appended to {path}")
+    from wc26.data.results import ingest
+
+    ingest()
+    typer.echo("re-ingested processed tables")
 
 
 @app.command()
@@ -66,10 +105,42 @@ def rankings(diff: bool = typer.Option(False, help="Show movement vs previous sn
     _stub("Phase 5")
 
 
-@app.command(name="data")
+data_app = typer.Typer(no_args_is_help=True, help="Ingest and inspect data tables.")
+app.add_typer(data_app, name="data")
+
+
+@data_app.command(name="elo")
+def data_elo(top: int = typer.Option(15, help="How many teams to show")) -> None:
+    """Current Elo ratings (computed in-repo, full history)."""
+    import pandas as pd
+
+    from wc26.config import load_settings
+    from wc26.data.elo import compute_elo_history, ratings_asof
+    from wc26.data.results import PROCESSED_DIR
+
+    results = pd.read_parquet(PROCESSED_DIR / "results.parquet")
+    history = compute_elo_history(results, load_settings().elo_k)
+    today = pd.Timestamp.now(tz="UTC").tz_localize(None) + pd.Timedelta(days=1)
+    for rank, (team, rating) in enumerate(ratings_asof(history, today).nlargest(top).items(), 1):
+        typer.echo(f"{rank:3d}. {team:25s} {rating:7.1f}")
+
+
+@data_app.command(name="ingest")
+def data_ingest() -> None:
+    """Build processed tables (results, fixtures) from raw + manual patch."""
+    from wc26.data.results import ingest
+
+    for name, path in ingest().items():
+        typer.echo(f"wrote {name}: {path}")
+
+
+@data_app.command(name="status")
 def data_status() -> None:
     """Row counts and freshness for every ingested table."""
-    _stub("Phase 1")
+    from wc26.data.results import freshness
+
+    for name, line in freshness().items():
+        typer.echo(f"{name:10s} {line}")
 
 
 if __name__ == "__main__":

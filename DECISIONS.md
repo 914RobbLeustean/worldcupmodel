@@ -42,3 +42,23 @@ Prop lines (corners/cards/team totals) are typed into data/manual/lines.csv
 from the user's sportsbook. Rationale: free-data constraint; The Odds API free
 tier (500 credits/mo) doesn't carry prop markets. Free-tier API reserved for
 occasional h2h sanity checks with a hard budget counter.
+
+## D008 — 2026-06-11 — Strict team resolution for WC26, lenient for history
+The registry (config/teams.yaml) strictly covers the 48 qualified teams; any
+WC26-facing pipeline resolves strictly (UnknownTeamError). The full ~300-team
+historical universe (needed only for Elo) uses resolve_lenient(): known
+aliases canonicalize, everything else passes through as a slug. Rationale:
+mapping 150 years of defunct nations buys nothing — historical teams never
+touch pricing code.
+
+## D009 — 2026-06-11 — Fixtures derived from results CSV, not manual schedule
+The martj42 results CSV already carries all 72 WC26 group fixtures with
+venues (NA scores until played), so fixtures.parquet is generated from it
+instead of hand-entering data/manual/schedule.csv. Manual schedule entry is
+now only needed for knockout slots/kickoff times when those matter (Phase 5).
+Altitude flag derived from city (Mexico City, Zapopan/Guadalajara).
+
+## D010 — 2026-06-11 — Results source: GitHub mirror of martj42 dataset
+Download results.csv from raw.githubusercontent.com/martj42/international_results
+rather than Kaggle (no API key needed, same maintained data, found to be
+current through yesterday's matches).
