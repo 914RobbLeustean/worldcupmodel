@@ -1,0 +1,50 @@
+[project]
+name = "wc26"
+version = "0.1.0"
+description = "World Cup 2026 prop-market edge model: predictions, +EV detection, CLV tracking"
+requires-python = ">=3.12"
+dependencies = [
+    "pandas>=3.0.3",
+    "pandera>=0.31.1",
+    "penaltyblog>=1.11.0",
+    "pyarrow>=24.0.0",
+    "pyyaml>=6.0.3",
+    "soccerdata>=1.9.0",
+    "typer>=0.26.7",
+]
+
+[project.scripts]
+wc26 = "wc26.cli:app"
+
+[build-system]
+requires = ["uv_build>=0.11.8,<0.12.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "mypy>=2.1.0",
+    "pandas-stubs>=3.0.3.260530",
+    "pytest>=9.0.3",
+    "ruff>=0.15.17",
+    "types-pyyaml>=6.0.12.20260518",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "PD", "RUF"]
+
+[tool.mypy]
+strict = true
+packages = ["wc26"]
+mypy_path = "src"
+
+[[tool.mypy.overrides]]
+module = ["penaltyblog.*", "soccerdata.*", "pandera.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

@@ -1,0 +1,20 @@
+# Operational settings. Money rules here are enforced by code; changing them
+# mid-tournament requires a DECISIONS.md entry.
+
+bankroll: 1000.0          # in user's currency units; update to real figure
+unit_pct: 0.015           # flat stake = bankroll * unit_pct
+edge_threshold: 0.05      # minimum model-vs-devigged-line edge to flag a bet
+kelly_enabled: false      # stays false until CLV > 0 over 50+ settled bets
+
+seed: 20260611            # all simulation randomness derives from this
+mc_runs: 20000            # tournament Monte Carlo iterations
+
+dixon_coles_decay: 0.00126   # ~ half-life 18 months; revisit after backtest
+elo:
+  k_world_cup: 60
+  k_continental: 50
+  k_qualifier: 40
+  k_friendly: 20
+
+odds_api:
+  monthly_credit_budget: 150   # hard cap, free tier is 500

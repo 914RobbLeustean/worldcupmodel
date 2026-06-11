@@ -1,0 +1,15 @@
+# environments
+.venv/
+__pycache__/
+*.pyc
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# data: raw + processed are rebuildable/cached locally, never committed.
+# data/manual/ and ledger/ ARE committed — they are hand-entered records.
+data/raw/
+data/processed/
+
+# misc
+.DS_Store
