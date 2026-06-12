@@ -2,16 +2,6 @@
 
 > Single source of truth for "where are we". Update before ending every session.
 
-## Last Session Summary (Used by user)
-  - 2026-06-12 (h): went LIVE. Set bankroll to 200 RON (unit = 3.00). Entered
-    real Superbet team-total lines for Canada v Bosnia + USA v Paraguay, ran
-    edges, and logged the first four real-money bets: B0002 Canada O1.5 @2.10,
-    B0003 Canada O2.5 @4.40, B0004 Paraguay O0.5 @1.60, B0005 Paraguay O1.5
-    @3.90 (all 3.00 RON, all on the strongest edge+EV rows). Passed on
-    thin-EV / correlated legs. Closing lines to capture at kickoff; settle +
-    CLV next session. Phase 4 acceptance still not ticked — completes once
-    these settle.
-
 ## Current phase
 **Phase 6 — IN PROGRESS. 6.1 (knockout readiness) DONE 2026-06-12; the 6.2
 recalibration checkpoint is calendar-gated (~2026-07-03, after the group
@@ -50,12 +40,11 @@ What exists now (Phase 6.1, on top of the full Phase 0–5 stack):
   the advancing team.
 
 ## Next task
-1. **Settle the open bets next session** (after results land via the morning
-     `data scrape && data sync`): B0001 (USA U1.5, paper), B0002 Canada O1.5,
-     B0003 Canada O2.5, B0004 Paraguay O0.5, B0005 Paraguay O1.5 — all REAL
-     Superbet money except B0001. For each: `wc26 settle <id> --closing-over X
-     --closing-under Y` with the closing quotes captured at kickoff, then
-     `wc26 clv-report`. This completes the Phase 4 acceptance cycle.
+  1. **Settle the USA v Paraguay bets next session** (match still unplayed —
+     kickoff slipped; do NOT settle until it finishes): B0001 (paper),
+     B0004 Paraguay O0.5, B0005 Paraguay O1.5 — capture closing lines at its
+     real kickoff. Settling completes the Phase 4 acceptance cycle. The two
+     Canada bets (B0002/B0003) are SETTLED — both lost, both negative CLV.
 2. The user should start entering REAL book lines into data/manual/lines.csv
    (PLAYBOOK §3) — everything downstream is live.
 3. **Phase 6.2 recalibration checkpoint — NEXT MILESTONE, ~2026-07-03**
@@ -94,9 +83,28 @@ bets (closing quotes!) → user enters today's lines → `wc26 edges` →
   now pinned by a test (audit finding 2).
 - Backtest artifacts: data/processed/backtest/ — all gate tests green
 - Rankings snapshots: data/processed/rankings/rankings_2026-06-12.parquet
-- Ledger: ledger/bets.csv — 1 open paper bet (B0001, settle next session)
+  - Ledger: ledger/bets.csv — 2 settled (B0002/B0003, both lost, CLV neg),
+    3 open (B0001/B0004/B0005, USA v Paraguay unplayed)
 
 ## Last session summary
+  - 2026-06-13: settled the first two real-money bets. Canada v Bosnia finished
+    1-1 (ingested: results 49,408). B0002 Canada O1.5 and B0003 Canada O2.5
+    both LOST (Canada scored 1) — pnl -3.00 each. Both also had NEGATIVE CLV
+    (B0002 -5.0%, B0003 -5.5%): the de-vigged closing fair prob (0.452 / 0.215)
+    came in below what the taken odds needed, so we were on the wrong side of
+    the close, not just unlucky. n=2, far below the 50-bet read threshold —
+    noise, not a verdict. Daily routine clean: refit @ec4661b (9,510 matches,
+    ha 0.235), gates green, 192 tests pass, predict/rankings/sim rendered.
+    3 bets still open (all USA v Paraguay, unplayed). Phase 4 acceptance still
+    not ticked.
+  - 2026-06-12 (h): went LIVE. Set bankroll to 200 RON (unit = 3.00). Entered
+    real Superbet team-total lines for Canada v Bosnia + USA v Paraguay, ran
+    edges, and logged the first four real-money bets: B0002 Canada O1.5 @2.10,
+    B0003 Canada O2.5 @4.40, B0004 Paraguay O0.5 @1.60, B0005 Paraguay O1.5
+    @3.90 (all 3.00 RON, all on the strongest edge+EV rows). Passed on
+    thin-EV / correlated legs. Closing lines to capture at kickoff; settle +
+    CLV next session. Phase 4 acceptance still not ticked — completes once
+    these settle.
 - 2026-06-12 (g): closed audit finding 8 — the manual data path is
   knockout-ready (D027). add-result: extra_time + shootout-winner +
   fouls/shots capture with hard validation (level ET score REQUIRES the

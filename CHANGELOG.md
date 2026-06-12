@@ -7,6 +7,15 @@ Every working session must add at least one entry under `[Unreleased]`.
 ## [Unreleased]
 
 ### Added
+  - 2026-06-13: first real-money settlements. Canada v Bosnia 1-1 ingested via
+    scrape/sync (results 49,408; refit @ec4661b, gates green, 192 tests).
+    `wc26 settle` graded B0002 (Canada O1.5) and B0003 (Canada O2.5) as LOSSES
+    (Canada scored 1 in 90'), pnl -3.00 each. clv-report: both NEGATIVE CLV
+    (-5.0% / -5.5%) — closing de-vigged fair prob (0.452/0.215) below the
+    taken-odds break-even, i.e. we were the wrong side of the close. n=2,
+    noise. 3 bets remain open (USA v Paraguay, unplayed). Kelly stays off
+    (CLV gate is 50+ bets).
+### Added    
 - 2026-06-12 (h): first REAL-money bets logged (Superbet, 200 RON bankroll).
     Bankroll in config/settings.yaml set 1000 → 200 (flat unit now 3.00 RON =
     1.5%). Entered real Superbet team-total lines for Canada v Bosnia and
