@@ -14,6 +14,7 @@ from wc26.markets.ledger import (
     clv_report,
     latest_view,
     next_bet_id,
+    open_market_conflicts,
     read_ledger,
     settle_bet,
 )
@@ -84,6 +85,30 @@ def test_append_only_round_trip(tmp_path: Path) -> None:
     assert len(current) == 1
     assert current.iloc[0]["status"] == "settled"
     assert current.iloc[0]["result"] == "won"
+
+
+def test_open_market_conflict_detected(tmp_path: Path) -> None:
+    """D029 correlation guard: a second OPEN bet on the same (match, market)
+    — e.g. O1.5 + O2.5 on one team's total, the B0002/B0003 pattern — must be
+    flagged; different markets and settled bets must not."""
+    path = tmp_path / "bets.csv"
+    append_row(_bet("B0001", line=1.5), path)
+    history = read_ledger(path)
+
+    same_market = open_market_conflicts(history, "mexico v south_korea", "team_total:south_korea")
+    assert list(same_market["bet_id"]) == ["B0001"]
+    other_team = open_market_conflicts(history, "mexico v south_korea", "team_total:mexico")
+    assert other_team.empty
+    other_match = open_market_conflicts(history, "canada v bosnia", "team_total:south_korea")
+    assert other_match.empty
+
+    # Settling B0001 releases the market (its latest row is no longer open).
+    append_row(_bet("B0001", status="settled", result="lost", pnl=-15.0, goals_90=1), path)
+    released = open_market_conflicts(
+        read_ledger(path), "mexico v south_korea", "team_total:south_korea"
+    )
+    assert released.empty
+    assert open_market_conflicts(history.iloc[0:0], "x v y", "team_total:x").empty
 
 
 def test_append_refuses_foreign_header(tmp_path: Path) -> None:

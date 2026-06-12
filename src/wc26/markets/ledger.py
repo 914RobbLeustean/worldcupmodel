@@ -124,6 +124,22 @@ def next_bet_id(history: pd.DataFrame) -> str:
     return f"B{int(history['bet_id'].str.removeprefix('B').astype(int).max()) + 1:04d}"
 
 
+def open_market_conflicts(history: pd.DataFrame, match: str, market: str) -> pd.DataFrame:
+    """OPEN bets already riding the same (match, market) — correlation guard (D029).
+
+    Two lines on one team's total (e.g. O1.5 + O2.5) win and lose together;
+    stacking them concentrates bankroll on one event and inflates the
+    effective n of the 50-bet CLV gate, which assumes roughly independent
+    bets. One open bet per (match, market); a second is refused at log time.
+    """
+    if history.empty:
+        return history
+    current = latest_view(history)
+    return current[
+        (current["status"] == "open") & (current["match"] == match) & (current["market"] == market)
+    ].reset_index(drop=True)
+
+
 @dataclass(frozen=True)
 class Settlement:
     result: str  # won | lost

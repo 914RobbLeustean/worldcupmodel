@@ -248,7 +248,13 @@ def log_bet(
     from wc26.data.results import PROCESSED_DIR
     from wc26.data.teams import registry
     from wc26.markets.edges import evaluate
-    from wc26.markets.ledger import BetRow, append_row, next_bet_id, read_ledger
+    from wc26.markets.ledger import (
+        BetRow,
+        append_row,
+        next_bet_id,
+        open_market_conflicts,
+        read_ledger,
+    )
     from wc26.markets.lines import LineError, load_lines
     from wc26.markets.odds import parse_odds
 
@@ -290,6 +296,19 @@ def log_bet(
     edge = model_p - fair_p
 
     history = read_ledger()
+    conflicts = open_market_conflicts(history, quote.match, quote.market)
+    if not conflicts.empty:
+        held = ", ".join(
+            f"{b} ({s} {ln})"
+            for b, s, ln in zip(
+                conflicts["bet_id"], conflicts["side"], conflicts["line"], strict=True
+            )
+        )
+        raise LineError(
+            f"an open bet already rides {quote.market} in this match: {held} — "
+            f"correlated lines win/lose together (D029); settle it first or pick "
+            f"a different market"
+        )
     row = BetRow(
         bet_id=next_bet_id(history),
         ts_utc=pd.Timestamp.now(tz="UTC").isoformat(timespec="seconds"),
@@ -715,6 +734,25 @@ def backtest() -> None:
                 f"{key.upper()} slope {block[key]['calibration_slope']:.2f}"
             )
         typer.echo(f"{market:8s} n={block['n']}  {line}")
+
+    from wc26.backtest.market_anchor import (
+        run_market_anchor_backtest,
+        write_market_anchor_artifacts,
+    )
+
+    anchor_df, anchor_summary = run_market_anchor_backtest(totals_df, eval_df, odds)
+    for path_str in write_market_anchor_artifacts(anchor_df, anchor_summary):
+        typer.echo(f"wrote {path_str}")
+    ll = anchor_summary["team_count_log_loss"]
+    o15 = anchor_summary["team_o15"]
+    blend = anchor_summary["blend_1x2"]
+    typer.echo(
+        f"anchor   n={anchor_summary['n']}  team count-LL {ll['anchored']:.4f} "
+        f"(engine {ll['engine']:.4f}, naive {ll['naive']:.4f}), "
+        f"team O1.5 slope {o15['anchored_calibration_slope']:.2f} "
+        f"(engine {o15['engine_calibration_slope']:.2f}); "
+        f"1X2 blend w*={blend['w_star']:.2f} LL {blend['log_loss_at_w_star']:.4f}"
+    )
 
 
 def _sim_inputs() -> "SimInputs":

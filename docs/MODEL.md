@@ -206,6 +206,36 @@ post-group recalibration (~70 WC26 matches + referee careers grown by WC26
 assignments + 2025-26 qualifier officials). Rationale and the no-fishing
 call: D019/D021.
 
+## Market-anchor experiment (2026-06-12) — D028, pivot adopted
+
+Question (from the strategic review, docs/BACKLOG.md #1/#2): does the
+de-vigged market 1X2 price team totals better than the engine's own grid?
+Implementation: `src/wc26/models/market_anchor.py` (solve DC lambdas that
+reproduce a de-vigged 1X2; rho=0 headline — zero fitted parameters, zero
+leak risk) + `src/wc26/backtest/market_anchor.py` (runs inside
+`wc26 backtest`, artifacts in data/processed/backtest/, verdict pinned by
+tests/test_market_anchor.py). Identical 191 eval rows and metrics as the
+Phase 3 totals backtest; odds joined from market_odds.parquet (D015 —
+near-kickoff averages, so live use carries a small optimism bias).
+
+| metric (191 matches) | anchored | engine | naive |
+|---|---|---|---|
+| team count log-loss | **1.3897** | 1.4051 | 1.4750 |
+| team O1.5 binary log-loss (n=382) | **0.5971** | 0.6053 | — |
+| team O1.5 calibration slope | **0.864** | 0.869 | — |
+
+rho sensitivity: −0.05 gives 1.3850 (second-order). 1X2 blend weight over
+the 211-match Phase 2 sample: **w\* = 0.00** — the optimal engine/market mix
+puts zero weight on the engine, i.e. raw `model_p − fair_p` edges are noise.
+Match totals: anchored count-LL 1.8452 beats naive 1.8520 (engine 1.8729)
+but O2.5 slope 0.458 — still QUARANTINED, D019 unchanged (pre-registered).
+
+Verdict: live team-total pricing moves to market-anchored grids (the book's
+1X2 supplies the level, the grid the shape; edge = the book's prop line vs
+its own 1X2). Betting on raw engine edges is PAUSED until the wiring lands
+(D028). The engine keeps the simulator, corners/cards features, gate iii,
+and quote-less prediction (a refuse-to-bet condition, not a fallback).
+
 ## Tournament simulator (Phase 5) — LIVE since 2026-06-12
 - 20k seeded Monte Carlo runs (~6 s); 2026 format: 12 groups, top 2 + 8 best
   thirds via FIFA Annex C (495-row allocation table in git), R32 → final.

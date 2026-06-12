@@ -40,24 +40,37 @@ What exists now (Phase 6.1, on top of the full Phase 0–5 stack):
   the advancing team.
 
 ## Next task
-  1. **Settle the USA v Paraguay bets next session** (match still unplayed —
+  1. **Settle the USA v Paraguay bets** (match still unplayed —
      kickoff slipped; do NOT settle until it finishes): B0001 (paper),
      B0004 Paraguay O0.5, B0005 Paraguay O1.5 — capture closing lines at its
      real kickoff. Settling completes the Phase 4 acceptance cycle. The two
      Canada bets (B0002/B0003) are SETTLED — both lost, both negative CLV.
-2. The user should start entering REAL book lines into data/manual/lines.csv
-   (PLAYBOOK §3) — everything downstream is live.
-3. **Phase 6.2 recalibration checkpoint — NEXT MILESTONE, ~2026-07-03**
-   (after the 72 group matches; do NOT start early): compare predicted vs
-   realized over the group stage; re-gate match totals (D019) and
-   corners/cards (D021) through the walk-forward harness (a pass needs a
-   new DECISIONS entry, never a silent flip); add the knockout flag +
-   group-state stakes feature (elimination risk from sim/tracker.py
-   TeamStatus) to the cards model; flip the simulator's R32 slots from
-   projected to actual (the KO-facts path from 6.1 is the mechanism).
+  2. **Wire market-anchored pricing into the live path (D028, backlog #1)** —
+     NEW BETS ARE PAUSED until this lands (D028: blend w*=0.00 means raw
+     engine edges are noise). Needs: lines.csv schema extension for the
+     book's 1X2 + match-total quotes (user types 2-3 extra rows per match),
+     `wc26 edges`/`log-bet` computing the anchored P(over) (rho from the
+     latest engine fit) and flagging on anchored edge; PLAYBOOK §3 update.
+  3. User resource asks (docs/BACKLOG.md): extra book accounts for line
+     shopping (#5); the historical prop-line sample (#3, OddsPortal —
+     template to be provided); decision on the Odds API budget for closing
+     snapshots (#6).
+  4. **Phase 6.2 recalibration checkpoint — NEXT MILESTONE, ~2026-07-03**
+   (after the 72 group matches; do NOT start early — pre-registered
+   expectations in D030): compare predicted vs realized over the group
+   stage; re-gate match totals (D019) and corners/cards (D021) through the
+   walk-forward harness (a pass needs a new DECISIONS entry, never a silent
+   flip); add the knockout flag + group-state stakes feature (elimination
+   risk from sim/tracker.py TeamStatus) to the cards model; flip the
+   simulator's R32 slots from projected to actual (the KO-facts path from
+   6.1 is the mechanism). NOT calendar-gated (D030): the D019 WC
+   scoring-environment engine fix (backlog #4) — harness-validated on
+   pre-2026 data, can ship any day.
 
 ## Blockers
-None. 5 bets open (B0001-B0005) awaiting results + settlement next session. Closing lines must be captured at kickoff or CLV is lost for those bets
+NEW BETS PAUSED until anchored pricing lands (D028; next task 2). 3 bets
+open (B0001/B0004/B0005, USA v Paraguay) awaiting result + settlement;
+closing lines must be captured at kickoff or CLV is lost for those bets.
 
 ## Daily during tournament (~10 min, see docs/PLAYBOOK.md for the full version)
 `uv run wc26 data scrape --tournament wc2026 && uv run wc26 data sync` →
@@ -87,6 +100,20 @@ bets (closing quotes!) → user enters today's lines → `wc26 edges` →
     3 open (B0001/B0004/B0005, USA v Paraguay unplayed)
 
 ## Last session summary
+  - 2026-06-13 (b): strategic review actioned (docs/BACKLOG.md = the full
+    prioritized improvement list). Built and ran the market-anchor experiment
+    (D028): team totals priced from DC grids solved to reproduce the de-vigged
+    market 1X2 BEAT the engine on the identical 191-row walk-forward eval
+    (count-LL 1.3897 vs 1.4051, naive 1.4750; O1.5 slope 0.864 in gate), and
+    the optimal 1X2 engine/market blend weight is w*=0.00 over 211 matches —
+    raw `model_p − fair_p` edges are noise. PIVOT: live team-total pricing
+    moves to market-anchored grids; new bets paused until `wc26 edges` is
+    rewired (next task 2). Match totals stay quarantined (anchored O2.5 slope
+    0.458; pre-registered). Correlation guard added (D029): one open bet per
+    (match, market) enforced at log-bet. D030 pre-registers July-3 re-gate
+    expectations. 16 new tests (208 total), lint clean, gate numbers
+    reproduced unchanged. Open bets B0001/B0004/B0005 untouched (settle on
+    the real result with closing capture).
   - 2026-06-13: settled the first two real-money bets. Canada v Bosnia finished
     1-1 (ingested: results 49,408). B0002 Canada O1.5 and B0003 Canada O2.5
     both LOST (Canada scored 1) — pnl -3.00 each. Both also had NEGATIVE CLV

@@ -345,3 +345,66 @@ knockout-ready. The contract for data/manual/stats_patch.csv is now:
   honest "-1 = unknown" must not wedge the daily refit. The fatal
   completeness check stays for ESPN finals rows — there it means ingest
   drift, which is the thing it exists to catch.
+
+## D028 — 2026-06-12 — Market-anchored team totals: experiment, verdict, pivot
+Context: the 2026-06-12 strategic review (docs/BACKLOG.md) flagged that edge
+= model_p − fair_p with threshold 0.05 mostly selects model-vs-market
+disagreement (mean per-outcome diff 0.074, D016) from a model the backtest
+shows is WORSE than the market (0.9952 vs 0.9706, gate ii's whole premise) —
+adverse selection by construction. B0002/B0003 (−5.0%/−5.5% CLV, the close
+ratified the book) are n=2 but mechanism-consistent.
+EXPERIMENT (src/wc26/backtest/market_anchor.py, runs inside `wc26 backtest`):
+per props-totals eval row, de-vig the D015 average market 1X2, solve the DC
+lambdas that reproduce it (models/market_anchor.py; rho=0 headline, zero
+fitted parameters → zero leak risk), price team totals off that grid, score
+on the identical 191 rows/metrics as the engine. RESULTS (pinned by
+tests/test_market_anchor.py):
+- Team count log-loss: anchored 1.3897 < engine 1.4051 < naive 1.4750
+  (rho=−0.05 sensitivity: 1.3850 — second-order). O1.5 binary: anchored
+  0.5971 < engine 0.6053; anchored slope 0.864 (in the [0.8, 1.2] gate).
+- 1X2 blend weight: w* = 0.00 over the 211-match sample — the optimal mix of
+  engine and market puts ZERO weight on the engine. Raw model-vs-quote edges
+  are noise, not signal. Pinned at w* ≤ 0.15.
+- Match totals stay QUARANTINED (pre-registered): anchored count-LL 1.8452
+  beats naive 1.8520, but O2.5 slope 0.458 is far outside the gate. D019
+  unchanged.
+DECISIONS:
+1. Live team-total pricing moves to MARKET-ANCHORED grids: the book's
+   de-vigged 1X2 (entered in lines.csv alongside prop lines) supplies the
+   level, the DC grid the shape; edge becomes the book's prop-vs-own-1X2
+   inconsistency. Wiring lands next session (lines.csv schema + edges +
+   log-bet); rho at predict time = latest fitted engine rho (versioned,
+   walk-forward-clean; sensitivity above shows the choice is second-order).
+2. BETTING PAUSE until that wiring lands: no new bets on raw engine edges
+   (w*=0 says they are noise). Open bets B0001/B0004/B0005 settle normally —
+   capture closings, the CLV data is the point.
+3. The engine is NOT retired: it still drives the simulator/rankings, the
+   corners/cards features (xg_gap, fav_prob), gate iii, and prediction where
+   no quote exists (which is now a refuse-to-price condition for bets, not an
+   engine-opinion fallback).
+KNOWN LIMITATION: D015 odds are near-kickoff averages, so the experiment
+measures pricing off a near-close anchor; live quotes arrive hours earlier —
+a small optimism bias, accepted and recorded. A future pass on this entry's
+verdict pins requires a new DECISIONS entry.
+
+## D029 — 2026-06-12 — Correlation guard: one open bet per (match, market)
+`wc26 log-bet` now refuses a second OPEN bet on the same (match, market)
+(ledger.open_market_conflicts). Rationale: B0002+B0003 (Canada O1.5+O2.5)
+and B0004+B0005 (Paraguay O0.5+O1.5) are nested same-team totals that
+win/lose together — stacking them concentrates bankroll on one event and
+inflates the effective n of the 50-bet CLV/Kelly gate, which assumes roughly
+independent bets. Different teams' totals in one match remain allowed
+(near-independent in the grid). Settled bets release the market. The ledger
+itself stays append-only (D006) — this is a log-time refusal, not a ledger
+mutation.
+
+## D030 — 2026-06-12 — Pre-registration for the July-3 re-gate (anti-fishing)
+Recorded BEFORE the data exists, so the checkpoint cannot quietly become a
+fishing expedition: at the ~2026-07-03 corners/cards re-gate (D021) the eval
+adds only ~70 WC26 matches. At that n, a true 2-4% log-loss improvement is
+hard to certify; a SECOND FAILURE IS THE EXPECTED OUTCOME and is acceptable.
+The gates themselves (beat naive + slope in [0.8, 1.2]) must not be relaxed
+to manufacture a pass. Distinct from this: engine-level changes validated
+walk-forward on PRE-2026 data through the existing harness (e.g. the D019
+WC scoring-environment fix, backlog #4) are NOT calendar-gated — the July-3
+date applies only to evaluations that need WC26 group-stage outcomes.

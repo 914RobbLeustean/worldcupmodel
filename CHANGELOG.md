@@ -7,6 +7,31 @@ Every working session must add at least one entry under `[Unreleased]`.
 ## [Unreleased]
 
 ### Added
+- 2026-06-13 (b): strategic review actioned — market-anchor experiment,
+    betting pivot, correlation guard. (1) docs/BACKLOG.md: full prioritized
+    improvement backlog from the review (NOW / July-3 / rejected, with owners
+    and validation paths). (2) Market-anchor experiment (D028):
+    models/market_anchor.py solves DC lambdas reproducing a de-vigged 1X2
+    (penaltyblog grid, scipy root-find, rho=0 → zero leak risk);
+    backtest/market_anchor.py scores anchored team totals on the identical
+    191-row props eval — anchored count-LL 1.3897 BEATS engine 1.4051 (naive
+    1.4750), O1.5 LL 0.5971 vs 0.6053, slope 0.864 in gate; 1X2 blend weight
+    w*=0.00 over 211 matches (the engine adds nothing to the market). Match
+    totals stay quarantined (anchored beats naive but O2.5 slope 0.458;
+    pre-registered). Runs inside `wc26 backtest`; verdict pinned by
+    tests/test_market_anchor.py. DECISION: live team-total pricing pivots to
+    market-anchored grids; NO new bets on raw engine edges until the
+    edges/lines wiring lands (next session; needs the book's 1X2 + match-total
+    quotes per match in lines.csv). (3) Correlation guard (D029): `wc26
+    log-bet` refuses a second OPEN bet on the same (match, market) — the
+    B0002/B0003 and B0004/B0005 nested-totals pattern; ledger stays
+    append-only. (4) D030 pre-registers July-3 re-gate expectations
+    (corners/cards second failure is the likely, acceptable outcome; gates
+    must not be relaxed; harness-validated engine work is NOT calendar-gated).
+    16 new tests (208 total), make lint clean, all existing gate numbers
+    reproduced unchanged.
+
+### Added
   - 2026-06-13: first real-money settlements. Canada v Bosnia 1-1 ingested via
     scrape/sync (results 49,408; refit @ec4661b, gates green, 192 tests).
     `wc26 settle` graded B0002 (Canada O1.5) and B0003 (Canada O2.5) as LOSSES
