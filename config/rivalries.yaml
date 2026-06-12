@@ -1,0 +1,29 @@
+# Rivalry/derby pairs for the cards model (Phase 3). Canonical team IDs from
+# config/teams.yaml, order-insensitive. Deliberately short: only fixtures with
+# a real history of elevated bookings, not every "big game". Adding a pair is
+# a model change — note it in CHANGELOG.md.
+#
+# NOTE: the fitted coefficient only exists if enough rivalry matches appear in
+# training (props.min_flag_support in settings.yaml); otherwise the feature is
+# dropped from that fit and the flag is informational only.
+rivalries:
+  - [argentina, brazil]
+  - [argentina, uruguay]
+  - [argentina, chile]
+  - [argentina, england]
+  - [brazil, uruguay]
+  - [chile, peru]
+  - [colombia, venezuela]
+  - [mexico, united_states]
+  - [england, scotland]
+  - [england, germany]
+  - [germany, netherlands]
+  - [spain, portugal]
+  - [croatia, serbia]
+  - [switzerland, serbia]
+  - [japan, south_korea]
+  - [iran, saudi_arabia]
+  - [morocco, algeria]
+  - [egypt, algeria]
+  - [senegal, ivory_coast]
+  - [turkey, greece]

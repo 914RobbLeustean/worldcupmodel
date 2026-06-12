@@ -80,8 +80,9 @@ raw sources → src/wc26/data (ingest, normalize) → data/processed/*.parquet
   CSV uses local dates. Cross-source joins must match team pair ±1 day.
 - FBref is Cloudflare-blocked (403 to plain HTTP, needs Chrome via
   soccerdata) — don't re-attempt it casually; ESPN is the source (D011).
-- Corners/cards training data = majors 2018→ (ESPN coverage of small
-  qualifiers is spotty). Don't silently train on club data.
+- Corners/cards training data = majors 2018→ plus UEFA WC qualifiers (D020;
+  the ONLY confederation with ESPN team stats — checked). Qualifier rows are
+  training-only behind a level dummy. Don't silently train on club data.
 - Referee assignments appear ~2 days before kickoff; cards predictions
   without a known ref must say so and widen uncertainty.
 - penaltyblog's Dixon-Coles defaults assume club football's home advantage —

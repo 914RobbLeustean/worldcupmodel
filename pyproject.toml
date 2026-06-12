@@ -12,6 +12,7 @@ dependencies = [
     "pyyaml>=6.0.3",
     "scipy>=1.17.1",
     "soccerdata>=1.9.0",
+    "statsmodels>=0.14.6",
     "typer>=0.26.7",
 ]
 
@@ -45,7 +46,7 @@ packages = ["wc26"]
 mypy_path = "src"
 
 [[tool.mypy.overrides]]
-module = ["penaltyblog.*", "soccerdata.*", "pandera.*"]
+module = ["penaltyblog.*", "soccerdata.*", "pandera.*", "statsmodels.*", "patsy.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

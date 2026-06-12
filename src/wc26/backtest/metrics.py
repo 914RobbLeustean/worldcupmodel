@@ -35,3 +35,31 @@ def brier(probs: NDArray[np.float64], outcomes: NDArray[np.int64]) -> float:
     onehot = np.zeros_like(probs)
     onehot[np.arange(len(outcomes)), outcomes] = 1.0
     return float(np.mean(np.sum((probs - onehot) ** 2, axis=1)))
+
+
+def binary_log_loss(probs: NDArray[np.float64], hits: NDArray[np.bool_]) -> float:
+    """Mean negative log-likelihood of binary (over/under) outcomes."""
+    if probs.shape != hits.shape:
+        raise ValueError("probs and hits length mismatch")
+    p = np.clip(probs, _EPS, 1.0 - _EPS)
+    y = hits.astype(np.float64)
+    return float(-np.mean(y * np.log(p) + (1.0 - y) * np.log(1.0 - p)))
+
+
+def calibration_slope(probs: NDArray[np.float64], hits: NDArray[np.bool_]) -> float:
+    """Slope of a logistic recalibration of outcomes on logit(predicted p).
+
+    1.0 = perfectly calibrated spread; < 1 means the model is overconfident
+    (its probabilities are too extreme), > 1 underconfident. This is the
+    Phase 3 gate statistic (PLAN 3.4) — a one-parameter logistic regression,
+    fit via statsmodels (D018), not hand-rolled.
+    """
+    if probs.shape != hits.shape:
+        raise ValueError("probs and hits length mismatch")
+    import statsmodels.api as sm
+
+    clipped = np.clip(probs, _EPS, 1.0 - _EPS)
+    x = np.log(clipped / (1.0 - clipped))
+    design = np.column_stack([np.ones_like(x), x])
+    res = sm.Logit(hits.astype(np.float64), design).fit(disp=0)
+    return float(res.params[1])

@@ -44,13 +44,20 @@
 - Fallback: `wc26 add-result` manual entry — the tournament loop never
   depends on the API being up.
 - Known gaps: referees missing for WC 2018 (ESPN has no officials data that
-  far back; 2022+ is 100%). Optional backfill from Wikipedia if the cards
-  model wants the extra 64 training rows. Qualifier legs (fifa.worldq.*) are
-  an optional Phase 3 extension if 211 majors prove too small a sample.
+  far back; 2022+ is 100%) and for the 2022-cycle UEFA qualifiers. Optional
+  backfill from Wikipedia if the cards model wants the extra 64 training rows.
+- Qualifiers (D020, Phase 3 escape hatch): UEFA World Cup qualifiers ONLY —
+  probing (2026-06-12) showed CONMEBOL/AFC/CAF/CONCACAF qualifier summaries
+  carry officials but NO team stats on ESPN. Ingested legs: wcq_uefa_2022
+  (2021-03→2022-06; stats, no officials) and wcq_uefa_2026 (2025-03→2026-03;
+  stats + officials). Tournament label "FIFA World Cup qualification" matches
+  the results CSV. Qualifier rows are training-only for the prop models;
+  rows with missing stats are dropped, not fatal.
 - Status: INGESTED 2026-06-12 → match_stats.parquet (211 majors: WC18/22 64
-  each, Euro24 51, Copa24 32; corners 100%, refs 70%; + WC26 rows accumulate
-  daily via scrape) + referees.parquet (51 refs). Verified: extra-time counts
-  exact for all four tournaments (5 each), WC18/WC22 finals spot-checked.
+  each, Euro24 51, Copa24 32; corners 100%, refs 70%; + UEFA WCQ rows per
+  D020; + WC26 rows accumulate daily via scrape) + referees.parquet.
+  Verified: extra-time counts exact for all four tournaments (5 each),
+  WC18/WC22 finals spot-checked.
 - Note: `wc26 data scrape --tournament X` merges into the existing table
   (other tournaments are preserved; fixed 2026-06-12).
 

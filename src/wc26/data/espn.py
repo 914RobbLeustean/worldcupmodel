@@ -60,6 +60,27 @@ TOURNAMENTS: dict[str, Tournament] = {
             date(2024, 7, 15),
         ),
         Tournament("wc2026", "fifa.world", "FIFA World Cup", date(2026, 6, 11), date(2026, 7, 19)),
+        # UEFA World Cup qualifiers — the documented Phase 3 escape hatch for
+        # corners/cards sample size (D020). UEFA is the ONLY confederation
+        # whose qualifiers carry team stats on ESPN (CONMEBOL/AFC/CAF/
+        # CONCACAF summaries verified stat-less, 2026-06-12). The 2022 cycle
+        # has no officials data (like WC18); 2026 cycle does. Labels match
+        # the results CSV so tier mapping ("qualification" -> qualifier) and
+        # the ±1-day join (D013) work unchanged.
+        Tournament(
+            "wcq_uefa_2022",
+            "fifa.worldq.uefa",
+            "FIFA World Cup qualification",
+            date(2021, 3, 24),
+            date(2022, 6, 14),
+        ),
+        Tournament(
+            "wcq_uefa_2026",
+            "fifa.worldq.uefa",
+            "FIFA World Cup qualification",
+            date(2025, 3, 20),
+            date(2026, 3, 31),
+        ),
     ]
 }
 
@@ -107,6 +128,9 @@ def _fetch(url: str) -> dict[str, Any]:
 # unrecognized raises: silently mislabeling extra time corrupts 90' training.
 REGULAR_FINAL_STATUSES = {"STATUS_FULL_TIME", "STATUS_FINAL"}
 EXTRA_TIME_FINAL_STATUSES = {"STATUS_FINAL_PEN", "STATUS_FINAL_AET", "STATUS_FINAL_ET"}
+# ESPN marks these state == "post" too, but no match was played — skip the
+# event entirely (seen: Russia v Poland WCQ playoff, canceled March 2022).
+NO_MATCH_STATUSES = {"STATUS_CANCELED", "STATUS_POSTPONED", "STATUS_ABANDONED", "STATUS_FORFEIT"}
 
 
 def _is_extra_time(status: dict[str, Any], event_id: str) -> bool:
@@ -172,6 +196,8 @@ def _parse_summary(payload: dict[str, Any], tournament: Tournament) -> dict[str,
     comp = payload["header"]["competitions"][0]
     status = comp.get("status", {}).get("type", {})
     if status.get("state") != "post":
+        return None
+    if str(status.get("name", "")) in NO_MATCH_STATUSES:
         return None
 
     event_id = str(comp["id"])

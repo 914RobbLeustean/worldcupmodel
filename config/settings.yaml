@@ -24,6 +24,26 @@ goal_engine:
     pseudo_matches: 10.0       # n0 in w = n_eff / (n_eff + n0): Elo prior worth ~10 matches
     min_effective_matches: 15.0  # teams above this define the Elo->strength regression
 
+props:
+  # Shrinkage pseudo-matches for per-team stat rates (corners taken, fouls
+  # committed) and referee career card rates:
+  #   shrunk = (sum + n0 * sample_mean) / (n + n0)
+  team_rate_pseudo_matches: 6.0
+  ref_rate_pseudo_matches: 8.0
+  # Corners/cards walk-forward fits need at least this many training rows;
+  # earlier cutoffs are skipped (in practice: WC18 is training-only — its 59
+  # non-ET rows are the first usable slice — and the corners/cards eval
+  # sample starts at WC22).
+  min_train_rows: 50
+  # Sparse binary features (rivalry) are dropped from a fit unless they have
+  # at least this many positive training rows — an NB coefficient estimated
+  # on 2-3 matches is noise that could blow up a live prediction.
+  min_flag_support: 5
+  # Gate: calibration slope (logistic regression of the over/under outcome
+  # on logit(p) at the canonical line) must land in this range.
+  calibration_slope_min: 0.8
+  calibration_slope_max: 1.2
+
 backtest:
   market_margin: 0.01          # gate: engine may beat market log-loss by at most this
   # Live sanity gate (model vs de-vigged market on upcoming WC26 fixtures).

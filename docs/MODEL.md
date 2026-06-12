@@ -108,14 +108,103 @@ Known limitation: match-totals output looks under-dispersed vs market totals
 totals calibration is part of Phase 3 (team-totals prop model) before any
 totals bet is priced.
 
-## Prop models (Phase 3) — NOT YET BUILT
-- Team totals: marginals of the score matrix.
-- Corners: negative-binomial regression (xG gap, attack proxies, stage,
-  shrunk team corner rates).
-- Cards: negative-binomial (referee career rate, match stakes, rivalry flag,
-  knockout flag); ref-unknown predictions are flagged and widened.
-- Gates: beat naive tournament-mean baselines on log-loss; calibration slope
-  in [0.8, 1.2].
+## Prop models (Phase 3) — built 2026-06-12
+
+All three run through the walk-forward props harness
+(`src/wc26/backtest/props.py`, artifacts under data/processed/backtest/,
+gates in tests/test_prop_gates.py). Eval universe: the 211 majors minus the
+20 extra-time rows (D017 — prop stat totals include ET and the 90' split is
+unrecoverable, so ET matches can be neither trained on nor scored), i.e. 191
+matches with true 90-minute counts. Naive baselines, walk-forward at every
+cutoff: Poisson at the pre-cutoff majors scoring mean (totals);
+moment-matched NB2 — mean AND dispersion — on pre-cutoff majors
+(corners/cards). Calibration slope = logistic recalibration of the over
+outcome on logit(p) at the canonical line nearest each stat's mean.
+
+### Team totals (src/wc26/models/team_totals.py) — LIVE, gates green
+Direct marginals of the goal-engine score grid; the model version IS the
+engine version. Walk-forward over 191 matches:
+
+| metric | engine | naive | gate |
+|---|---|---|---|
+| per-side count log-loss | **1.4050** | 1.4750 | beat naive: PASS |
+| team O1.5 binary log-loss (n=382 sides) | **0.6053** | 0.6504 | — |
+| team O1.5 calibration slope | **0.869** | — | in [0.8, 1.2]: PASS |
+
+### Match totals — QUARANTINED, do not price (D019)
+The Phase 2 "under-dispersion vs market" flag, quantified against outcomes:
+- Match-totals count log-loss 1.8728 LOSES to naive 1.8520; O2.5 binary
+  log-loss 0.7182 vs naive 0.6923; pooled O2.5 calibration slope **0.13**
+  (within tournament: WC 0.28, Euro24 0.17, Copa24 −0.18).
+- Re-diagnosis: it is NOT grid variance. Empirical home/away goal covariance
+  is −0.14 (the grid's ≈ 0), and the variance-ratio "under-dispersion"
+  (residual var / mean predicted var = 1.19) is driven by conditional MEAN
+  errors: the engine under-predicts World Cup scoring specifically
+  (predicted 2.20 vs realized 2.66 goals/match over WC18+WC22 n=118;
+  Euro24 2.47 vs 2.37 and Copa24 2.34 vs 2.26 are fine), concentrated on
+  the favorite's side (listed-home pred 1.24 vs realized 1.45) —
+  Elo-anchored shrinkage compresses mismatch lambdas, and World Cups have
+  the most mismatches.
+- Team totals survive this (ranking intact, slope in range, big naive
+  margin); the SUM's signal does not. `wc26 predict` prints match O/U with
+  an explicit "NOT validated" tag; Phase 4 edges must refuse match-total
+  lines; test_match_totals_remain_quarantined pins the failure so it cannot
+  silently rot. Engine mean recalibration belongs to the Phase 6
+  recalibration checkpoint (it would move the 1X2 gates too).
+
+### Corners (src/wc26/models/corners.py) — QUARANTINED, do not price (D021)
+NB2 regression (statsmodels, D018) on: engine xG gap + favorite probability
+(fit at the same walk-forward cutoff), shrunk team shots/corners rates
+(leave-one-out in training so a match never sees its own stats), MD3 +
+knockout dummies, qualifier level dummy (D020).
+
+Walk-forward, 141 finals matches (eval starts at the 2018-07 cutoff; 462
+UEFA qualifier rows in training from 2021 on):
+
+| metric | model | naive (moment-matched NB2) | gate |
+|---|---|---|---|
+| count log-loss | 2.7189 | **2.7107** | beat naive: **FAIL** |
+| O9.5 binary log-loss | 0.6985 | **0.6871** | — |
+| O9.5 calibration slope | **−0.72** | — | in [0.8, 1.2]: **FAIL** |
+
+Predicted means are uncorrelated with outcomes (pooled r = −0.12; WC22
+−0.21, Euro24 +0.13, Copa24 +0.02) while the level is right (pred 9.09 vs
+realized 9.23). The same pipeline recovers planted signal on synthetic data
+(tests/test_negbin.py, tests/test_corners_cards.py), so this is a no-signal
+verdict, not a bug.
+
+### Cards (src/wc26/models/cards.py) — QUARANTINED, do not price (D021)
+NB2 on: shrunk referee career total-cards rate (the lead feature; LOO in
+training), knockout, rivalry (config/rivalries.yaml, only fit when ≥
+min_flag_support training rows), shrunk team fouls rates, qualifier dummy.
+Target = yellows + reds, each counting 1 (the standard total-cards market —
+bookings-points markets are a different contract and are not priced).
+Referee unknown OR known-but-historyless → mean rate, variance widened by
+the ref-coefficient times the between-ref spread of shrunk rates
+(alpha_eff = alpha + (beta_ref·sigma_ref)²), output flagged ref_known=False.
+
+Walk-forward, 141 finals matches (70 ref-known / 71 ref-unknown):
+
+| metric | model | naive (moment-matched NB2) | gate |
+|---|---|---|---|
+| count log-loss | 2.2236 | **2.1524** | beat naive: **FAIL** |
+| O3.5 binary log-loss | 0.7561 | **0.7071** | — |
+| O3.5 calibration slope | **−0.18** | — | in [0.8, 1.2]: **FAIL** |
+
+Predicted means uncorrelated with outcomes (pooled r = −0.07; even the
+ref-known slice is −0.16 — WC22-era referee careers are ≤7 matches and
+shrink to the mean). Tournament-level shocks dominate both stats: Euro24 ran
+hot (realized 9.96 corners, 4.26 cards vs ~9.2/~3.6 history) and no
+per-match feature can see that coming.
+
+### Phase 3 verdict
+Team totals is the ONLY model cleared to price. Corners/cards (and match
+totals) are quarantined: `wc26 predict` prints them as reference with
+explicit tags, Phase 4 `wc26 edges` must refuse their lines, and
+tests/test_prop_gates.py pins the failures. Re-gate at the Phase 6
+post-group recalibration (~70 WC26 matches + referee careers grown by WC26
+assignments + 2025-26 qualifier officials). Rationale and the no-fishing
+call: D019/D021.
 
 ## Tournament simulator (Phase 5) — NOT YET BUILT
 - 20k seeded Monte Carlo runs; 2026 format (12 groups, 8 best thirds, R32);

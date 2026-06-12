@@ -7,6 +7,32 @@ Every working session must add at least one entry under `[Unreleased]`.
 ## [Unreleased]
 
 ### Added
+- 2026-06-12: Phase 3 — prop models, walk-forward-validated. (1) Team totals
+  (src/wc26/models/team_totals.py): direct marginals of the goal-engine
+  grid; gates GREEN (count log-loss 1.405 vs naive 1.475, O1.5 calibration
+  slope 0.87) — the only Phase 3 model cleared to price. The Phase 2 "totals
+  under-dispersion" flag was quantified and re-diagnosed as a
+  World-Cup-specific conditional mean miss; MATCH totals fail their gates
+  and are quarantined from pricing (D019, pinned by a test). (2) Corners
+  (corners.py): NB2 regression (statsmodels, D018) on engine xG gap,
+  favorite prob, shrunk team shot/corner rates (leave-one-out in training),
+  MD3/knockout/qualifier dummies. (3) Cards (cards.py): NB2 on shrunk
+  referee career card rate, knockout, rivalry (config/rivalries.yaml,
+  support-gated), team foul rates; ref-unknown → mean rate + widened
+  variance + flagged output. VERDICT: corners and cards FAIL their gates
+  (lose to the naive moment-matched baseline; slopes −0.72/−0.18) even after
+  extending training with 462 UEFA WC-qualifier rows — quarantined as
+  reference-only (D021, pinned by tests; re-gate at the Phase 6 post-group
+  recalibration). Props harness in src/wc26/backtest/props.py, gates in
+  tests/test_prop_gates.py; ET rows excluded from prop training AND eval
+  (D017). New scrape legs wcq_uefa_2022/wcq_uefa_2026 (UEFA is the only
+  confederation with ESPN team stats, D020); canceled/postponed ESPN events
+  now skipped (Russia v Poland 2022). `wc26 refit` fits + versions
+  corners/cards params alongside the engine; `wc26 predict` prints team
+  totals, corners and cards distributions with uncertainty,
+  ref-known/ref-unknown labels (optional data/manual/ref_assignments.csv)
+  and explicit not-validated tags; `wc26 backtest` runs the props
+  walk-forward after the 1X2 one. New deps: statsmodels (+patsy), D018.
 - 2026-06-12: Phase 2 — Dixon-Coles goal engine (penaltyblog, time-decay +
   tier weights, neutral-venue handling, Elo-anchored shrinkage with the blend
   documented in docs/MODEL.md; extra-time rows excluded per D012/D014) and

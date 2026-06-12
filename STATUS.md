@@ -3,19 +3,27 @@
 > Single source of truth for "where are we". Update before ending every session.
 
 ## Current phase
-**Phase 2 — COMPLETE** (2026-06-12). Next: **Phase 3 — Prop models: team
-totals, corners, cards** (docs/PLAN.md).
+**Phase 3 — COMPLETE** (2026-06-12). Next: **Phase 4 — Market layer: edges,
+ledger, CLV** (docs/PLAN.md).
+
+Phase 3 verdict (full report in docs/MODEL.md, decisions D017–D021):
+- **Team totals: LIVE, gates green** — the only model cleared to price
+  (count log-loss 1.405 vs naive 1.475; O1.5 calibration slope 0.87).
+- **Match totals: QUARANTINED (D019)** — the Phase 2 "under-dispersion" flag
+  turned out to be a World-Cup-specific conditional mean miss (engine 2.20
+  vs realized 2.66 goals/match at WCs, favorite side); O2.5 slope 0.13.
+- **Corners & cards: built, FAILED gates, QUARANTINED (D021)** — lose to the
+  naive moment-matched baseline even after extending training with 462 UEFA
+  qualifier rows (D020); predictions uncorrelated with outcomes. Re-gate at
+  the Phase 6 post-group recalibration. Tests pin all three quarantines.
 
 ## Next task
-Phase 3 task 1: team totals — direct marginals of the goal engine's score
-matrix (`grid.home_goal_distribution` / `away_goal_distribution`), run
-through the existing walk-forward harness (src/wc26/backtest/) for
-calibration before pricing any line. Then corners (negative-binomial on
-match_stats features), then cards (referee rate is the biggest feature —
-referees.parquet is ready). Gates per PLAN 3.4: beat the historical
-tournament-mean baseline on log-loss; calibration slope in [0.8, 1.2].
-Note from Phase 2: engine match-totals look under-dispersed vs market —
-quantify and fix as part of the team-totals work before any totals bet.
+Phase 4 task 1: data/manual/lines.csv format + `wc26 edges` (de-vig two-way
+prop lines multiplicatively D005, compare vs model, flag edge ≥ threshold,
+flat stake from settings). HARD GUARD: refuse lines for any market that is
+not gate-cleared — today that means TEAM TOTALS ONLY (match totals D019,
+corners/cards D021, and anything with no prediction). Then `wc26 log-bet` /
+`settle` / `clv-report` per PLAN 4.2.
 
 ## Blockers
 None.
@@ -24,47 +32,46 @@ None.
 `uv run wc26 data scrape --tournament wc2026 && uv run wc26 data sync` —
 pulls finished WC26 matches from ESPN into the patch + processed tables.
 Then `wc26 data status` to confirm freshness, `uv run wc26 refit` to fold
-new results into the model, `uv run wc26 predict` for today's matches.
-(Re-run `wc26 backtest` + `pytest` after refit if you want the gates
-re-checked against the new fit; takes ~1 min.)
+new results into all models (engine + corners/cards params, versioned
+together), `uv run wc26 predict` for today's matches. Referee assignments
+(appear ~2 days out) can be entered in data/manual/ref_assignments.csv
+(date,home_id,away_id,referee — ESPN spelling) to switch cards output to
+ref-known. (Re-run `wc26 backtest` + `pytest` after refit to re-check all
+gates; ~2 min.)
 
 ## Data inventory (all verified)
-- results.parquet: 49,406 played internationals 1872→now (incl. WC26 opener
-  Mexico 2-0 South Africa) + patch layer
+- results.parquet: 49,406 played internationals 1872→now + patch layer
 - fixtures.parquet: 72 WC26 group matches, venues, altitude, played flags
-- match_stats.parquet: 212 matches (211 majors WC18/22, Euro24, Copa24 +
-  WC26 accumulating daily) — extra_time flags verified
-- market_odds.parquet: 211 historical 1X2 average odds (WC18/22 via
-  football-data.co.uk; Euro24/Copa24 via BetExplorer) — cross-verified, D015
-- referees.parquet: 51 refs with card rates
+- match_stats.parquet: 674 matches — 211 majors (WC18/22, Euro24, Copa24)
+  + 462 UEFA WC qualifiers (D020, training-only) + WC26 accumulating daily;
+  extra_time flags verified; canceled events skipped (Russia–Poland 2022)
+- market_odds.parquet: 211 historical 1X2 average odds (D015)
+- referees.parquet: 121 refs with card rates (2022+ majors, 2025-26 quals)
 - Elo: leak-free as-of-date snapshots, top-12 sanity-checked
-- Goal engine: data/processed/models/goal_engine_2026-06-13_20ae804.json
-- Backtest artifacts: data/processed/backtest/ (gates read these)
-
-## Phase 2 acceptance notes
-- Backtest (211 matches, monthly walk-forward): engine log-loss 0.9952 beats
-  Elo-only 1.0120, does not beat market 0.9706 — all three reality gates are
-  pytest tests (tests/test_gates.py) and green. Report in docs/MODEL.md.
-- `wc26 predict` runs in <1 s from cached data (requirement was <10 s).
-- Live sanity (gate iii): mean diff vs market 0.074 over 71 fixtures; the
-  big deviations are brand-vs-form opinions, documented in MODEL.md + D016.
-- Odds are average-near-kickoff, not strict closing (D015 limitation).
+- Models (data/processed/models/): goal_engine + corners + cards, all
+  versioned `<name>_<cutoff>_<sha7>.json`; latest fit 2026-06-13 @b3defec
+  (engine 9,508 matches; props 649)
+- Backtest artifacts: data/processed/backtest/ — goal_engine_* (Phase 2
+  gates) + props_* (Phase 3 gates); all gate tests green
 
 ## Last session summary
-- 2026-06-12 (b): Phase 2 done — goal engine (Dixon-Coles + decay + tier
-  weights + neutral venue + Elo-anchored shrinkage, ET rows excluded D014),
-  walk-forward harness with Elo + market baselines, market-odds ingest from
-  two cross-verified free sources, reality gates as tests, `wc26
-  refit|predict|backtest`. Fixed scrape subset-clobber + empty-day crash.
-  58 tests green, mypy --strict clean. Opener ingested and folded into the
-  production fit.
+- 2026-06-12 (c): Phase 3 done — team_totals/corners/cards models +
+  walk-forward props harness + gates as tests. Quantified the totals flag:
+  team totals pass and ship; match totals + corners/cards quarantined with
+  pinned tests (D019/D021). Added UEFA WCQ scrape legs (only confederation
+  with ESPN team stats, D020), statsmodels dep (D018), ET exclusion for
+  props (D017). `predict` prints all prop distributions with uncertainty +
+  ref-known/unknown labels in ~1 s; `refit` versions all three models;
+  `backtest` runs both harnesses. 99 tests green, mypy --strict clean.
+- 2026-06-12 (b): Phase 2 done — goal engine + harness + market odds +
+  reality gates; opener ingested. 58 tests green.
 - 2026-06-12 (a): Phase 1 finished (ESPN ingest, referee table, sync).
 
 ## Phase checklist
 - [x] Phase 0 — Scaffold
 - [x] Phase 1 — Data layer (teams, results, Elo, match stats, referees)
 - [x] Phase 2 — Goal engine + walk-forward backtest harness
-- [ ] Phase 3 — Prop models (team totals, corners, cards)
+- [x] Phase 3 — Prop models (team totals LIVE; corners/cards quarantined D021)
 - [ ] Phase 4 — Market layer (edges, ledger, CLV)
 - [ ] Phase 5 — Tournament simulator & country rankings
-- [ ] Phase 6 — Tournament ops (daily routine, recalibration)
+- [ ] Phase 6 — Tournament ops (daily routine, recalibration + prop re-gate)

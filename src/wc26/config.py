@@ -22,6 +22,16 @@ class GoalEngineSettings:
 
 
 @dataclass(frozen=True)
+class PropsSettings:
+    team_rate_pseudo_matches: float
+    ref_rate_pseudo_matches: float
+    min_train_rows: int
+    min_flag_support: int
+    calibration_slope_min: float
+    calibration_slope_max: float
+
+
+@dataclass(frozen=True)
 class BacktestSettings:
     market_margin: float
     sanity_max_abs_diff: float
@@ -41,6 +51,7 @@ class Settings:
     elo_k: dict[str, int]
     odds_api_budget: int
     goal_engine: GoalEngineSettings
+    props: PropsSettings
     backtest: BacktestSettings
 
     @property
@@ -72,6 +83,14 @@ def load_settings(path: Path = SETTINGS_PATH) -> Settings:
             elo_anchor_min_effective_matches=float(
                 raw["goal_engine"]["elo_anchor"]["min_effective_matches"]
             ),
+        ),
+        props=PropsSettings(
+            team_rate_pseudo_matches=float(raw["props"]["team_rate_pseudo_matches"]),
+            ref_rate_pseudo_matches=float(raw["props"]["ref_rate_pseudo_matches"]),
+            min_train_rows=int(raw["props"]["min_train_rows"]),
+            min_flag_support=int(raw["props"]["min_flag_support"]),
+            calibration_slope_min=float(raw["props"]["calibration_slope_min"]),
+            calibration_slope_max=float(raw["props"]["calibration_slope_max"]),
         ),
         backtest=BacktestSettings(
             market_margin=float(raw["backtest"]["market_margin"]),

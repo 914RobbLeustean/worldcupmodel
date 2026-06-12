@@ -136,3 +136,76 @@ Brazil modal). Thresholds set to: max per-outcome diff ≤ 0.25, mean ≤ 0.10,
 and any market favorite ≥ 0.55 must also be the model's modal outcome.
 Revisit only with a DECISIONS entry; CLV tracking (Phase 4) is the real
 adjudicator of who is right on the big deviations.
+
+## D017 — 2026-06-12 — Extra time and prop models: exclude, both sides
+Corners/cards/fouls totals in match_stats include extra time for `extra_time`
+rows (D012), and the 90' split is not recoverable from ESPN's totals. The
+90-minute prop models therefore EXCLUDE ET rows from BOTH training and
+evaluation (20 of 211 majors rows; the eval universe is 191). Exclusion over
+adjustment for the same reason as D014; unlike 1X2 (where an ET match is a
+known draw), a 90' corner/card count for an ET match is simply unknown, so
+these matches cannot be scored at all. `props_universe()` in
+src/wc26/models/prop_features.py is the single entry point and drops them.
+
+## D018 — 2026-06-12 — statsmodels for NB2 prop regressions
+New dependency: statsmodels 0.14 (with patsy). The corners/cards models are
+NB2 negative-binomial regressions (Var = mu + alpha*mu^2) fit by MLE —
+exactly statsmodels' NegativeBinomial; hand-rolling count-regression MLE is
+the same class of bug risk D003 exists to avoid. penaltyblog stays the only
+source of goal-model/de-vig math. Also used for the calibration-slope gate
+statistic (a one-parameter logistic recalibration). Fits are warm-started
+from a Poisson GLM; an alpha MLE on the boundary (<1e-3, i.e. no conditional
+overdispersion) collapses explicitly to the Poisson solution rather than
+reporting a fake non-convergence.
+
+## D019 — 2026-06-12 — Totals verdict: team totals ship, match totals don't
+Phase 2 flagged engine match-totals as "under-dispersed vs market". The
+Phase 3 walk-forward quantification (191 non-ET majors) shows the real
+problem is a conditional MEAN miss, not grid variance:
+- Team-totals marginals are healthy: count log-loss beats the naive
+  Poisson-at-majors-mean baseline and the O1.5 calibration slope is in
+  gate range. Empirical home/away goal covariance is ~-0.14 (the grid's is
+  ~0), so the grid is not too narrow on the sum either.
+- The engine under-predicts World Cup scoring specifically (pred 2.20 vs
+  realized 2.66 goals/match over WC18+WC22; Euro24/Copa24 are fine), mostly
+  on the favorite's side — Elo-anchored shrinkage compresses mismatch
+  lambdas. Match-total O2.5 calibration slope ≈ 0.13 pooled (0.28/0.17/-0.18
+  within tournament): the match-totals signal is too weak to price.
+DECISION: team totals (home/away O/U) ship behind their green gates; match
+totals O/U is NOT priceable — `wc26 predict` prints it with an explicit
+"NOT validated" tag and the markets layer (Phase 4) must refuse match-total
+lines. No rescaling correction is applied: a mean-level rescale would not
+fix a 0.13 slope, and engine retuning belongs to a Phase 6 recalibration
+checkpoint with the 1X2 gates re-run. Numbers in docs/MODEL.md.
+
+## D020 — 2026-06-12 — Corners/cards sample: UEFA WC-qualifier extension
+The PLAN escape hatch invoked: majors-only training (59 rows at the first
+usable cutoff) produced corners/cards fits whose coefficients whipped
+cutoff-to-cutoff and lost to the naive baseline. Added fifa.worldq.* legs to
+espn.py TOURNAMENTS — but UEFA ONLY: probing ESPN (2026-06-12) showed
+CONMEBOL/AFC/CAF/CONCACAF qualifier summaries carry officials but NO team
+stats, so only fifa.worldq.uefa is ingestible. Two cycles: 2021-03→2022-06
+(stats, no officials — like WC18) and 2025-03→2026-03 (stats + officials).
+Qualifier rows are TRAINING-ONLY (a `qualifier` level dummy separates their
+environment; matchday/knockout forced to baseline; incomplete rows dropped
+rather than fatal): the gates stay defined on the 2018→2024 finals sample
+and we never price qualifier lines. Naive baselines keep using finals rows
+only.
+
+## D021 — 2026-06-12 — Corners/cards gate verdict: built, FAILED, quarantined
+The PLAN 3.4 gates ran on 141 walk-forward finals matches (WC18 July KOs,
+WC22, Euro24, Copa24) with training extended by 462 UEFA qualifier rows
+(D020): corners count log-loss 2.719 vs naive 2.711 (LOSES), O9.5 slope
+-0.72; cards 2.224 vs 2.152 (LOSES), O3.5 slope -0.18. Predicted means are
+essentially uncorrelated with outcomes (corners -0.12, cards -0.07, cards
+ref-known slice -0.16) while the LEVEL is right — and the same code recovers
+planted signal on synthetic data (tests), so this is absence of evidence of
+per-match signal, not a bug. Tournament-level shocks (Euro24 ran hot on both
+stats) dominate and are unpredictable pre-tournament. DECISION: the fitted
+NB2 models ship as REFERENCE ONLY — `wc26 predict` prints them with a "NOT
+validated" tag, Phase 4 must refuse corners/cards lines, and
+tests/test_prop_gates.py pins the failures (a future pass requires a new
+DECISIONS entry, not a silent flip). Further feature surgery was rejected as
+backtest fishing. Re-gate at the Phase 6 post-group recalibration when ~70
+WC26 matches and richer referee careers exist. The only Phase 3 model
+cleared to price is TEAM TOTALS.
