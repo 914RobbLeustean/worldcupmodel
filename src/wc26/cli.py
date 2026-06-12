@@ -14,8 +14,36 @@ def _stub(phase: str) -> None:
 
 @app.command()
 def predict(date: str = typer.Option(None, help="YYYY-MM-DD, default today")) -> None:
-    """Model probabilities for a match day (1X2, totals, props)."""
-    _stub("Phase 2 (1X2/totals) and Phase 3 (props)")
+    """Model probabilities for a match day (1X2, totals; props in Phase 3)."""
+    import pandas as pd
+
+    from wc26.data.results import PROCESSED_DIR
+    from wc26.models.goal_engine import GoalEngineParams, latest_params_path, predict_grid
+
+    params = GoalEngineParams.load(latest_params_path())
+    day = pd.Timestamp(date) if date else pd.Timestamp.now(tz="UTC").tz_localize(None).normalize()
+    fixtures = pd.read_parquet(PROCESSED_DIR / "fixtures.parquet")
+    todays = fixtures[fixtures["date"].dt.normalize() == day.normalize()]
+    if todays.empty:
+        typer.echo(f"no WC26 fixtures on {day.date()}")
+        raise typer.Exit(code=1)
+
+    typer.echo(f"model: {params.version} (fitted {params.fitted_at})")
+    typer.echo(
+        f"{'match':40s} {'1':>6s} {'X':>6s} {'2':>6s}  {'O2.5':>6s} {'U2.5':>6s}  lam_h/lam_a"
+    )
+    for row in todays.itertuples(index=False):
+        home, away = str(row.home_id), str(row.away_id)
+        grid = predict_grid(params, home, away, neutral=bool(row.neutral))
+        p_home, p_draw, p_away = grid.home_draw_away
+        over = float(grid.total_goals("over", 2.5))
+        label = f"{home} v {away}" + ("" if bool(row.neutral) else " (home adv)")
+        typer.echo(
+            f"{label:40s} {p_home:6.3f} {p_draw:6.3f} {p_away:6.3f}  "
+            f"{over:6.3f} {1 - over:6.3f}  {grid.home_goal_expectation:.2f}/"
+            f"{grid.away_goal_expectation:.2f}"
+        )
+    typer.echo("(90-minute probabilities; knockout matches can draw)")
 
 
 @app.command()
@@ -93,8 +121,55 @@ def add_result(
 
 @app.command()
 def refit() -> None:
-    """Re-fit models on latest data and version the parameters."""
-    _stub("Phase 2")
+    """Re-fit the goal engine on all current data and version the params."""
+    import pandas as pd
+
+    from wc26.config import load_settings
+    from wc26.data.elo import compute_elo_history, ratings_asof
+    from wc26.data.results import PROCESSED_DIR
+    from wc26.models.goal_engine import MODELS_DIR, fit_goal_engine, prepare_training_data
+
+    settings = load_settings()
+    results = pd.read_parquet(PROCESSED_DIR / "results.parquet")
+    stats = pd.read_parquet(PROCESSED_DIR / "match_stats.parquet")
+    # Cutoff = tomorrow: include everything played through today.
+    cutoff = pd.Timestamp.now(tz="UTC").tz_localize(None).normalize() + pd.Timedelta(days=1)
+    train = prepare_training_data(
+        results, stats, cutoff, settings.goal_engine.training_window_years
+    )
+    elo = ratings_asof(compute_elo_history(results, settings.elo_k), cutoff)
+    params = fit_goal_engine(train, elo, cutoff, settings)
+    path = MODELS_DIR / f"goal_engine_{params.data_cutoff}_{params.git_sha[:7]}.json"
+    params.save(path)
+    typer.echo(f"fitted on {params.n_matches} matches (window to {params.data_cutoff})")
+    typer.echo(f"home_advantage={params.home_advantage:.3f} rho={params.rho:.4f}")
+    typer.echo(f"saved {path}")
+
+
+@app.command()
+def backtest() -> None:
+    """Walk-forward backtest vs Elo-only and market baselines; write artifacts."""
+    import pandas as pd
+
+    from wc26.backtest.harness import run_backtest, write_artifacts
+    from wc26.config import load_settings
+    from wc26.data.results import PROCESSED_DIR
+
+    settings = load_settings()
+    results = pd.read_parquet(PROCESSED_DIR / "results.parquet")
+    stats = pd.read_parquet(PROCESSED_DIR / "match_stats.parquet")
+    odds_path = PROCESSED_DIR / "market_odds.parquet"
+    if not odds_path.exists():
+        from wc26.data.market_odds import build_market_odds
+
+        build_market_odds()
+    odds = pd.read_parquet(odds_path)
+    eval_df, summary = run_backtest(settings, results, stats, odds)
+    for path in write_artifacts(eval_df, summary):
+        typer.echo(f"wrote {path}")
+    typer.echo(f"n={summary['n_matches']} matches, cutoffs={len(summary['cutoffs'])}")
+    for model, m in summary["metrics"].items():
+        typer.echo(f"{model:8s} log-loss {m['log_loss']:.4f}  brier {m['brier']:.4f}")
 
 
 @app.command()

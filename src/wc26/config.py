@@ -14,6 +14,22 @@ SETTINGS_PATH = REPO_ROOT / "config" / "settings.yaml"
 
 
 @dataclass(frozen=True)
+class GoalEngineSettings:
+    tier_weights: dict[str, float]
+    training_window_years: int
+    elo_anchor_pseudo_matches: float
+    elo_anchor_min_effective_matches: float
+
+
+@dataclass(frozen=True)
+class BacktestSettings:
+    market_margin: float
+    sanity_max_abs_diff: float
+    sanity_mean_abs_diff: float
+    sanity_favorite_prob: float
+
+
+@dataclass(frozen=True)
 class Settings:
     bankroll: float
     unit_pct: float
@@ -24,6 +40,8 @@ class Settings:
     dixon_coles_decay: float
     elo_k: dict[str, int]
     odds_api_budget: int
+    goal_engine: GoalEngineSettings
+    backtest: BacktestSettings
 
     @property
     def unit_stake(self) -> float:
@@ -47,4 +65,18 @@ def load_settings(path: Path = SETTINGS_PATH) -> Settings:
         dixon_coles_decay=float(raw["dixon_coles_decay"]),
         elo_k={k.removeprefix("k_"): int(v) for k, v in raw["elo"].items()},
         odds_api_budget=int(raw["odds_api"]["monthly_credit_budget"]),
+        goal_engine=GoalEngineSettings(
+            tier_weights={k: float(v) for k, v in raw["goal_engine"]["tier_weights"].items()},
+            training_window_years=int(raw["goal_engine"]["training_window_years"]),
+            elo_anchor_pseudo_matches=float(raw["goal_engine"]["elo_anchor"]["pseudo_matches"]),
+            elo_anchor_min_effective_matches=float(
+                raw["goal_engine"]["elo_anchor"]["min_effective_matches"]
+            ),
+        ),
+        backtest=BacktestSettings(
+            market_margin=float(raw["backtest"]["market_margin"]),
+            sanity_max_abs_diff=float(raw["backtest"]["sanity_max_abs_diff"]),
+            sanity_mean_abs_diff=float(raw["backtest"]["sanity_mean_abs_diff"]),
+            sanity_favorite_prob=float(raw["backtest"]["sanity_favorite_prob"]),
+        ),
     )

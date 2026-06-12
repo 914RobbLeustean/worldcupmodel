@@ -4,11 +4,13 @@ version = "0.1.0"
 description = "World Cup 2026 prop-market edge model: predictions, +EV detection, CLV tracking"
 requires-python = ">=3.12"
 dependencies = [
+    "openpyxl>=3.1.5",
     "pandas>=3.0.3",
     "pandera>=0.31.1",
     "penaltyblog>=1.11.0",
     "pyarrow>=24.0.0",
     "pyyaml>=6.0.3",
+    "scipy>=1.17.1",
     "soccerdata>=1.9.0",
     "typer>=0.26.7",
 ]
@@ -26,6 +28,7 @@ dev = [
     "pandas-stubs>=3.0.3.260530",
     "pytest>=9.0.3",
     "ruff>=0.15.17",
+    "scipy-stubs>=1.17.1.5",
     "types-pyyaml>=6.0.12.20260518",
 ]
 

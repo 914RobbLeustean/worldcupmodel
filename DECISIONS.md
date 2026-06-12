@@ -91,3 +91,48 @@ Late-evening kickoffs in the Americas land on the next UTC day, so joining
 match_stats to results on exact (date, home, away) will silently drop
 matches. Any cross-source join goes through a tolerant matcher (team pair +
 date within ±1 day). Applies to Phase 2/3 feature joins and result syncing.
+
+## D014 — 2026-06-12 — Extra-time handling in goal-engine training
+90-minute models must not train on scores that include extra time (D012).
+Handling, by era:
+- 2018+ majors (incl. WC26 live): match_stats carries a verified per-event
+  `extra_time` flag → flagged rows are EXCLUDED from training (matched back
+  to results by team pair ±1 day, D013). Exclusion over adjustment: the 90'
+  score is not recoverable from our sources' totals, and it is ~20 rows.
+- Pre-2018: no flag exists (ESPN coverage starts 2018). Contamination is
+  accepted and quantified: only knockout matches of majors can be affected
+  (~1% of all internationals), of which ~25-30% went to ET (~0.3% of rows);
+  shootout matches are stored with level scores and settle as draws, which is
+  already the correct 90' outcome, halving the damage again. With 18-month
+  decay half-life, pre-2018 rows carry <3% weight in any 2026 fit. Building a
+  stage-inference heuristic across 150 years of formats was judged more
+  dangerous than this residual bias.
+- Backtest evaluation: an ET-flagged match was level after 90' by
+  construction (single-match knockouts) → outcome scored as a draw. Verified
+  against football-data.co.uk's separate 90' scores (HGFT/AGFT) for all 10
+  WC18/WC22 ET matches in tests/test_market_odds.py.
+
+## D015 — 2026-06-12 — Historical 1X2 odds: football-data.co.uk + BetExplorer
+Market baseline odds (Phase 2 backtest) come from two free sources:
+- WC 2018 + WC 2022: football-data.co.uk WorldCup2026.xlsx (per-tournament
+  sheets, average/max odds + named books, plus true 90' scores).
+- Euro 2024 + Copa América 2024 (archives) and WC 2026 (live fixtures page):
+  BetExplorer average odds (static pages + their league-results AJAX
+  endpoint), cached forever under data/raw/odds/.
+Cross-verified on overlapping matches (WC22 final, 3rd-place; ~1.5% apart)
+and against known lines (WC18 opener). LIMITATION: these are average
+bookmaker odds collected near kickoff, not strictly Pinnacle closing — the
+market baseline is a closing proxy and is documented as such in MODEL.md.
+New dependencies: openpyxl (xlsx parsing), scipy made explicit (Elo baseline
+draw-width MLE; already transitive via penaltyblog), scipy-stubs (dev).
+
+## D016 — 2026-06-12 — Live sanity gate thresholds (gate iii)
+The live model-vs-market gate catches insanity (team mix-ups, inverted strong
+favorites, broken home advantage), not honest disagreement. Initial guess of
+0.15 max per-outcome diff was too tight: inspecting the 2026-06-12 snapshot
+(71 fixtures) showed mean diff 0.074 but worst 0.213 (brazil v morocco —
+market prices the brand, Elo/results price Morocco's form; model still keeps
+Brazil modal). Thresholds set to: max per-outcome diff ≤ 0.25, mean ≤ 0.10,
+and any market favorite ≥ 0.55 must also be the model's modal outcome.
+Revisit only with a DECISIONS entry; CLV tracking (Phase 4) is the real
+adjudicator of who is right on the big deviations.

@@ -21,6 +21,8 @@ A task is not done until tests pass and docs reflect it.
 - `wc26 log-bet` / `wc26 settle` / `wc26 clv-report`   ledger ops
 - `wc26 add-result`    append a finished match (Kaggle lags during tournament)
 - `wc26 refit`         re-fit models on latest data, version the params
+- `wc26 backtest`      walk-forward backtest vs Elo + market baselines;
+  refreshes the artifacts the reality-gate tests assert on
 - `wc26 sim` / `wc26 rankings [--diff]`   Monte Carlo of remaining tournament →
   per-team advancement/champion probabilities, recalculated from live results
 

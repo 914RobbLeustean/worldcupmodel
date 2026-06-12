@@ -47,10 +47,12 @@
   far back; 2022+ is 100%). Optional backfill from Wikipedia if the cards
   model wants the extra 64 training rows. Qualifier legs (fifa.worldq.*) are
   an optional Phase 3 extension if 211 majors prove too small a sample.
-- Status: INGESTED 2026-06-12 → match_stats.parquet (211 matches: WC18/22 64
-  each, Euro24 51, Copa24 32; corners 100%, refs 70%) + referees.parquet (51
-  refs). Verified: extra-time counts exact for all four tournaments (5 each),
-  WC18/WC22 finals spot-checked.
+- Status: INGESTED 2026-06-12 → match_stats.parquet (211 majors: WC18/22 64
+  each, Euro24 51, Copa24 32; corners 100%, refs 70%; + WC26 rows accumulate
+  daily via scrape) + referees.parquet (51 refs). Verified: extra-time counts
+  exact for all four tournaments (5 each), WC18/WC22 finals spot-checked.
+- Note: `wc26 data scrape --tournament X` merges into the existing table
+  (other tournaments are preserved; fixed 2026-06-12).
 
 ## Tournament schedule
 - Group stage: derived automatically from the results CSV into
@@ -58,6 +60,47 @@
 - Knockout slots + kickoff times: manual entry deferred to Phase 5 when the
   simulator needs the bracket mapping.
 - Status: GROUP STAGE DERIVED 2026-06-11.
+
+## Historical 1X2 market odds (backtest baseline)
+- Decision: D015. Output: data/processed/market_odds.parquet (211 rows:
+  WC18 64, WC22 64, Euro24 51, Copa24 32), built by
+  `wc26.data.market_odds.build_market_odds()` (auto-run by `wc26 backtest`).
+- Source 1 — football-data.co.uk: https://www.football-data.co.uk/WorldCup2026.xlsx
+  One workbook, per-tournament sheets (WorldCup2022, WorldCup2018, ...).
+  Columns used: Date, Home, Away, H-Avg/D-Avg/A-Avg (average odds across
+  books). Bonus: HGFT/AGFT are the TRUE 90-minute scores (ET and pens
+  recorded separately) — used in tests to verify D012 handling.
+- Source 2 — BetExplorer (betexplorer.com): average odds from results pages.
+  Group stages come from their AJAX endpoint
+  `/res/ajax/league-results.php?par={tournament},{stage},1&show=all&sort=d`
+  (par values recorded in market_odds.py; read off each tournament's
+  /results/ page). Euro 2024: euro-2024; Copa 2024 lives at /copa-america/
+  (no year suffix = latest edition).
+- Caching: every raw file under data/raw/odds/ is immutable (finished
+  tournaments) and never re-fetched.
+- Verification (test-enforced): WC22 final 2.63/3.12/2.84 (football-data) vs
+  2.67/3.13/2.86 (BetExplorer); WC18 opener Russia 1.46; Euro24 final Spain
+  2.41 — tests/test_market_odds.py.
+- LIMITATION: average bookmaker odds collected near kickoff — a closing-line
+  proxy, not strict Pinnacle closing odds. Good enough to anchor the "do not
+  beat the market" gate; do NOT use for CLV math (Phase 4 enters real
+  closing lines manually).
+- Failure modes: page/format drift (parsers raise on row-count mismatch:
+  128/51/32 expected); BetExplorer team spellings (strict resolution for
+  WC26 — fix via config/teams.yaml aliases, e.g. "D.R. Congo").
+- Status: INGESTED 2026-06-12.
+
+## WC26 live 1X2 odds (sanity gate + daily reference)
+- BetExplorer fixtures page for the live tournament:
+  https://www.betexplorer.com/football/world/world-championship-2026/fixtures/
+  (note: NOT world-cup-2026 — that URL redirects to the homepage).
+- `wc26.data.market_odds.fetch_wc26_live_odds()` snapshots it once per UTC
+  day into data/raw/odds/betexplorer_wc26_fixtures_YYYYMMDD.html; rows have
+  no date column and join to fixtures by team pair (unique in group stage).
+- Used by the gate-iii test (model vs de-vigged market, thresholds in
+  settings.yaml `backtest:`) — the test reads the latest snapshot only,
+  never the network.
+- Status: FIRST SNAPSHOT 2026-06-12 (71 fixtures).
 
 ## Sportsbook lines (manual, in git)
 - File: data/manual/lines.csv — typed from the user's book before betting.

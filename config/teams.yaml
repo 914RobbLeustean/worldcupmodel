@@ -62,7 +62,7 @@ teams:
   # Group K
   - {id: portugal, name: Portugal, group: K, aliases: []}
   - {id: dr_congo, name: DR Congo, group: K,
-     aliases: [Congo DR, Democratic Republic of the Congo, Congo Kinshasa, Zaire, Zaïre]}
+     aliases: [Congo DR, Democratic Republic of the Congo, Congo Kinshasa, D.R. Congo, Zaire, Zaïre]}
   - {id: uzbekistan, name: Uzbekistan, group: K, aliases: []}
   - {id: colombia, name: Colombia, group: K, aliases: []}
   # Group L

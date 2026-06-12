@@ -32,7 +32,11 @@ def test_cli_help_lists_commands() -> None:
 
 
 def test_stub_commands_fail_loudly() -> None:
-    result = runner.invoke(app, ["predict"])
+    # predict/refit/backtest landed in Phase 2; these remain stubs.
+    result = runner.invoke(app, ["edges"])
+    assert result.exit_code == 1
+    assert "Not implemented" in result.output
+    result = runner.invoke(app, ["sim"])
     assert result.exit_code == 1
     assert "Not implemented" in result.output
 

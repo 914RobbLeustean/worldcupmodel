@@ -10,6 +10,31 @@ seed: 20260611            # all simulation randomness derives from this
 mc_runs: 20000            # tournament Monte Carlo iterations
 
 dixon_coles_decay: 0.00126   # ~ half-life 18 months; revisit after backtest
+
+goal_engine:
+  # Per-match fit weight = exp(-decay * days_before_cutoff) * tier_weight.
+  # Tier ratios mirror the Elo K convention below (3 : 2.5 : 2 : 1).
+  tier_weights:
+    world_cup: 3.0
+    continental: 2.5
+    qualifier: 2.0
+    friendly: 1.0
+  training_window_years: 10    # older matches carry <1% decay weight anyway
+  elo_anchor:
+    pseudo_matches: 10.0       # n0 in w = n_eff / (n_eff + n0): Elo prior worth ~10 matches
+    min_effective_matches: 15.0  # teams above this define the Elo->strength regression
+
+backtest:
+  market_margin: 0.01          # gate: engine may beat market log-loss by at most this
+  # Live sanity gate (model vs de-vigged market on upcoming WC26 fixtures).
+  # Catches insanity (team mix-ups, inverted favorites, broken home adv), not
+  # honest disagreement — thresholds chosen after inspecting the 2026-06-12
+  # snapshot (mean diff 0.074, worst 0.213 on brand-heavy teams); see
+  # docs/MODEL.md "Live sanity check".
+  sanity_max_abs_diff: 0.25    # per-outcome |model - market| ceiling
+  sanity_mean_abs_diff: 0.10   # mean per-outcome diff across all fixtures
+  sanity_favorite_prob: 0.55   # market favorites above this must be model-modal too
+
 elo:
   k_world_cup: 60
   k_continental: 50

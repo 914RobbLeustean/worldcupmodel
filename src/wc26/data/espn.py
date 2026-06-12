@@ -265,7 +265,16 @@ def _apply_stats_patch(df: pd.DataFrame) -> pd.DataFrame:
 
 def build_match_stats(keys: list[str] | None = None) -> pd.DataFrame:
     frames = [scrape_tournament(k) for k in (keys or list(TOURNAMENTS))]
-    df = pd.concat([f for f in frames if not f.empty], ignore_index=True)
+    out_path = PROCESSED_DIR / "match_stats.parquet"
+    if keys is not None and out_path.exists():
+        # Scraping a subset must not drop the tournaments that weren't asked
+        # for — keep the existing table underneath the fresh rows.
+        frames.append(pd.read_parquet(out_path))
+    frames = [f for f in frames if not f.empty]
+    if not frames:
+        # First day of a tournament before any match has finished.
+        return MATCH_STATS_SCHEMA.validate(pd.DataFrame(columns=list(MATCH_STATS_SCHEMA.columns)))
+    df = pd.concat(frames, ignore_index=True)
     df = df.sort_values(["date", "event_id"]).drop_duplicates("event_id").reset_index(drop=True)
     df = _apply_stats_patch(df)
     validated = MATCH_STATS_SCHEMA.validate(df)

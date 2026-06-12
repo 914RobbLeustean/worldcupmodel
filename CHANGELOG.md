@@ -7,6 +7,19 @@ Every working session must add at least one entry under `[Unreleased]`.
 ## [Unreleased]
 
 ### Added
+- 2026-06-12: Phase 2 — Dixon-Coles goal engine (penaltyblog, time-decay +
+  tier weights, neutral-venue handling, Elo-anchored shrinkage with the blend
+  documented in docs/MODEL.md; extra-time rows excluded per D012/D014) and
+  the walk-forward backtest harness (monthly refit grid, leak-free per-match
+  Elo, Elo-only + de-vigged market baselines). Historical 1X2 odds ingest
+  from football-data.co.uk + BetExplorer, cross-verified (D015) →
+  market_odds.parquet (211 matches). Reality gates as tests: engine beats
+  Elo (0.9952 vs 1.0120 log-loss), does NOT beat the market (0.9706 —
+  leak-check), live 1X2 sane vs market across 71 WC26 fixtures (D016).
+  New commands: `wc26 refit` (versioned params: fit date + git SHA + data
+  cutoff), `wc26 predict --date` (1X2 + totals in <1 s), `wc26 backtest`.
+  New deps: openpyxl, scipy (explicit), scipy-stubs (dev). Full report in
+  docs/MODEL.md. First WC26 result ingested (Mexico 2-0 South Africa).
 - 2026-06-12: Match-stats pipeline — ESPN JSON API ingest (corners, cards,
   fouls, shots, possession, referee) for WC 2018/2022, Euro 2024, Copa 2024
   and WC 2026 live, with permanent finished-only caching and strict parsers
@@ -14,6 +27,13 @@ Every working session must add at least one entry under `[Unreleased]`.
   `wc26 data scrape|sync` commands; automatic syncing of finished WC26
   results into the patch layer with ±1-day UTC-date tolerance. Manual stats
   entry now records yellows/reds separately.
+
+### Fixed
+- 2026-06-12: `wc26 data scrape --tournament X` no longer overwrites
+  match_stats.parquet with only that tournament's rows (subset scrapes now
+  merge with the existing table) and no longer crashes when a tournament has
+  no finished matches yet (first match day). New alias: "D.R. Congo"
+  (BetExplorer) → dr_congo.
 
 ### Changed
 - 2026-06-12: FBref dropped as the stats source (Cloudflare-blocked, needs
