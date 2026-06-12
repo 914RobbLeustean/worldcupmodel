@@ -7,6 +7,8 @@ session — nothing below is copied from STATUS.md on trust. Citations are
 file:line as of this audit's commit.
 
 **Verdict: PASS with 8 findings — 6 fixed in this session, 2 filed.**
+*(Same-day addendum at the bottom: finding 8 was closed hours later —
+final scoreboard 7 fixed, 1 accepted.)*
 Phase 4 has one acceptance step legitimately still open (time-gated on a
 match that has not kicked off; see §Phase 4).
 
@@ -202,3 +204,36 @@ shootout_winner_id (all 20 historical pens matches verified correct, e.g.
 WC22 final → argentina), predict KO handling (fixture_stage), D025 refit
 cadence, ET regression tests on constructed WC26 KO rows. 180 tests green,
 `make lint` (ruff + mypy --strict) clean after all audit fixes.
+
+---
+
+## Addendum — 2026-06-12, same day: finding 8 CLOSED (D027)
+
+The add-result knockout-readiness gap was fixed the same session, ahead of
+its June 28 deadline:
+- `wc26 add-result` captures extra_time + shootout winner + fouls/shots,
+  with hard validation (a level extra-time score REQUIRES the shootout
+  winner; a winner implies extra time, a level score, and membership in
+  the match). Tests: tests/test_manual.py.
+- stats_patch.csv rows are self-contained (new column contract, header
+  enforced): override of a matching ESPN row — team pair ±1 day (D013),
+  flipped orientation flips per-side columns, blanks never erase — or a
+  standalone match_stats row (`manual:` event_id) when ESPN never served
+  the match. Standalone rows are scrubbed and re-derived from the CSV on
+  every build (no duplicates when ESPN later recovers). Tests:
+  tests/test_espn.py §stats patch overlay.
+- props_universe drops incomplete MANUAL finals rows fail-soft (the fatal
+  check stays for ESPN rows — it exists to catch ingest drift). Test:
+  tests/test_prop_features.py::test_incomplete_manual_row_dropped_not_fatal.
+- Bonus latent bug found by the end-to-end check: a patch row for a match
+  absent from the upstream CSV (every KO result, initially) crashed ingest
+  on NaN city. Fixed — "unknown" venue fields (nothing models off fixtures
+  city/country; the bracket yaml is the KO venue truth); regression test
+  in tests/test_results_elo.py.
+- End-to-end verified in a sandbox repo copy: `wc26 add-result` of a pens
+  knockout result → fixtures row + standalone stats row → `knockout_facts`
+  resolves the advancing team; 192 tests green.
+
+With this, finding 7 (pre-commit hook) is the only open audit item, and it
+is an accepted deviation, not a defect. Scoreboard: 8 findings — 7 fixed,
+1 accepted.

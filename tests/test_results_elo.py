@@ -63,6 +63,28 @@ def test_patch_matches_on_canonical_ids_not_spelling(tmp_path: Path) -> None:
     assert (row["home_score"], row["away_score"]) == (2, 1)
 
 
+def test_patch_only_knockout_row_gets_unknown_venue(tmp_path: Path) -> None:
+    """D027: an add-result row for a match the upstream CSV doesn't carry yet
+    (every knockout match, until upstream adds it) must produce a valid
+    fixtures row — venue fields fall back to "unknown" (the bracket yaml is
+    the venue truth for knockouts), not crash the schema (broke 2026-06-12)."""
+    raw = tmp_path / "raw.csv"
+    raw.write_text(
+        "date,home_team,away_team,home_score,away_score,tournament,city,country,neutral\n"
+        "2026-06-11,South Korea,Czechia,2,1,FIFA World Cup,Zapopan,Mexico,TRUE\n"
+    )
+    patch = tmp_path / "patch.csv"
+    patch.write_text(
+        "date,home_team,away_team,home_score,away_score,tournament,neutral\n"
+        "2026-06-29,Argentina,Mexico,1,1,FIFA World Cup,TRUE\n"
+    )
+    _results, fixtures = build_results(raw, patch)
+    assert len(fixtures) == 2
+    ko = fixtures[fixtures["home_id"] == "argentina"].iloc[0]
+    assert ko["city"] == "unknown" and ko["country"] == "unknown"
+    assert not ko["high_altitude"] and bool(ko["played"])
+
+
 def test_elo_basics() -> None:
     results, _ = build_results(FIXTURE_RAW, FIXTURE_PATCH)
     k = load_settings().elo_k

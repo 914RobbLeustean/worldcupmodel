@@ -554,23 +554,36 @@ def add_result(
     date: str = typer.Option(..., prompt=True, help="Match date YYYY-MM-DD"),
     home: str = typer.Option(..., prompt=True, help="Home team (any known alias)"),
     away: str = typer.Option(..., prompt=True, help="Away team (any known alias)"),
-    home_score: int = typer.Option(..., prompt=True, min=0),
+    home_score: int = typer.Option(
+        ..., prompt=True, min=0, help="STORED score: the 120' total if extra time (D012)"
+    ),
     away_score: int = typer.Option(..., prompt=True, min=0),
+    extra_time: bool = typer.Option(False, prompt="Extra time? (knockouts only)"),
+    shootout_winner: str = typer.Option(
+        "",
+        prompt="Shootout winner (blank unless pens)",
+        help="REQUIRED when extra time ended level — the advancing team (D027)",
+    ),
     corners_home: int = typer.Option(-1, prompt="Home corners (-1 if unknown)"),
     corners_away: int = typer.Option(-1, prompt="Away corners (-1 if unknown)"),
     yellows_home: int = typer.Option(-1, prompt="Home yellow cards (-1 if unknown)"),
     yellows_away: int = typer.Option(-1, prompt="Away yellow cards (-1 if unknown)"),
     reds_home: int = typer.Option(-1, prompt="Home red cards (-1 if unknown)"),
     reds_away: int = typer.Option(-1, prompt="Away red cards (-1 if unknown)"),
+    fouls_home: int = typer.Option(-1, prompt="Home fouls (-1 if unknown)"),
+    fouls_away: int = typer.Option(-1, prompt="Away fouls (-1 if unknown)"),
+    shots_home: int = typer.Option(-1, prompt="Home shots (-1 if unknown)"),
+    shots_away: int = typer.Option(-1, prompt="Away shots (-1 if unknown)"),
     referee: str = typer.Option("", prompt="Referee (blank if unknown)"),
     tournament: str = typer.Option("FIFA World Cup", prompt=True),
     neutral: bool = typer.Option(True, prompt="Neutral venue?"),
 ) -> None:
-    """Append a finished match (score, corners, cards, referee) and re-ingest.
+    """Append a finished match (score, stats, referee) and re-ingest.
 
-    Score goes to data/manual/results_patch.csv (overrides the lagging Kaggle
-    CSV); corners/cards/ref go to data/manual/stats_patch.csv for the prop
-    models. Both files are in git — review the diff before committing.
+    Score goes to data/manual/results_patch.csv (overrides the lagging
+    upstream CSV); the self-contained stats row (incl. extra_time and the
+    shootout winner for knockouts, D027) goes to data/manual/stats_patch.csv.
+    Both files are in git — review the diff before committing.
     """
     from wc26.data.manual import append_result
 
@@ -586,16 +599,26 @@ def add_result(
         yellows_away=yellows_away,
         reds_home=reds_home,
         reds_away=reds_away,
+        fouls_home=fouls_home,
+        fouls_away=fouls_away,
+        shots_home=shots_home,
+        shots_away=shots_away,
         referee=referee,
         tournament=tournament,
         neutral=neutral,
+        extra_time=extra_time,
+        shootout_winner=shootout_winner,
     )
     for path in paths:
         typer.echo(f"appended to {path}")
+    from wc26.data.espn import refresh_match_stats_from_patch
     from wc26.data.results import ingest
 
     ingest()
-    typer.echo("re-ingested processed tables")
+    if refresh_match_stats_from_patch() is not None:
+        typer.echo("re-ingested processed tables (incl. match_stats from the patch)")
+    else:
+        typer.echo("re-ingested processed tables")
 
 
 @app.command()

@@ -162,6 +162,13 @@ def build_results(
     # Strict resolution: every WC26 participant must be in the registry.
     for col in ("home_team", "away_team"):
         wc26[col].map(registry().resolve)
+    # Patch-born rows (results_patch.csv carries no venue columns) get an
+    # explicit "unknown": nothing models off fixtures city/country — the
+    # knockout bracket yaml is the venue truth for KO matches (host home
+    # advantage reads match.country there), and altitude only derives for
+    # upstream rows that name the city (D027).
+    for col in ("city", "country"):
+        wc26[col] = wc26[col].fillna("unknown")
     wc26["high_altitude"] = wc26["city"].isin(HIGH_ALTITUDE_CITIES)
     wc26["played"] = wc26["home_score"].notna() & wc26["away_score"].notna()
     wc26["home_score"] = wc26["home_score"].astype(pd.Int64Dtype())

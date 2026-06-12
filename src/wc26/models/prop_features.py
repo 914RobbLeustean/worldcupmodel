@@ -95,20 +95,28 @@ def props_universe(match_stats: pd.DataFrame, results: pd.DataFrame) -> pd.DataF
       counting is meaningless across a 2-year campaign; the ~12 playoff
       matches mislabeled as group stage are accepted noise).
 
-    Stat completeness: a finals (majors/WC26) row with missing stats raises —
-    that is ingest drift, not something to paper over. Qualifier rows with
-    missing stats are simply dropped (ESPN coverage there is best-effort).
+    Stat completeness: a finals (majors/WC26) ESPN row with missing stats
+    raises — that is ingest drift, not something to paper over. Qualifier
+    rows and MANUAL rows (event_id `manual:...`, D027) with missing stats
+    are simply dropped: qualifiers because ESPN coverage is best-effort,
+    manual rows because an operator's honest "-1 = unknown" entry must not
+    wedge the daily refit (the score still flows via results_patch).
     """
     stats = match_stats[~match_stats["extra_time"].astype(bool)].copy()
     is_qualifier = stats["tournament"].str.contains("qualification", case=False)
+    is_manual = (
+        stats["event_id"].astype(str).str.startswith("manual:")
+        if "event_id" in stats.columns
+        else pd.Series(False, index=stats.index)
+    )
     stat_cols = [
         f"{stat}_{side}"
         for stat in ("corners", "yellows", "reds", "fouls", "shots")
         for side in ("home", "away")
     ]
     incomplete = stats[stat_cols].isna().any(axis=1)
-    if (incomplete & ~is_qualifier).any():
-        bad = stats[incomplete & ~is_qualifier]
+    if (incomplete & ~is_qualifier & ~is_manual).any():
+        bad = stats[incomplete & ~is_qualifier & ~is_manual]
         raise ValueError(
             f"{len(bad)} finals match_stats rows are missing prop stats, e.g.\n"
             f"{bad[['date', 'home_id', 'away_id']].head(3)}\n"

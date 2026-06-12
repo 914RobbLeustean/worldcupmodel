@@ -7,6 +7,34 @@ Every working session must add at least one entry under `[Unreleased]`.
 ## [Unreleased]
 
 ### Added
+- 2026-06-12 (g): manual data path is knockout-ready (D027; closes audit
+  finding 8). `wc26 add-result` now captures extra_time, the shootout
+  winner (required when extra time ends level — the advancing team is
+  unrecoverable later), and fouls/shots; the entered score stays the
+  STORED (120') total per D012. stats_patch.csv rows are self-contained:
+  they override a matching ESPN row (team pair ±1 day per D013, flipped
+  orientation flips the per-side columns, blanks never erase) or become
+  standalone match_stats rows (event_id `manual:<date>:<home>:<away>`)
+  when ESPN never served the match; standalone rows are scrubbed and
+  re-derived from the CSV on every build, so a later ESPN recovery
+  converts them to overrides with no duplicates. add-result re-applies the
+  patch to match_stats.parquet immediately (no scrape needed), making the
+  ET flag visible to `wc26 settle` and the shootout winner to the KO-facts
+  path the same minute it is entered. props_universe treats incomplete
+  manual rows like incomplete qualifier rows (dropped, fail-soft) so an
+  honest "-1 = unknown" cannot wedge the daily refit. 12 new tests
+  (192 total); end-to-end verified in a sandbox copy (manual pens entry →
+  fixtures + stats → knockout_facts resolves the winner).
+
+### Fixed
+- 2026-06-12 (g): latent ingest crash — a results_patch row for a match
+  the upstream CSV doesn't carry yet (i.e. EVERY knockout result until
+  upstream adds the fixture) produced a fixtures row with NaN city and
+  failed FIXTURES_SCHEMA. Patch-born rows now get explicit "unknown"
+  venue fields (nothing models off fixtures city/country — the bracket
+  yaml is the venue truth for knockouts); regression test added.
+
+### Added
 - 2026-06-12 (f): Phase 6.1 — knockout readiness + full conformance audit.
   (1) KO-facts path: played knockout matches enter the simulator as FACTS —
   fixtures rows on/after the bracket's first R32 date split off in

@@ -25,7 +25,19 @@ What exists now (Phase 6.1, on top of the full Phase 0–5 stack):
 - Refit cadence: DAILY after every completed match day (D025, PLAYBOOK §1).
 - docs/AUDIT.md (2026-06-12): full conformance audit — every PLAN Phase 0–5
   acceptance criterion re-run, all invariants + risk-register rows cited to
-  code/tests. 8 findings: 6 fixed in-session, 2 filed (below). 180 tests.
+  code/tests. 8 findings: 7 now fixed, 1 accepted (pre-commit hook —
+  Makefile + session protocol cover it). 192 tests.
+- Manual path is knockout-ready (D027, audit finding 8 CLOSED): `wc26
+  add-result` captures extra_time, the shootout winner (required when ET
+  ends level), and fouls/shots; stats_patch rows are self-contained —
+  they override a matching ESPN row (±1 day, flipped orientation handled)
+  or become standalone match_stats rows (event_id `manual:...`) when ESPN
+  never served the match; add-result refreshes match_stats.parquet
+  immediately (no scrape needed); patch-born fixture rows get "unknown"
+  venue instead of crashing ingest; incomplete manual rows drop fail-soft
+  in props_universe instead of wedging refit. Verified end-to-end in a
+  sandbox: manual pens entry → fixtures+stats → knockout_facts resolves
+  the advancing team.
 
 ## Next task
 1. **Finish the Phase 4 acceptance cycle** (carried over twice now,
@@ -36,16 +48,9 @@ What exists now (Phase 6.1, on top of the full Phase 0–5 stack):
    quotes from the user's book if available; else a representative closing
    quote with --note saying so — the logged line was representative paper
    too) and `wc26 clv-report`. Then tick Phase 4 acceptance here.
-2. **Make `wc26 add-result` knockout-ready BEFORE June 28** (audit finding
-   8, docs/AUDIT.md): (a) add extra_time + shootout-winner capture so a
-   manually entered KO result carries the D012 flag and the advancement
-   winner; (b) fix the stats_patch overlay so rows for matches ESPN never
-   served become standalone match_stats rows instead of being dropped by
-   `DataFrame.update` (espn.py:_apply_stats_patch). Needs a small
-   completeness-contract decision → DECISIONS entry.
-3. The user should start entering REAL book lines into data/manual/lines.csv
+2. The user should start entering REAL book lines into data/manual/lines.csv
    (PLAYBOOK §3) — everything downstream is live.
-4. **Phase 6.2 recalibration checkpoint — NEXT MILESTONE, ~2026-07-03**
+3. **Phase 6.2 recalibration checkpoint — NEXT MILESTONE, ~2026-07-03**
    (after the 72 group matches; do NOT start early): compare predicted vs
    realized over the group stage; re-gate match totals (D019) and
    corners/cards (D021) through the walk-forward harness (a pass needs a
@@ -84,6 +89,19 @@ bets (closing quotes!) → user enters today's lines → `wc26 edges` →
 - Ledger: ledger/bets.csv — 1 open paper bet (B0001, settle next session)
 
 ## Last session summary
+- 2026-06-12 (g): closed audit finding 8 — the manual data path is
+  knockout-ready (D027). add-result: extra_time + shootout-winner +
+  fouls/shots capture with hard validation (level ET score REQUIRES the
+  winner; winner implies ET + level + in-match); stats_patch.csv rows are
+  self-contained and either override an ESPN row (team pair ±1 day, D013,
+  flipped orientation flips per-side columns) or append as standalone
+  match_stats rows; manual rows scrubbed+re-derived from the CSV every
+  build so a later ESPN recovery converts them to overrides without
+  duplicates; fixed the latent ingest crash on patch-born fixture rows
+  (NaN city → "unknown"); props_universe drops incomplete manual rows
+  fail-soft. Sandbox e2e: pens entry → knockout_facts winner resolved.
+  12 new tests (192 total), make lint clean. Phase 4 settlement still
+  awaits the USA v Paraguay result (next session step 1).
 - 2026-06-12 (f): Phase 6.1 + conformance audit. Daily routine clean (0 new
   results — no WC26 match finished between sessions; refit @508c267; gates
   green; predict + rankings rendered). Phase 4 acceptance NOT ticked AGAIN:

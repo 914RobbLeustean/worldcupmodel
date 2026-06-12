@@ -319,3 +319,29 @@ two undocumented states; both fixed here:
   superseded by the ESPN JSON API before it was ever imported (D011); it
   sat unused in pyproject pulling ~20 transitive packages. The CLAUDE.md
   gotcha about FBref/Cloudflare stays — it documents why we don't go back.
+
+## D027 — 2026-06-12 — Manual stats entries are self-contained rows
+Closes audit finding 8 (docs/AUDIT.md): the manual data path was not
+knockout-ready. The contract for data/manual/stats_patch.csv is now:
+- Every row is SELF-CONTAINED: date, teams, tournament, the stored score
+  (120' total for ET matches — same convention as both upstream sources,
+  D012), extra_time, shootout_winner_id, all ten prop stats (corners/
+  yellows/reds/fouls/shots per side), referee. -1/blank = unknown.
+- A patch row matching an existing ESPN row — team pair within ±1 day
+  (D013), either orientation; a flipped match flips the per-side columns —
+  is a field-level OVERRIDE (non-blank values win; blanks never erase).
+  More than one candidate raises. A row matching nothing becomes a
+  STANDALONE match_stats row with event_id `manual:<date>:<home>:<away>`.
+- Standalone rows are scrubbed from the loaded parquet and re-derived from
+  the CSV on every build: the CSV (in git) is the source of truth, so a
+  later ESPN recovery of the same match automatically converts the entry
+  from standalone row to override — no duplicates.
+- `wc26 add-result` validation: a shootout winner requires extra_time AND
+  a level score and must be one of the two teams; an extra-time entry with
+  a level score REQUIRES the shootout winner (the advancing team is
+  unrecoverable later otherwise — refuse at entry, not at simulation).
+- props_universe treats incomplete MANUAL finals rows like incomplete
+  qualifier rows (dropped, fail-soft) instead of fatal: an operator's
+  honest "-1 = unknown" must not wedge the daily refit. The fatal
+  completeness check stays for ESPN finals rows — there it means ingest
+  drift, which is the thing it exists to catch.

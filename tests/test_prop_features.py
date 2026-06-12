@@ -179,3 +179,21 @@ def test_rivalries_load_and_are_order_insensitive() -> None:
     assert is_rivalry("mexico", "united_states", rivalries)
     assert is_rivalry("united_states", "mexico", rivalries)
     assert not is_rivalry("mexico", "canada", rivalries)
+
+
+def test_incomplete_manual_row_dropped_not_fatal() -> None:
+    """D027: an add-result row with unknown stats (event_id manual:...) is
+    dropped fail-soft; an incomplete ESPN finals row still raises."""
+    rows = [
+        _stats_row("2030-06-01", "aa", "bb"),
+        _stats_row("2030-06-01", "cc", "dd", corners_home=None),
+    ]
+    stats = pd.DataFrame(rows)
+    stats["event_id"] = ["espn1", "manual:2030-06-01:cc:dd"]
+    universe = props_universe(stats, _results_for(stats))
+    assert list(universe["home_id"]) == ["aa"]
+
+    stats_espn_broken = pd.DataFrame(rows)
+    stats_espn_broken["event_id"] = ["espn1", "espn2"]
+    with pytest.raises(ValueError, match="missing prop stats"):
+        props_universe(stats_espn_broken, _results_for(stats_espn_broken))

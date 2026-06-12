@@ -29,6 +29,9 @@ from wc26.data.teams import registry
 ESPN_RAW = REPO_ROOT / "data" / "raw" / "espn"
 PROCESSED_DIR = REPO_ROOT / "data" / "processed"
 STATS_PATCH = REPO_ROOT / "data" / "manual" / "stats_patch.csv"
+# event_id prefix of rows born from stats_patch.csv with no ESPN counterpart
+# (D027). They are scrubbed and re-derived from the CSV on every build.
+MANUAL_EVENT_PREFIX = "manual:"
 
 BASE = "https://site.api.espn.com/apis/site/v2/sports/soccer"
 REQUEST_PAUSE_S = 1.2
@@ -295,21 +298,112 @@ def scrape_tournament(key: str) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def _patch_value(raw: object) -> str | None:
+    """-1 / blank = unknown (no override; NA in a standalone row)."""
+    if raw is None or (isinstance(raw, float) and pd.isna(raw)):
+        return None
+    text = str(raw).strip()
+    return None if text in ("", "-1", "-1.0") else text
+
+
+def _patch_bool(raw: object) -> bool:
+    return str(raw).strip().upper() in ("TRUE", "1")
+
+
+# Per-side columns that swap when a patch row's orientation is flipped vs ESPN.
+_SIDE_COLUMNS = [
+    ("home_score", "away_score"),
+    *((f"{stat}_home", f"{stat}_away") for stat in STAT_FIELDS.values()),
+]
+_FLIP = {a: b for a, b in _SIDE_COLUMNS} | {b: a for a, b in _SIDE_COLUMNS}
+
+
 def _apply_stats_patch(df: pd.DataFrame) -> pd.DataFrame:
-    """Manual stats entries (data/manual/stats_patch.csv) override ESPN."""
+    """Manual stats entries (data/manual/stats_patch.csv) — override or append.
+
+    D027 contract: a patch row matching an existing row (team pair within
+    ±1 day, D013, either orientation — flipped matches flip the per-side
+    columns) overrides field-by-field, non-blank values only; more than one
+    candidate raises. A row matching nothing becomes a standalone
+    match_stats row (event_id `manual:<date>:<home>:<away>`) — the path
+    that keeps the tournament loop alive when ESPN never serves a match.
+    """
+    from wc26.data.manual import STATS_PATCH_COLUMNS
+
     if not STATS_PATCH.exists():
         return df
-    patch = pd.read_csv(STATS_PATCH)
+    patch = pd.read_csv(STATS_PATCH, dtype=str, keep_default_na=False)
     if patch.empty:
         return df
-    patch["date"] = pd.to_datetime(patch["date"])
-    key = ["date", "home_id", "away_id"]
-    indexed = df.set_index(key)
-    overlay = patch.set_index(key)
-    overlay = overlay[[c for c in overlay.columns if c in indexed.columns]]
-    overlay = overlay.replace(-1, pd.NA).replace("", pd.NA).dropna(how="all")
-    indexed.update(overlay)
-    return indexed.reset_index()
+    if list(patch.columns) != STATS_PATCH_COLUMNS:
+        raise ValueError(
+            f"{STATS_PATCH} columns must be {STATS_PATCH_COLUMNS} (D027), got "
+            f"{list(patch.columns)} — re-enter rows via `wc26 add-result`"
+        )
+    out = df.reset_index(drop=True)
+    new_rows: list[dict[str, Any]] = []
+    for entry in patch.to_dict("records"):
+        date = pd.Timestamp(str(entry["date"]))
+        home, away = str(entry["home_id"]).strip(), str(entry["away_id"]).strip()
+        near = (out["date"] - date).abs() <= pd.Timedelta(days=1)
+        same = near & (out["home_id"] == home) & (out["away_id"] == away)
+        flipped = near & (out["home_id"] == away) & (out["away_id"] == home)
+        hits = out[same | flipped]
+        if len(hits) > 1:
+            raise ValueError(
+                f"stats_patch row {home} v {away} on {date.date()} matches "
+                f"{len(hits)} match_stats rows — fix the table before patching"
+            )
+        if len(hits) == 1:
+            idx = hits.index[0]
+            flip = bool(flipped[idx])
+            for col in STATS_PATCH_COLUMNS:
+                if col in ("date", "home_id", "away_id", "tournament"):
+                    continue
+                value = _patch_value(entry[col])
+                if value is None:
+                    continue  # blank/-1 never erases what ESPN has
+                target = _FLIP[col] if flip and col in _FLIP else col
+                if col == "extra_time":
+                    out.loc[idx, target] = _patch_bool(value)
+                elif col in ("home_score", "away_score"):
+                    out.loc[idx, target] = int(float(value))
+                elif col in ("referee", "shootout_winner_id"):
+                    out.loc[idx, target] = value
+                else:
+                    out.loc[idx, target] = float(value)
+        else:
+            for col in ("home_score", "away_score"):
+                if _patch_value(entry[col]) is None:
+                    raise ValueError(
+                        f"stats_patch row {home} v {away} on {date.date()} has no ESPN "
+                        f"counterpart and no {col} — standalone rows must carry the "
+                        f"score (D027); re-enter via `wc26 add-result`"
+                    )
+            new_rows.append(
+                {
+                    "date": date,
+                    "tournament": str(entry["tournament"]).strip() or "FIFA World Cup",
+                    "event_id": f"{MANUAL_EVENT_PREFIX}{date.date()}:{home}:{away}",
+                    "home_id": home,
+                    "away_id": away,
+                    "home_score": int(float(str(entry["home_score"]))),
+                    "away_score": int(float(str(entry["away_score"]))),
+                    "extra_time": _patch_bool(entry["extra_time"]),
+                    "shootout_winner_id": _patch_value(entry["shootout_winner_id"]),
+                    "referee": _patch_value(entry["referee"]),
+                    **{
+                        f"{stat}_{side}": _patch_value(entry[f"{stat}_{side}"])
+                        for stat in STAT_FIELDS.values()
+                        if stat not in ("shots_on_target", "possession")
+                        for side in ("home", "away")
+                    },
+                }
+            )
+    if new_rows:
+        out = pd.concat([out, pd.DataFrame(new_rows)], ignore_index=True)
+        out = out.sort_values(["date", "event_id"]).reset_index(drop=True)
+    return out
 
 
 def build_match_stats(keys: list[str] | None = None) -> pd.DataFrame:
@@ -317,8 +411,12 @@ def build_match_stats(keys: list[str] | None = None) -> pd.DataFrame:
     out_path = PROCESSED_DIR / "match_stats.parquet"
     if keys is not None and out_path.exists():
         # Scraping a subset must not drop the tournaments that weren't asked
-        # for — keep the existing table underneath the fresh rows.
-        frames.append(pd.read_parquet(out_path))
+        # for — keep the existing table underneath the fresh rows. Manual
+        # standalone rows are scrubbed: they re-derive from stats_patch.csv
+        # below, which lets a later ESPN recovery of the same match convert
+        # the entry from standalone row to override without duplication (D027).
+        existing = pd.read_parquet(out_path)
+        frames.append(existing[~existing["event_id"].str.startswith(MANUAL_EVENT_PREFIX)])
     frames = [f for f in frames if not f.empty]
     if not frames:
         # First day of a tournament before any match has finished.
@@ -329,6 +427,23 @@ def build_match_stats(keys: list[str] | None = None) -> pd.DataFrame:
     validated = MATCH_STATS_SCHEMA.validate(df)
     PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
     validated.to_parquet(PROCESSED_DIR / "match_stats.parquet", index=False)
+    return validated
+
+
+def refresh_match_stats_from_patch() -> pd.DataFrame | None:
+    """Re-apply stats_patch.csv to the existing parquet — no network.
+
+    Lets `wc26 add-result` make a manual stats row effective immediately
+    (extra_time for settlement, shootout winner for the KO-facts path)
+    instead of waiting for the next scrape. None if no parquet exists yet.
+    """
+    out_path = PROCESSED_DIR / "match_stats.parquet"
+    if not out_path.exists():
+        return None
+    existing = pd.read_parquet(out_path)
+    base = existing[~existing["event_id"].str.startswith(MANUAL_EVENT_PREFIX)]
+    validated = MATCH_STATS_SCHEMA.validate(_apply_stats_patch(base.reset_index(drop=True)))
+    validated.to_parquet(out_path, index=False)
     return validated
 
 
