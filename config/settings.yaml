@@ -1,7 +1,7 @@
 # Operational settings. Money rules here are enforced by code; changing them
 # mid-tournament requires a DECISIONS.md entry.
 
-bankroll: 1000.0          # in user's currency units; update to real figure
+bankroll: 200.0          # in user's currency units; update to real figure
 unit_pct: 0.015           # flat stake = bankroll * unit_pct
 edge_threshold: 0.05      # minimum model-vs-devigged-line edge to flag a bet
 kelly_enabled: false      # stays false until CLV > 0 over 50+ settled bets

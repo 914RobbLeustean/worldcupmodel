@@ -2,6 +2,16 @@
 
 > Single source of truth for "where are we". Update before ending every session.
 
+## Last Session Summary (Used by user)
+  - 2026-06-12 (h): went LIVE. Set bankroll to 200 RON (unit = 3.00). Entered
+    real Superbet team-total lines for Canada v Bosnia + USA v Paraguay, ran
+    edges, and logged the first four real-money bets: B0002 Canada O1.5 @2.10,
+    B0003 Canada O2.5 @4.40, B0004 Paraguay O0.5 @1.60, B0005 Paraguay O1.5
+    @3.90 (all 3.00 RON, all on the strongest edge+EV rows). Passed on
+    thin-EV / correlated legs. Closing lines to capture at kickoff; settle +
+    CLV next session. Phase 4 acceptance still not ticked — completes once
+    these settle.
+
 ## Current phase
 **Phase 6 — IN PROGRESS. 6.1 (knockout readiness) DONE 2026-06-12; the 6.2
 recalibration checkpoint is calendar-gated (~2026-07-03, after the group
@@ -40,14 +50,12 @@ What exists now (Phase 6.1, on top of the full Phase 0–5 stack):
   the advancing team.
 
 ## Next task
-1. **Finish the Phase 4 acceptance cycle** (carried over twice now,
-   time-gated): after USA v Paraguay finishes (~04:00 UTC 2026-06-13):
-   `wc26 data scrape --tournament wc2026 && wc26 data sync`, confirm the
-   result is in results.parquet, then
-   `wc26 settle B0001 --closing-over X --closing-under Y` (real closing
-   quotes from the user's book if available; else a representative closing
-   quote with --note saying so — the logged line was representative paper
-   too) and `wc26 clv-report`. Then tick Phase 4 acceptance here.
+1. **Settle the open bets next session** (after results land via the morning
+     `data scrape && data sync`): B0001 (USA U1.5, paper), B0002 Canada O1.5,
+     B0003 Canada O2.5, B0004 Paraguay O0.5, B0005 Paraguay O1.5 — all REAL
+     Superbet money except B0001. For each: `wc26 settle <id> --closing-over X
+     --closing-under Y` with the closing quotes captured at kickoff, then
+     `wc26 clv-report`. This completes the Phase 4 acceptance cycle.
 2. The user should start entering REAL book lines into data/manual/lines.csv
    (PLAYBOOK §3) — everything downstream is live.
 3. **Phase 6.2 recalibration checkpoint — NEXT MILESTONE, ~2026-07-03**
@@ -60,7 +68,7 @@ What exists now (Phase 6.1, on top of the full Phase 0–5 stack):
    projected to actual (the KO-facts path from 6.1 is the mechanism).
 
 ## Blockers
-None. (Phase 4 acceptance is time-gated on tonight's match, not blocked.)
+None. 5 bets open (B0001-B0005) awaiting results + settlement next session. Closing lines must be captured at kickoff or CLV is lost for those bets
 
 ## Daily during tournament (~10 min, see docs/PLAYBOOK.md for the full version)
 `uv run wc26 data scrape --tournament wc2026 && uv run wc26 data sync` →

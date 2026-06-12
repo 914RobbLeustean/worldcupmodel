@@ -1,7 +1,37 @@
 ts_utc,match,market,line,side,odds,book
-2026-06-12T07:45:00,Canada v Bosnia,team_total:Canada,1.5,over,-120,paper
-2026-06-12T07:45:00,Canada v Bosnia,team_total:Canada,1.5,under,+100,paper
-2026-06-12T07:45:00,USA v Paraguay,team_total:USA,1.5,over,2.60,paper
-2026-06-12T07:45:00,USA v Paraguay,team_total:USA,1.5,under,1.50,paper
-2026-06-12T07:45:00,USA v Paraguay,team_total:Paraguay,0.5,over,1.40,paper
-2026-06-12T07:45:00,USA v Paraguay,team_total:Paraguay,0.5,under,2.90,paper
+2026-06-12T17:54:00,Canada v Bosnia,team_total:Canada,0.5,over,1.23,superbet
+2026-06-12T17:54:00,Canada v Bosnia,team_total:Canada,0.5,under,3.90,superbet
+2026-06-12T17:54:00,Canada v Bosnia,team_total:Canada,1.5,over,2.10,superbet
+2026-06-12T17:54:00,Canada v Bosnia,team_total:Canada,1.5,under,1.69,superbet
+2026-06-12T17:54:00,Canada v Bosnia,team_total:Canada,2.5,over,4.40,superbet
+2026-06-12T17:54:00,Canada v Bosnia,team_total:Canada,2.5,under,1.19,superbet
+2026-06-12T17:54:00,Canada v Bosnia,team_total:Canada,3.5,over,10.00,superbet
+2026-06-12T17:54:00,Canada v Bosnia,team_total:Canada,3.5,under,1.04,superbet
+2026-06-12T17:54:00,Canada v Bosnia,team_total:Canada,4.5,over,26.00,superbet
+2026-06-12T17:54:00,Canada v Bosnia,team_total:Canada,4.5,under,1.004,superbet
+2026-06-12T17:54:00,Canada v Bosnia,team_total:Bosnia,0.5,over,1.65,superbet
+2026-06-12T17:54:00,Canada v Bosnia,team_total:Bosnia,0.5,under,2.17,superbet
+2026-06-12T17:54:00,Canada v Bosnia,team_total:Bosnia,1.5,over,4.15,superbet
+2026-06-12T17:54:00,Canada v Bosnia,team_total:Bosnia,1.5,under,1.21,superbet
+2026-06-12T17:54:00,Canada v Bosnia,team_total:Bosnia,2.5,over,12.00,superbet
+2026-06-12T17:54:00,Canada v Bosnia,team_total:Bosnia,2.5,under,1.03,superbet
+2026-06-12T17:54:00,Canada v Bosnia,team_total:Bosnia,3.5,over,39.00,superbet
+2026-06-12T17:54:00,Canada v Bosnia,team_total:Bosnia,3.5,under,1.002,superbet
+2026-06-12T18:22:00,USA v Paraguay,team_total:United States,0.5,over,1.30,superbet
+2026-06-12T18:22:00,USA v Paraguay,team_total:United States,0.5,under,3.35,superbet
+2026-06-12T18:22:00,USA v Paraguay,team_total:United States,1.5,over,2.40,superbet
+2026-06-12T18:22:00,USA v Paraguay,team_total:United States,1.5,under,1.53,superbet
+2026-06-12T18:22:00,USA v Paraguay,team_total:United States,2.5,over,5.45,superbet
+2026-06-12T18:22:00,USA v Paraguay,team_total:United States,2.5,under,1.13,superbet
+2026-06-12T18:22:00,USA v Paraguay,team_total:United States,3.5,over,14.00,superbet
+2026-06-12T18:22:00,USA v Paraguay,team_total:United States,3.5,under,1.02,superbet
+2026-06-12T18:22:00,USA v Paraguay,team_total:United States,4.5,over,38.00,superbet
+2026-06-12T18:22:00,USA v Paraguay,team_total:United States,4.5,under,1.002,superbet
+2026-06-12T18:22:00,USA v Paraguay,team_total:Paraguay,0.5,over,1.60,superbet
+2026-06-12T18:22:00,USA v Paraguay,team_total:Paraguay,0.5,under,2.25,superbet
+2026-06-12T18:22:00,USA v Paraguay,team_total:Paraguay,1.5,over,3.90,superbet
+2026-06-12T18:22:00,USA v Paraguay,team_total:Paraguay,1.5,under,1.23,superbet
+2026-06-12T18:22:00,USA v Paraguay,team_total:Paraguay,2.5,over,11.00,superbet
+2026-06-12T18:22:00,USA v Paraguay,team_total:Paraguay,2.5,under,1.03,superbet
+2026-06-12T18:22:00,USA v Paraguay,team_total:Paraguay,3.5,over,35.00,superbet
+2026-06-12T18:22:00,USA v Paraguay,team_total:Paraguay,3.5,under,1.003,superbet

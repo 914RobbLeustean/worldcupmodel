@@ -7,6 +7,19 @@ Every working session must add at least one entry under `[Unreleased]`.
 ## [Unreleased]
 
 ### Added
+- 2026-06-12 (h): first REAL-money bets logged (Superbet, 200 RON bankroll).
+    Bankroll in config/settings.yaml set 1000 → 200 (flat unit now 3.00 RON =
+    1.5%). Entered real Superbet team-total lines for Canada v Bosnia and
+    USA v Paraguay into data/manual/lines.csv (replacing the Phase 4 paper
+    rows); `wc26 edges` flagged the BET set. Took the two cleanest edges per
+    match: B0002 Canada O1.5 @2.10 (edge +0.130), B0003 Canada O2.5 @4.40
+    (+0.092), B0004 Paraguay O0.5 @1.60 (+0.113), B0005 Paraguay O1.5 @3.90
+    (+0.097); all 3.00 RON. Passed on the thin-EV and correlated legs
+    (USA U1.5/U2.5, Bosnia U0.5/U1.5, Canada O0.5). Closing lines to be
+    captured at kickoff (Canada v Bosnia 19:00 UTC 06-12; USA v Paraguay
+    01:00 UTC 06-13); settle + clv-report next session
+
+### Added
 - 2026-06-12 (g): manual data path is knockout-ready (D027; closes audit
   finding 8). `wc26 add-result` now captures extra_time, the shootout
   winner (required when extra time ends level — the advancing team is

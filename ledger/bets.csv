@@ -1,2 +1,6 @@
 bet_id,ts_utc,match,match_date,market,line,side,odds_taken,stake,model_prob,model_version,edge,book,status,closing_over_odds,closing_under_odds,clv,goals_90,result,pnl,note
 B0001,2026-06-12T07:46:35+00:00,united_states v paraguay,2026-06-12,team_total:united_states,1.5,under,1.5,15.0,0.7066022493532751,goal_engine 2026-06-13 @f355f46,0.07245590788986056,paper,open,,,,,,,"paper bet — representative line (book quote not available programmatically), Phase 4 dry-run"
+B0002,2026-06-12T18:11:19+00:00,canada v bosnia_herzegovina,2026-06-12,team_total:canada,1.5,over,2.1,3.0,0.5760878119347367,goal_engine 2026-06-13 @58becd5,0.1301775216972697,superbet,open,,,,,,,
+B0003,2026-06-12T18:11:51+00:00,canada v bosnia_herzegovina,2026-06-12,team_total:canada,2.5,over,4.4,3.0,0.30441183686248396,goal_engine 2026-06-13 @58becd5,0.0915316937497827,superbet,open,,,,,,,
+B0004,2026-06-12T18:32:34+00:00,united_states v paraguay,2026-06-12,team_total:paraguay,0.5,over,1.6,3.0,0.697906660761222,goal_engine 2026-06-13 @58becd5,0.1134910763456376,superbet,open,,,,,,,
+B0005,2026-06-12T18:32:49+00:00,united_states v paraguay,2026-06-12,team_total:paraguay,1.5,over,3.9,3.0,0.3371223907114719,goal_engine 2026-06-13 @58becd5,0.0973563088401268,superbet,open,,,,,,,
