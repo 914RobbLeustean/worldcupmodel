@@ -7,11 +7,13 @@ from typing import TYPE_CHECKING
 import typer
 
 if TYPE_CHECKING:
+    import pandas as pd
+
     from wc26.config import Settings
     from wc26.markets.lines import TwoWayLine
     from wc26.models.goal_engine import GoalEngineParams
     from wc26.sim.bracket import Bracket
-    from wc26.sim.tracker import GroupStage
+    from wc26.sim.tracker import GroupStage, KnockoutFact
 
     SimInputs = tuple[
         Settings,
@@ -20,9 +22,39 @@ if TYPE_CHECKING:
         Bracket,
         dict[frozenset[str], dict[str, str]],
         dict[str, float],
+        tuple[KnockoutFact, ...],
     ]
 
 app = typer.Typer(no_args_is_help=True, help="WC26 Edge Model CLI")
+
+
+def fixture_stage(
+    fixtures: "pd.DataFrame",
+    home_id: str,
+    away_id: str,
+    date: "pd.Timestamp",
+    knockout_start: "pd.Timestamp",
+) -> tuple[int, bool]:
+    """(matchday, knockout) for one WC26 fixture, from the calendar alone.
+
+    A fixture on/after the bracket's first knockout date is a knockout match
+    (matchday is meaningless there and returned as 0). Group matchday counts
+    each team's earlier GROUP fixtures only — knockout rows in the table
+    must not inflate it.
+    """
+    if date >= knockout_start:
+        return 0, True
+    group_rows = fixtures[fixtures["date"] < knockout_start]
+    matchday = int(
+        min(
+            (group_rows["home_id"].eq(t) | group_rows["away_id"].eq(t))[
+                group_rows["date"] < date
+            ].sum()
+            for t in (home_id, away_id)
+        )
+        + 1
+    )
+    return matchday, False
 
 
 @app.command()
@@ -37,6 +69,7 @@ def predict(date: str = typer.Option(None, help="YYYY-MM-DD, default today")) ->
     from wc26.models.goal_engine import GoalEngineParams, latest_params_path, predict_grid
     from wc26.models.prop_features import is_rivalry, load_rivalries
     from wc26.models.team_totals import distribution_mean_var, goal_marginals, p_over
+    from wc26.sim.bracket import load_bracket
 
     params = GoalEngineParams.load(latest_params_path())
     corners_params = CornersParams.load(latest_corners_path())
@@ -61,6 +94,7 @@ def predict(date: str = typer.Option(None, help="YYYY-MM-DD, default today")) ->
             if pd.Timestamp(str(r.date)).normalize() == day.normalize()
         }
 
+    ko_start = pd.Timestamp(min(m.date for m in load_bracket().matches))
     typer.echo(f"models: {params.version} | {corners_params.version} | {cards_params.version}")
     for row in todays.itertuples(index=False):
         home, away = str(row.home_id), str(row.away_id)
@@ -68,30 +102,24 @@ def predict(date: str = typer.Option(None, help="YYYY-MM-DD, default today")) ->
         grid = predict_grid(params, home, away, neutral=neutral)
         p_home, p_draw, p_away = grid.home_draw_away
         home_dist, away_dist = goal_marginals(grid)
-        # Group fixtures only until Phase 5 wires the knockout bracket.
-        matchday = int(
-            min(
-                (fixtures["home_id"].eq(t) | fixtures["away_id"].eq(t))[
-                    fixtures["date"] < pd.Timestamp(str(row.date))
-                ].sum()
-                for t in (home, away)
-            )
-            + 1
+        matchday, knockout = fixture_stage(
+            fixtures, home, away, pd.Timestamp(str(row.date)), ko_start
         )
         corners_dist = predict_corners(
-            corners_params, params, home, away, neutral, matchday, knockout=False
+            corners_params, params, home, away, neutral, matchday, knockout=knockout
         )
         cards_pred = predict_cards(
             cards_params,
             home,
             away,
             refs.get((home, away)),
-            knockout=False,
+            knockout=knockout,
             rivalry=is_rivalry(home, away, rivalries),
         )
 
         label = f"{home} v {away}" + ("" if neutral else " (home adv)")
-        typer.echo(f"\n{label}  [MD{matchday}]")
+        stage_tag = "[KO — 90' probabilities; can draw]" if knockout else f"[MD{matchday}]"
+        typer.echo(f"\n{label}  {stage_tag}")
         typer.echo(
             f"  1X2          {p_home:5.3f} / {p_draw:5.3f} / {p_away:5.3f}   "
             f"lam {grid.home_goal_expectation:.2f}/{grid.away_goal_expectation:.2f}"
@@ -288,6 +316,56 @@ def log_bet(
     )
 
 
+class SettleDataError(ValueError):
+    """The 90' goal count cannot be read from the tables (ET or no result)."""
+
+
+def goals_90_from_tables(
+    stats: "pd.DataFrame",
+    results: "pd.DataFrame",
+    match_date: "pd.Timestamp",
+    home_id: str,
+    away_id: str,
+    team_id: str,
+) -> int:
+    """Bet team's 90-minute goals from the results table (D004).
+
+    Refuses (SettleDataError) when the match went to extra time — stored
+    scores are 120' totals (D012), so --goals is mandatory then — or when
+    the result has not landed yet. Matching is team pair ±1 day (D013).
+    """
+    import pandas as pd
+
+    near_stats = (stats["date"] - match_date).abs() <= pd.Timedelta(days=1)
+    pair_stats = stats["home_id"].isin([home_id, away_id]) & stats["away_id"].isin(
+        [home_id, away_id]
+    )
+    played_stats = stats[near_stats & pair_stats]
+    if not played_stats.empty and bool(played_stats.iloc[0]["extra_time"]):
+        raise SettleDataError(
+            f"{home_id} v {away_id} went to EXTRA TIME — stored scores include ET "
+            f"(D012) but the bet settles on 90' (D004). Re-run with "
+            f"--goals <{team_id}'s 90-minute goal count>."
+        )
+    row = results[
+        ((results["date"] - match_date).abs() <= pd.Timedelta(days=1))
+        & (results["home_id"].isin([home_id, away_id]))
+        & (results["away_id"].isin([home_id, away_id]))
+    ]
+    if row.empty:
+        raise SettleDataError(
+            f"{home_id} v {away_id} not in the results table yet — run "
+            f"`wc26 data scrape --tournament wc2026 && wc26 data sync`, "
+            f"or pass --goals"
+        )
+    result_row = row.iloc[0]
+    return int(
+        result_row["home_score"]
+        if str(result_row["home_id"]) == team_id
+        else result_row["away_score"]
+    )
+
+
 @app.command()
 def settle(
     bet_id: str = typer.Argument(..., help="e.g. B0001"),
@@ -326,39 +404,15 @@ def settle(
     home_id, away_id = str(bet["match"]).split(" v ")
     team_id = str(bet["market"]).partition(":")[2]
     if goals < 0:
-        match_date = pd.Timestamp(str(bet["match_date"]))
         stats = pd.read_parquet(PROCESSED_DIR / "match_stats.parquet")
-        near = (stats["date"] - match_date).abs() <= pd.Timedelta(days=1)
-        pair = (stats["home_id"].isin([home_id, away_id])) & (
-            stats["away_id"].isin([home_id, away_id])
-        )
-        played_stats = stats[near & pair]
-        if not played_stats.empty and bool(played_stats.iloc[0]["extra_time"]):
-            typer.echo(
-                f"{bet['match']} went to EXTRA TIME — stored scores include ET "
-                f"(D012) but the bet settles on 90' (D004). Re-run with "
-                f"--goals <{team_id}'s 90-minute goal count>."
-            )
-            raise typer.Exit(code=1)
         results = pd.read_parquet(PROCESSED_DIR / "results.parquet")
-        row = results[
-            ((results["date"] - match_date).abs() <= pd.Timedelta(days=1))
-            & (results["home_id"].isin([home_id, away_id]))
-            & (results["away_id"].isin([home_id, away_id]))
-        ]
-        if row.empty:
-            typer.echo(
-                f"{bet['match']} not in the results table yet — run "
-                f"`wc26 data scrape --tournament wc2026 && wc26 data sync`, "
-                f"or pass --goals"
+        try:
+            goals = goals_90_from_tables(
+                stats, results, pd.Timestamp(str(bet["match_date"])), home_id, away_id, team_id
             )
-            raise typer.Exit(code=1)
-        result_row = row.iloc[0]
-        goals = int(
-            result_row["home_score"]
-            if str(result_row["home_id"]) == team_id
-            else result_row["away_score"]
-        )
+        except SettleDataError as exc:
+            typer.echo(str(exc))
+            raise typer.Exit(code=1) from exc
 
     over_dec, under_dec = parse_odds(closing_over), parse_odds(closing_under)
     settlement = settle_bet(
@@ -650,20 +704,23 @@ def _sim_inputs() -> "SimInputs":
     from wc26.data.teams import registry
     from wc26.models.goal_engine import GoalEngineParams, latest_params_path
     from wc26.sim.bracket import load_allocation, load_bracket
-    from wc26.sim.tracker import build_group_stage
+    from wc26.sim.tracker import build_group_stage, knockout_facts
 
     settings = load_settings()
     fixtures = pd.read_parquet(PROCESSED_DIR / "fixtures.parquet")
     stats = pd.read_parquet(PROCESSED_DIR / "match_stats.parquet")
     results = pd.read_parquet(PROCESSED_DIR / "results.parquet")
     params = GoalEngineParams.load(latest_params_path())
-    stage = build_group_stage(fixtures, stats, registry())
     bracket = load_bracket()
+    ko_start = pd.Timestamp(min(m.date for m in bracket.matches))
+    reg = registry()
+    stage = build_group_stage(fixtures, stats, reg, knockout_start=ko_start)
+    facts = knockout_facts(fixtures, stats, reg, knockout_start=ko_start)
     allocation = load_allocation(bracket)
     asof = pd.Timestamp.now(tz="UTC").tz_localize(None).normalize() + pd.Timedelta(days=1)
     elo_series = ratings_asof(compute_elo_history(results, settings.elo_k), asof)
     elo = {str(k): float(v) for k, v in elo_series.items()}
-    return settings, params, stage, bracket, allocation, elo
+    return settings, params, stage, bracket, allocation, elo, facts
 
 
 @app.command()
@@ -679,9 +736,11 @@ def sim() -> None:
     from wc26.sim.mc import run_simulation
     from wc26.sim.tracker import tournament_state
 
-    settings, params, stage, bracket, allocation, elo = _sim_inputs()
+    settings, params, stage, bracket, allocation, elo, facts = _sim_inputs()
     state = tournament_state(stage, elo, settings.seed)
-    out = run_simulation(params, stage, bracket, allocation, elo, settings.seed, settings.mc_runs)
+    out = run_simulation(
+        params, stage, bracket, allocation, elo, settings.seed, settings.mc_runs, ko_facts=facts
+    )
     n = float(out.n_runs)
     typer.echo(f"model {out.model_version} | {out.n_runs} runs, seed {out.seed}\n")
     for letter in sorted(stage.groups):
@@ -717,8 +776,10 @@ def rankings(diff: bool = typer.Option(False, help="Show movement vs previous sn
     from wc26.sim.mc import rankings_frame, run_simulation
     from wc26.sim.snapshots import diff_frames, previous_snapshot, save_snapshot
 
-    settings, params, stage, bracket, allocation, elo = _sim_inputs()
-    out = run_simulation(params, stage, bracket, allocation, elo, settings.seed, settings.mc_runs)
+    settings, params, stage, bracket, allocation, elo, facts = _sim_inputs()
+    out = run_simulation(
+        params, stage, bracket, allocation, elo, settings.seed, settings.mc_runs, ko_facts=facts
+    )
     frame = rankings_frame(out)
     today = dt.datetime.now(tz=dt.UTC).date()
     path = save_snapshot(frame, today, out.model_version, out.n_runs, out.seed)

@@ -104,6 +104,10 @@ MATCH_STATS_SCHEMA = pa.DataFrameSchema(
         "home_score": pa.Column(int, pa.Check.ge(0)),
         "away_score": pa.Column(int, pa.Check.ge(0)),
         "extra_time": pa.Column(bool),
+        # Set ONLY for penalty shootouts: stored scores are the level 120'
+        # scores (D012), so the advancing team is unrecoverable from them.
+        # The simulator's knockout-facts path needs it (Phase 6.1).
+        "shootout_winner_id": pa.Column(str, nullable=True),
         "referee": pa.Column(str, nullable=True),
         **{
             f"{stat}_{side}": pa.Column(pd.Float64Dtype(), nullable=True)
@@ -147,6 +151,12 @@ def _is_extra_time(status: dict[str, Any], event_id: str) -> bool:
     raise ValueError(
         f"event {event_id}: unrecognized final status {name!r} / {detail!r} — "
         f"add it to espn.py status sets after checking whether it implies extra time"
+    )
+
+
+def _is_shootout(status: dict[str, Any]) -> bool:
+    return str(status.get("name", "")) == "STATUS_FINAL_PEN" or "Pen" in str(
+        status.get("detail", "")
     )
 
 
@@ -211,9 +221,21 @@ def _parse_summary(payload: dict[str, Any], tournament: Tournament) -> dict[str,
         sides[side] = {
             "id": reg.resolve_lenient(name),
             "score": int(competitor["score"]),
+            "winner": bool(competitor.get("winner", False)),
         }
     if set(sides) != {"home", "away"}:
         raise ValueError(f"event {event_id}: missing home/away competitors")
+
+    shootout_winner_id: str | None = None
+    if _is_shootout(status):
+        winners = [s["id"] for s in sides.values() if s["winner"]]
+        if len(winners) != 1:
+            raise ValueError(
+                f"event {event_id}: penalty shootout but ESPN marks {len(winners)} "
+                f"winners — the stored level score cannot identify the advancing "
+                f"team (D012); fix the source data"
+            )
+        shootout_winner_id = str(winners[0])
 
     row: dict[str, Any] = {
         "date": pd.Timestamp(comp["date"]).tz_localize(None).normalize(),
@@ -224,6 +246,7 @@ def _parse_summary(payload: dict[str, Any], tournament: Tournament) -> dict[str,
         "home_score": sides["home"]["score"],
         "away_score": sides["away"]["score"],
         "extra_time": extra_time,
+        "shootout_winner_id": shootout_winner_id,
         "referee": None,
         **{f"{stat}_{side}": None for stat in STAT_FIELDS.values() for side in ("home", "away")},
     }

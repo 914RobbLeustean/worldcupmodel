@@ -206,9 +206,15 @@ post-group recalibration (~70 WC26 matches + referee careers grown by WC26
 assignments + 2025-26 qualifier officials). Rationale and the no-fishing
 call: D019/D021.
 
-## Tournament simulator (Phase 5) — NOT YET BUILT
-- 20k seeded Monte Carlo runs; 2026 format (12 groups, 8 best thirds, R32);
-  FIFA tiebreakers; ET/pens resolution rule documented in DECISIONS.md.
+## Tournament simulator (Phase 5) — LIVE since 2026-06-12
+- 20k seeded Monte Carlo runs (~6 s); 2026 format: 12 groups, top 2 + 8 best
+  thirds via FIFA Annex C (495-row allocation table in git), R32 → final.
+- Official 2026 tiebreakers (art. 13, h2h FIRST — D023); conduct and FIFA-
+  ranking proxies documented in D023. ET/pens advancement rule: D024.
+- Knockout facts (Phase 6.1): played KO matches enter as facts matched to
+  bracket slots by team pair; pens winners come from ESPN's winner flag
+  (match_stats.shootout_winner_id). Nothing here is bettable (PLAN 5.5);
+  gates in tests/test_sim_gates.py + tests/test_ko_facts.py.
 
 ## Model version log
 - `goal_engine 2026-06-13 @20ae804` — first production fit (2026-06-12),

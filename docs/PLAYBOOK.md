@@ -11,6 +11,9 @@ wc26 data scrape --tournament wc2026   # yesterday's finals from ESPN (cached, r
 wc26 data sync                         # write finished results into the patch + re-ingest
 wc26 data status                       # confirm freshness (results/fixtures/match_stats)
 wc26 refit                             # fold new results into all models, version params
+                                       # cadence: EVERY completed match day (D025) —
+                                       # never skip to "save" a refit, never refit twice
+                                       # for the same data state
 wc26 backtest && uv run pytest         # re-check ALL reality gates after the refit (~2 min)
 wc26 predict                           # today's probabilities (1X2 + props)
 wc26 rankings --diff                   # advancement snapshot + movement vs yesterday (~6 s)

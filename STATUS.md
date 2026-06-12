@@ -3,46 +3,56 @@
 > Single source of truth for "where are we". Update before ending every session.
 
 ## Current phase
-**Phase 5 — DONE (2026-06-12). Phase 4 acceptance still time-gated** on
-tonight's USA v Paraguay (kickoff ~02:00 UTC 2026-06-13 in Inglewood — the
-match had NOT been played as of this session's end, so settling B0001 now
-would mean inventing a result; refused). The simulator & rankings are live.
+**Phase 6 — IN PROGRESS. 6.1 (knockout readiness) DONE 2026-06-12; the 6.2
+recalibration checkpoint is calendar-gated (~2026-07-03, after the group
+stage). Phase 4 acceptance STILL time-gated** on USA v Paraguay (kickoff
+~02:00 UTC 2026-06-13 — the match had still not been played as of this
+session's end at 16:15 UTC 2026-06-12, so settling B0001 would again mean
+inventing a result; refused again).
 
-What exists now (Phase 5, src/wc26/sim/):
-- Group-state tracker: official 2026 tiebreakers (art. 13 — h2h FIRST,
-  before overall GD, verified in the FIFA regulations PDF; D023), conduct
-  from card counts, Elo as the FIFA-ranking proxy; exact per-team
-  can/secured/eliminated flags (3^k completion enumeration, D024); MD3
-  dead-rubber flags.
-- Knockout bracket in git: data/manual/bracket_2026.yaml (matches 73-104,
-  R32 slots, dates, venues+countries) + third_place_allocation.csv (FIFA
-  Annex C, 495 rows, verified vs both the FIFA PDF and Wikipedia 495/495).
-  Loaders re-validate structure on every load. Source notes in docs/DATA.md.
-- `wc26 sim` — group standings + statuses + dead rubbers + per-team
-  P(win group / top2 / 3rd-qualify / advance) from the seeded MC.
-- `wc26 rankings [--diff]` — P(R32→champion) + expected finish for all 48;
-  dated snapshot in data/processed/rankings/; --diff vs previous match day.
-  Runs in ~6 s (gate <60 s). KO draws → ET/pens mini-match (D024),
-  advancement only; futures stay UNBETTABLE (PLAN 5.5).
-- Gates as tests (tests/test_sim_gates.py, on constructed fixtures): decided
-  outcomes collapse, P(champion) sums to 1, bit-deterministic seed,
-  eliminated team → exact 0% after the result lands. Tiebreaker unit tests
-  incl. three-way ties (tests/test_standings.py).
+What exists now (Phase 6.1, on top of the full Phase 0–5 stack):
+- KO-facts path: once knockout results land in fixtures.parquet, the
+  simulator consumes them as FACTS — sim/tracker.py splits rows on/after
+  the bracket's first R32 date (`knockout_facts`), sim/mc.py matches each
+  played KO match to its bracket slot by team pair, advances the real
+  winner and skips sampling; an unconsumed fact (simulated finishers
+  contradicting the real bracket) raises. Pens winners ride
+  match_stats.shootout_winner_id from ESPN's winner flag (all 20 historical
+  shootouts verified correct).
+- `wc26 predict` handles KO fixture rows: knockout=True, no matchday,
+  explicit "[KO — 90' probabilities; can draw]" tag. D019/D021 quarantines
+  and refusals unchanged.
+- Refit cadence: DAILY after every completed match day (D025, PLAYBOOK §1).
+- docs/AUDIT.md (2026-06-12): full conformance audit — every PLAN Phase 0–5
+  acceptance criterion re-run, all invariants + risk-register rows cited to
+  code/tests. 8 findings: 6 fixed in-session, 2 filed (below). 180 tests.
 
 ## Next task
-1. **Finish the Phase 4 acceptance cycle** (carried over, time-gated): after
-   USA v Paraguay finishes (~04:00 UTC 2026-06-13): `wc26 data scrape
-   --tournament wc2026 && wc26 data sync`, then
+1. **Finish the Phase 4 acceptance cycle** (carried over twice now,
+   time-gated): after USA v Paraguay finishes (~04:00 UTC 2026-06-13):
+   `wc26 data scrape --tournament wc2026 && wc26 data sync`, confirm the
+   result is in results.parquet, then
    `wc26 settle B0001 --closing-over X --closing-under Y` (real closing
    quotes from the user's book if available; else a representative closing
    quote with --note saying so — the logged line was representative paper
    too) and `wc26 clv-report`. Then tick Phase 4 acceptance here.
-2. The user should start entering REAL book lines into data/manual/lines.csv
+2. **Make `wc26 add-result` knockout-ready BEFORE June 28** (audit finding
+   8, docs/AUDIT.md): (a) add extra_time + shootout-winner capture so a
+   manually entered KO result carries the D012 flag and the advancement
+   winner; (b) fix the stats_patch overlay so rows for matches ESPN never
+   served become standalone match_stats rows instead of being dropped by
+   `DataFrame.update` (espn.py:_apply_stats_patch). Needs a small
+   completeness-contract decision → DECISIONS entry.
+3. The user should start entering REAL book lines into data/manual/lines.csv
    (PLAYBOOK §3) — everything downstream is live.
-3. Then Phase 6 — tournament ops (docs/PLAN.md): daily routine through the
-   group stage; post-group recalibration checkpoint (~2026-07-03) re-gates
-   match totals (D019) and corners/cards (D021) and feeds the group-state
-   tracker's knockout/stakes context into the cards model.
+4. **Phase 6.2 recalibration checkpoint — NEXT MILESTONE, ~2026-07-03**
+   (after the 72 group matches; do NOT start early): compare predicted vs
+   realized over the group stage; re-gate match totals (D019) and
+   corners/cards (D021) through the walk-forward harness (a pass needs a
+   new DECISIONS entry, never a silent flip); add the knockout flag +
+   group-state stakes feature (elimination risk from sim/tracker.py
+   TeamStatus) to the cards model; flip the simulator's R32 slots from
+   projected to actual (the KO-facts path from 6.1 is the mechanism).
 
 ## Blockers
 None. (Phase 4 acceptance is time-gated on tonight's match, not blocked.)
@@ -60,19 +70,32 @@ bets (closing quotes!) → user enters today's lines → `wc26 edges` →
 - bracket_2026.yaml + third_place_allocation.csv: knockout structure
   (manual, in git, FIFA-verified 2026-06-12)
 - match_stats.parquet: 675 matches — 211 majors + 462 UEFA WC qualifiers
-  (D020, training-only) + WC26 accumulating daily; extra_time flags verified
+  (D020, training-only) + WC26 accumulating daily; extra_time flags verified;
+  NEW: shootout_winner_id for pens matches (20 historical, all verified)
 - market_odds.parquet: 211 historical 1X2 average odds (D015)
 - referees.parquet: 122 refs with card rates (2022+ majors, 2025-26 quals)
 - Elo: leak-free as-of-date snapshots, top-12 sanity-checked
 - Models (data/processed/models/): goal_engine + corners + cards, versioned
-  `<name>_<cutoff>_<sha7>.json`; latest fit 2026-06-13 @6fe3a4b (engine
-  9,509 matches; props 650). latest-model selection now tie-breaks on
-  fitted_at, not filename (D023 note).
+  `<name>_<cutoff>_<sha7>.json`; latest fit 2026-06-13 @508c267 (engine
+  9,509 matches; props 650). latest-model selection by (cutoff, fitted_at)
+  now pinned by a test (audit finding 2).
 - Backtest artifacts: data/processed/backtest/ — all gate tests green
 - Rankings snapshots: data/processed/rankings/rankings_2026-06-12.parquet
 - Ledger: ledger/bets.csv — 1 open paper bet (B0001, settle next session)
 
 ## Last session summary
+- 2026-06-12 (f): Phase 6.1 + conformance audit. Daily routine clean (0 new
+  results — no WC26 match finished between sessions; refit @508c267; gates
+  green; predict + rankings rendered). Phase 4 acceptance NOT ticked AGAIN:
+  USA v Paraguay still unplayed at 16:15 UTC (kicks off ~02:00 UTC 06-13) —
+  settling B0001 would fabricate a result; carries to next session. Built:
+  KO-facts path (tracker/mc, ESPN shootout_winner_id), KO-aware predict,
+  D025 refit cadence, ET regression tests on constructed WC26 KO rows.
+  docs/AUDIT.md: 8 findings — fixed stale MODEL.md Phase 5 section, added
+  missing latest_model_path + knockout-draw tests, extracted+tested settle's
+  ET refusal, removed unused soccerdata, documented pyarrow (D026); filed
+  add-result knockout-readiness (next task 2) and the absent pre-commit
+  hook. 180 tests green, mypy --strict + ruff clean, fresh-clone smoke OK.
 - 2026-06-12 (e): Phase 5 built & gated — src/wc26/sim/ (standings with the
   OFFICIAL 2026 tiebreakers — h2h first, a deliberate deviation from the
   task brief's 2022-style ordering, verified in the FIFA regulations PDF;
@@ -100,4 +123,6 @@ bets (closing quotes!) → user enters today's lines → `wc26 edges` →
 - [x] Phase 4 — Market layer (edges, ledger, CLV) — acceptance: settle B0001
       after tonight's match (next session, step 1 above)
 - [x] Phase 5 — Tournament simulator & country rankings
-- [ ] Phase 6 — Tournament ops (daily routine, recalibration + prop re-gate)
+- [ ] Phase 6 — Tournament ops: 6.1 knockout readiness DONE (KO facts, KO
+      predict, D025 cadence, audit); 6.2 recalibration checkpoint
+      calendar-gated ~2026-07-03 (next task 4)

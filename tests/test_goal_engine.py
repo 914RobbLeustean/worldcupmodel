@@ -175,3 +175,30 @@ def test_params_roundtrip(tmp_path: object, fitted: GoalEngineParams) -> None:
     fitted.save(path)
     loaded = GoalEngineParams.load(path)
     assert loaded == fitted
+
+
+def test_latest_model_path_orders_by_cutoff_then_fitted_at(
+    tmp_path: object, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """D023 note: same-cutoff refits tie-break on fitted_at, never the SHA.
+
+    The filename SHAs are chosen so a pure filename sort would pick the
+    WRONG file in both dimensions.
+    """
+    import json
+    from pathlib import Path
+
+    from wc26.models import goal_engine
+
+    models_dir = Path(str(tmp_path))
+    monkeypatch.setattr(goal_engine, "MODELS_DIR", models_dir)
+
+    def write(sha: str, cutoff: str, fitted_at: str) -> None:
+        payload = {"data_cutoff": cutoff, "fitted_at": fitted_at}
+        (models_dir / f"goal_engine_{cutoff}_{sha}.json").write_text(json.dumps(payload))
+
+    write("zzzzzzz", "2026-06-12", "2026-06-12T08:00:00+00:00")
+    write("aaaaaaa", "2026-06-12", "2026-06-12T09:00:00+00:00")  # newest fit, same cutoff
+    write("yyyyyyy", "2026-06-10", "2026-06-12T23:00:00+00:00")  # later fit, older cutoff
+    chosen = goal_engine.latest_model_path("goal_engine")
+    assert chosen.name == "goal_engine_2026-06-12_aaaaaaa.json"

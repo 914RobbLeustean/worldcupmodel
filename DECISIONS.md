@@ -283,3 +283,39 @@ same-cutoff refits on the meaningless git SHA.
   no-qualification-stakes matches (historically the softest lines).
 - Lots/permutations and every sampled score derive from settings.yaml seed;
   `wc26 sim`/`wc26 rankings` are bit-reproducible (gate-tested).
+
+## D025 — 2026-06-12 — Refit cadence: after every completed match day
+PLAN 6.1 left the choice open (weekly vs after each own-group match day).
+Decided: refit DAILY, after each completed match day, as part of the
+PLAYBOOK §1 morning routine — during the WC26 group stage every day is a
+match day, so the candidate cadences only differ in how stale the training
+set is allowed to get. Rationale:
+- A refit is cheap (~30 s), deterministic (no random component, sorted
+  input), and versioned (`<name>_<cutoff>_<sha7>.json`), so frequency
+  carries no reproducibility cost; latest-model selection by
+  (data_cutoff, fitted_at) makes the newest fit take effect atomically.
+- The reality gates re-run right after (`wc26 backtest && pytest` in the
+  same routine), so a refit that degrades calibration fails loudly the same
+  morning instead of silently pricing a week of lines.
+- The prop models are sample-starved (650 rows); each match day adds ~4-6
+  WC26 rows with current-tournament referee careers — exactly the data the
+  D021 re-gate is waiting on.
+- CLV accounting assumes the logged model_p came from params that knew
+  everything knowable pre-kickoff; a weekly cadence would blur that by up
+  to 6 match days of results.
+Weekly was rejected because it saves nothing (the routine runs daily
+anyway) and costs freshness. If a daily refit ever flips a gate: stop,
+investigate, do not bet that day (the routine already orders backtest+tests
+before `wc26 edges`).
+
+## D026 — 2026-06-12 — Dependency hygiene found by the conformance audit
+The audit (docs/AUDIT.md) diffed pyproject.toml against DECISIONS and found
+two undocumented states; both fixed here:
+- pyarrow: RETROACTIVELY documented. Added in Phase 1 as the parquet engine
+  behind every data/processed/*.parquet read/write (pandas requires an
+  explicit engine dependency). Standard choice, no alternative considered —
+  which is why it was missed at the time.
+- soccerdata: REMOVED. Planned for FBref scraping (PLAN Phase 1.4) but
+  superseded by the ESPN JSON API before it was ever imported (D011); it
+  sat unused in pyproject pulling ~20 transitive packages. The CLAUDE.md
+  gotcha about FBref/Cloudflare stays — it documents why we don't go back.

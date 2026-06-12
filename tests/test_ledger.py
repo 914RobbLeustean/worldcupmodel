@@ -204,3 +204,56 @@ def test_clv_report_empty_when_nothing_settled(tmp_path: Path) -> None:
     path = tmp_path / "bets.csv"
     append_row(_bet(), path)
     assert clv_report(read_ledger(path)).empty
+
+
+def _tables(extra_time: bool, with_result: bool) -> tuple[pd.DataFrame, pd.DataFrame]:
+    stats = pd.DataFrame(
+        {
+            "date": [pd.Timestamp("2026-06-29")],  # ESPN UTC date, fixture is 06-28 (D013)
+            "home_id": ["mexico"],
+            "away_id": ["south_korea"],
+            "extra_time": [extra_time],
+        }
+    )
+    results = pd.DataFrame(
+        {
+            "date": [pd.Timestamp("2026-06-28")],
+            "home_id": ["mexico"],
+            "away_id": ["south_korea"],
+            "home_score": [2],
+            "away_score": [1],
+        }
+    )
+    if not with_result:
+        results = results.iloc[0:0]
+    return stats, results
+
+
+def test_settle_reads_90_minute_goals_from_results() -> None:
+    from wc26.cli import goals_90_from_tables
+
+    stats, results = _tables(extra_time=False, with_result=True)
+    date = pd.Timestamp("2026-06-28")
+    assert goals_90_from_tables(stats, results, date, "mexico", "south_korea", "mexico") == 2
+    assert goals_90_from_tables(stats, results, date, "mexico", "south_korea", "south_korea") == 1
+
+
+def test_settle_refuses_extra_time_match_without_goals_flag() -> None:
+    """PLAYBOOK §2 / D012: stored ET scores are 120' — auto-read must refuse."""
+    from wc26.cli import SettleDataError, goals_90_from_tables
+
+    stats, results = _tables(extra_time=True, with_result=True)
+    with pytest.raises(SettleDataError, match="EXTRA TIME"):
+        goals_90_from_tables(
+            stats, results, pd.Timestamp("2026-06-28"), "mexico", "south_korea", "mexico"
+        )
+
+
+def test_settle_refuses_when_result_not_landed() -> None:
+    from wc26.cli import SettleDataError, goals_90_from_tables
+
+    stats, results = _tables(extra_time=False, with_result=False)
+    with pytest.raises(SettleDataError, match="not in the results table"):
+        goals_90_from_tables(
+            stats, results, pd.Timestamp("2026-06-28"), "mexico", "south_korea", "mexico"
+        )

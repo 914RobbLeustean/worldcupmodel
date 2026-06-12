@@ -31,7 +31,7 @@ from numpy.typing import NDArray
 from wc26.models.goal_engine import GoalEngineParams, predict_grid
 from wc26.sim.bracket import HOST_COUNTRY, Bracket, KnockoutMatch, Slot
 from wc26.sim.standings import GroupMatch, Record, rank_group, rank_thirds, records
-from wc26.sim.tracker import GroupStage
+from wc26.sim.tracker import GroupStage, KnockoutFact
 
 STAGES = ("group", "r32", "r16", "qf", "sf", "final", "champion")
 _ROUND_STAGE = {"r32": 2, "r16": 3, "qf": 4, "sf": 5, "final": 6}
@@ -150,6 +150,49 @@ def _slot_team(
     return ref[0] if slot.kind == "winner" else ref[1]
 
 
+def _facts_by_pair(
+    ko_facts: tuple[KnockoutFact, ...], stage: GroupStage
+) -> dict[frozenset[str], KnockoutFact]:
+    """Index played knockout matches by team pair (unique in single elimination).
+
+    Knockout facts can only exist once every group match is played — a fact
+    alongside an unplayed group fixture means the inputs are inconsistent.
+    """
+    if not ko_facts:
+        return {}
+    unplayed = [m for ms in stage.remaining.values() for m in ms]
+    if unplayed:
+        raise ValueError(
+            f"{len(ko_facts)} knockout fact(s) but {len(unplayed)} group fixtures "
+            f"are still unplayed — fix the fixtures table before simulating"
+        )
+    by_pair: dict[frozenset[str], KnockoutFact] = {}
+    for fact in ko_facts:
+        if fact.pair in by_pair:
+            raise ValueError(
+                f"duplicate knockout fact for {sorted(fact.pair)} — two teams meet "
+                f"at most once in the knockout bracket"
+            )
+        by_pair[fact.pair] = fact
+    return by_pair
+
+
+def _fact_winner(fact: KnockoutFact, match: KnockoutMatch, team_a: str, team_b: str) -> str:
+    """Validate a fact against its bracket slot; return the advancing team."""
+    if abs(fact.date - pd.Timestamp(match.date)) > pd.Timedelta(days=1):
+        raise ValueError(
+            f"knockout fact {fact.home_id} v {fact.away_id} on {fact.date.date()} "
+            f"matches bracket match {match.match_no} ({match.round}) dated "
+            f"{match.date} — more than ±1 day apart (D013); check the fixtures table"
+        )
+    if fact.winner_id not in (team_a, team_b):
+        raise ValueError(
+            f"knockout fact winner {fact.winner_id!r} is neither side of bracket "
+            f"match {match.match_no}"
+        )
+    return fact.winner_id
+
+
 def run_simulation(
     params: GoalEngineParams,
     stage: GroupStage,
@@ -158,10 +201,20 @@ def run_simulation(
     elo: Mapping[str, float],
     seed: int,
     n_runs: int,
+    ko_facts: tuple[KnockoutFact, ...] = (),
 ) -> SimOutput:
-    """Simulate the remaining tournament n_runs times; count stages reached."""
+    """Simulate the remaining tournament n_runs times; count stages reached.
+
+    Played knockout matches (`ko_facts`) enter as facts: each is matched to
+    its bracket slot by team pair once the group finishers are known, its
+    real winner advances, and no score is sampled for it. Every fact must be
+    consumed in every run — a leftover fact means the simulated finishers
+    contradict reality (e.g. a tiebreak our FIFA-ranking proxy got wrong),
+    which must fail loudly, not average away.
+    """
     if n_runs < 1:
         raise ValueError("n_runs must be >= 1")
+    facts = _facts_by_pair(ko_facts, stage)
     rng = np.random.default_rng(seed)
     sampler = _MatchSampler(params)
     letters = sorted(stage.groups)
@@ -218,16 +271,34 @@ def run_simulation(
             stage_reached[t] = 1
 
         results: dict[int, tuple[str, str]] = {}
+        consumed = 0
         for match in bracket.matches:
             winner_group = match.team_a.group if match.team_b.kind == "third" else None
             team_a = _slot_team(match.team_a, finishers, third_by_group, assignment, None, results)
             team_b = _slot_team(
                 match.team_b, finishers, third_by_group, assignment, winner_group, results
             )
-            winner, loser = _resolve_knockout(match, team_a, team_b, sampler, rng)
+            fact = facts.get(frozenset((team_a, team_b)))
+            if fact is not None:
+                winner = _fact_winner(fact, match, team_a, team_b)
+                loser = team_b if winner == team_a else team_a
+                consumed += 1
+            else:
+                winner, loser = _resolve_knockout(match, team_a, team_b, sampler, rng)
             results[match.match_no] = (winner, loser)
             if match.round != "third_place":
                 stage_reached[winner] = _ROUND_STAGE[match.round]
+        if consumed != len(facts):
+            unmatched = [
+                sorted(f.pair)
+                for f in facts.values()
+                if frozenset(f.pair) not in {frozenset(r) for r in results.values()}
+            ]
+            raise ValueError(
+                f"{len(facts) - consumed} knockout fact(s) never matched a bracket "
+                f"slot, e.g. {unmatched[:3]} — the computed group finishers "
+                f"contradict the real bracket (check tiebreaker proxies, D023)"
+            )
 
         for t, s in stage_reached.items():
             i = idx[t]

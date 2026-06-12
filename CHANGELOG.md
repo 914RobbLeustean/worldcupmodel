@@ -7,6 +7,48 @@ Every working session must add at least one entry under `[Unreleased]`.
 ## [Unreleased]
 
 ### Added
+- 2026-06-12 (f): Phase 6.1 — knockout readiness + full conformance audit.
+  (1) KO-facts path: played knockout matches enter the simulator as FACTS —
+  fixtures rows on/after the bracket's first R32 date split off in
+  sim/tracker.py (`knockout_facts`), matched to bracket slots by team pair
+  in sim/mc.py (skip sampling; every fact must be consumed in every run or
+  the sim raises — a leftover fact means our finishers contradict the real
+  bracket). Pens winners come from ESPN's competitor winner flag, captured
+  as match_stats.shootout_winner_id (all 20 historical shootouts verified,
+  e.g. WC22 final -> argentina); a level KO score without one refuses
+  loudly. (2) `wc26 predict` handles knockout fixture rows: knockout=True
+  for corners/cards (display only — D019/D021 quarantines unchanged), no
+  matchday, "[KO — 90' probabilities; can draw]" tag; group matchday
+  derivation now ignores knockout rows (cli.fixture_stage). (3) Refit
+  cadence decided and encoded: daily, after every completed match day
+  (D025; PLAYBOOK §1). (4) ET-contamination regression tests on
+  constructed WC26 KO rows (prepare_training_data + props_universe both
+  drop flagged rows, incl. ±1-day date drift). (5) docs/AUDIT.md: every
+  PLAN Phase 0–5 acceptance criterion re-run, every CLAUDE.md invariant
+  and risk-register row cited to code/tests; fresh-clone + working-tree
+  smoke both pass (tests skip gracefully without data/processed). 16 new
+  tests (180 total).
+
+### Fixed
+- 2026-06-12 (f): audit findings — stale MODEL.md "Phase 5 NOT YET BUILT"
+  section rewritten; latest_model_path (cutoff, fitted_at) ordering and the
+  knockout-1X2-includes-draw invariant got the tests they were missing;
+  settle's ET/missing-result refusal extracted to a testable
+  goals_90_from_tables (3 new tests); unused soccerdata dependency removed
+  and pyarrow retroactively documented (D026). Remaining gaps filed in
+  STATUS.md: add-result is not knockout-ready (no extra_time/shootout
+  capture; stats_patch overlay drops rows ESPN never had) — must fix
+  before June 28; PLAN 0.3 pre-commit hook never delivered (judgment call).
+
+### Not done (time-gated, carries)
+- 2026-06-12 (f): Phase 4 acceptance (settle B0001 + CLV report) still
+  open — USA v Paraguay kicks off ~02:00 UTC 2026-06-13; at session time
+  (16:15 UTC 2026-06-12) the fixture is unplayed, and settling would mean
+  fabricating a result. The daily routine ran clean (scrape/sync: 0 new
+  results; refit @508c267; backtest gates green; predict + rankings
+  snapshot rendered).
+
+### Added
 - 2026-06-12: Phase 5 — tournament simulator & country rankings
   (src/wc26/sim/). (1) Group-state tracker: standings under the OFFICIAL
   2026 tiebreakers (art. 13 verified in the FIFA regulations PDF — h2h

@@ -16,9 +16,13 @@ def _payload(
     away: str = "France",
     home_score: int = 3,
     away_score: int = 3,
+    winner: str | None = None,
 ) -> dict[str, Any]:
     def competitor(side: str, name: str, score: int) -> dict[str, Any]:
-        return {"homeAway": side, "score": score, "team": {"displayName": name}}
+        row: dict[str, Any] = {"homeAway": side, "score": score, "team": {"displayName": name}}
+        if winner is not None:
+            row["winner"] = name == winner
+        return row
 
     def box(name: str, corners: str, yellows: str) -> dict[str, Any]:
         return {
@@ -68,11 +72,22 @@ def test_parse_skips_unfinished() -> None:
 
 
 def test_extra_time_flagging() -> None:
-    pens = _payload(status_name="STATUS_FINAL_PEN", detail="FT-Pens")
+    pens = _payload(status_name="STATUS_FINAL_PEN", detail="FT-Pens", winner="Argentina")
     row = _parse_summary(pens, TOURNAMENTS["wc2022"])
     assert row is not None and row["extra_time"] is True
+    assert row["shootout_winner_id"] == "argentina"
+    aet = _payload(status_name="STATUS_FINAL_AET", detail="AET", winner="Argentina")
+    row_aet = _parse_summary(aet, TOURNAMENTS["wc2022"])
+    assert row_aet is not None and row_aet["extra_time"] is True
+    assert row_aet["shootout_winner_id"] is None  # decided in ET, not pens
     with pytest.raises(ValueError, match="unrecognized final status"):
         _is_extra_time({"name": "STATUS_SOMETHING_NEW", "detail": "??"}, "x")
+
+
+def test_shootout_without_winner_flag_raises() -> None:
+    pens = _payload(status_name="STATUS_FINAL_PEN", detail="FT-Pens")
+    with pytest.raises(ValueError, match="penalty shootout"):
+        _parse_summary(pens, TOURNAMENTS["wc2022"])
 
 
 def test_boxscore_team_mismatch_raises() -> None:
