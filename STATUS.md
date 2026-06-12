@@ -51,10 +51,12 @@ What exists now (Phase 6.1, on top of the full Phase 0–5 stack):
      book's 1X2 + match-total quotes (user types 2-3 extra rows per match),
      `wc26 edges`/`log-bet` computing the anchored P(over) (rho from the
      latest engine fit) and flagging on anchored edge; PLAYBOOK §3 update.
-  3. User resource asks (docs/BACKLOG.md): extra book accounts for line
-     shopping (#5); the historical prop-line sample (#3, OddsPortal —
-     template to be provided); decision on the Odds API budget for closing
-     snapshots (#6).
+  3. User commitments (answered 2026-06-13, see docs/BACKLOG.md): captures
+     TONIGHT's USA v Paraguay closing quotes at kickoff (alarm set); collects
+     the historical prop-line sample manually into
+     data/manual/historical_prop_lines.csv (instructions in BACKLOG #3);
+     Odds API cap raised 150->400 (D031) — agent builds kickoff snapshots
+     next session. Line shopping (#5) DEFERRED by user for now.
   4. **Phase 6.2 recalibration checkpoint — NEXT MILESTONE, ~2026-07-03**
    (after the 72 group matches; do NOT start early — pre-registered
    expectations in D030): compare predicted vs realized over the group

@@ -408,3 +408,14 @@ to manufacture a pass. Distinct from this: engine-level changes validated
 walk-forward on PRE-2026 data through the existing harness (e.g. the D019
 WC scoring-environment fix, backlog #4) are NOT calendar-gated — the July-3
 date applies only to evaluations that need WC26 group-stage outcomes.
+
+## D031 — 2026-06-13 — Odds API budget raised 150 -> 400 for closing snapshots
+User-approved (2026-06-13 session). The free tier is 500 credits/month; the
+cap moves from 150 to 400 to fund automated 1X2 + match-total snapshots at
+each kickoff (backlog #6) as a fallback closing anchor for CLV and for the
+D028 anchored-pricing history. Cost per snapshot is #markets x #regions
+(h2h+totals x eu = 2 credits, one request covers the whole sport), so ~4
+kickoff snapshots/day ~= 240/month — inside the new cap with headroom. The
+hard charge-before-request counter (odds_api.py) is unchanged; prop CLOSES
+remain manual capture at the user's book (props are not on the free tier,
+D007). Snapshot automation itself lands with the next session's wiring.

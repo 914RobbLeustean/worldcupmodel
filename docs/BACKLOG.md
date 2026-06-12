@@ -35,7 +35,7 @@
      (anchored pricing supersedes shrinkage if adopted; else shrinkage applies).
    - Owner: AGENT.
 
-3. **Historical prop-line sample (the unfulfilled PLAN 3.4 item)** — [edge] — **TODO, needs HUMAN (or browser access)**
+3. **Historical prop-line sample (the unfulfilled PLAN 3.4 item)** — [edge] — **IN PROGRESS: user collects manually (chosen 2026-06-13); agent builds the eval script once rows land**
    - ~50–100 team-total/corners/cards closing lines for WC22/Euro24 matches
      from OddsPortal archives → measures (a) how soft these books actually are
      (the project's founding premise, currently unmeasured), (b) a market
@@ -63,13 +63,13 @@
      quarantined unless the O2.5 slope actually enters [0.8, 1.2].
    - Owner: AGENT (~1 session).
 
-5. **Line shopping: 1–2 more books** — [edge] — **TODO, HUMAN only**
+5. **Line shopping: 1–2 more books** — [edge] — **DEFERRED by user (2026-06-13): Superbet-only for now; revisit after anchored pricing is live**
    - Open/fund accounts at 1–2 more Romanian books (e.g. Betano, Unibet RO,
      MaxBet); type their team-total quotes into lines.csv (the `book` column
      already exists; zero code). Best-of-N quotes is plausibly worth more EV
      than any model change on this list.
 
-6. **Automated closing-line backup** — [protects the success metric] — **TODO**
+6. **Automated closing-line backup** — [protects the success metric] — **APPROVED: Odds API cap 150→400 (D031); snapshot code TODO next session**
    - STATUS.md: "Closing lines must be captured at kickoff or CLV is lost."
      Snapshot the already-ingested BetExplorer odds at kickoff as a fallback
      closing proxy (1X2/match totals; the prop close itself stays manual).

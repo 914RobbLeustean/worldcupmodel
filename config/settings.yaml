@@ -62,4 +62,4 @@ elo:
   k_friendly: 20
 
 odds_api:
-  monthly_credit_budget: 150   # hard cap, free tier is 500
+  monthly_credit_budget: 400   # hard cap, free tier is 500 (raised 150 -> 400, D031)
