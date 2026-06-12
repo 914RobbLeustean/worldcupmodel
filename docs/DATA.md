@@ -64,9 +64,29 @@
 ## Tournament schedule
 - Group stage: derived automatically from the results CSV into
   fixtures.parquet (D009) — no manual entry needed.
-- Knockout slots + kickoff times: manual entry deferred to Phase 5 when the
-  simulator needs the bracket mapping.
-- Status: GROUP STAGE DERIVED 2026-06-11.
+- Knockout bracket (Phase 5): hand-entered ONCE, in git:
+  - data/manual/bracket_2026.yaml — R32 slot pairings, match numbers 73-104,
+    dates, venues + countries (knockout host home advantage). Source: FIFA
+    World Cup 2026 Regulations (May 2025), art. 12.5-12.11,
+    https://digitalhub.fifa.com/m/636f5c9c6f29771f/original/FWC2026_regulations_EN.pdf
+    Dates/venues cross-checked against the FIFA match schedule via
+    https://en.wikipedia.org/wiki/2026_FIFA_World_Cup_knockout_stage
+  - data/manual/third_place_allocation.csv — FIFA Annex C, all 495
+    combinations of eight qualified thirds → R32 slot assignments. Parsed
+    programmatically out of the regulations PDF (pp. 80-97) on 2026-06-12,
+    then verified: full C(12,8) coverage, every row a permutation of its
+    qualified set, every assignment inside the slot's allowed groups, AND a
+    495/495 row-for-row match against the independently maintained Wikipedia
+    transcription (Template:2026 FIFA World Cup third-place table). Options
+    1 and 495 are additionally pinned by hand in tests/test_bracket.py.
+- Loaders (src/wc26/sim/bracket.py) re-validate structure on every load;
+  group-stage tiebreaker rules come from the same regulations PDF (art. 13,
+  D023).
+- Failure modes: FIFA reschedules a knockout match (edit the yaml, the
+  loader catches structural typos); fixtures.parquet starts carrying
+  cross-group knockout rows once upstream adds results — build_group_stage
+  raises loudly, knockout facts are a Phase 6 task.
+- Status: KNOCKOUT BRACKET ENTERED + VERIFIED 2026-06-12.
 
 ## Historical 1X2 market odds (backtest baseline)
 - Decision: D015. Output: data/processed/market_odds.parquet (211 rows:

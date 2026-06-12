@@ -190,13 +190,10 @@ def fit_corners(
 
 
 def latest_corners_path() -> Path:
-    """Most recent saved corners model (filename-sorted, like the engine's)."""
-    from wc26.models.goal_engine import MODELS_DIR
+    """Most recent saved corners model (cutoff + fit time, like the engine's)."""
+    from wc26.models.goal_engine import latest_model_path
 
-    candidates = sorted(MODELS_DIR.glob("corners_*.json"))
-    if not candidates:
-        raise FileNotFoundError(f"no fitted corners model under {MODELS_DIR} — run `wc26 refit`")
-    return candidates[-1]
+    return latest_model_path("corners")
 
 
 def predict_corners(

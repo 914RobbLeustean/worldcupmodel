@@ -269,9 +269,24 @@ def predict_grid(
     return grid
 
 
-def latest_params_path() -> Path:
-    """Most recent saved model (by filename: goal_engine_<cutoff>_<sha>.json)."""
-    candidates = sorted(MODELS_DIR.glob("goal_engine_*.json"))
+def latest_model_path(prefix: str) -> Path:
+    """Most recent saved model `<prefix>_<cutoff>_<sha>.json`.
+
+    Ordered by (data_cutoff, fitted_at) read from the payload — two same-day
+    refits share a cutoff and a pure filename sort would tie-break on the
+    git SHA, which is meaningless.
+    """
+    candidates = list(MODELS_DIR.glob(f"{prefix}_*.json"))
     if not candidates:
-        raise FileNotFoundError(f"no fitted goal engine under {MODELS_DIR} — run `wc26 refit`")
-    return candidates[-1]
+        raise FileNotFoundError(f"no fitted {prefix} under {MODELS_DIR} — run `wc26 refit`")
+
+    def key(path: Path) -> tuple[str, str]:
+        raw: dict[str, Any] = json.loads(path.read_text())
+        return (str(raw["data_cutoff"]), str(raw["fitted_at"]))
+
+    return max(candidates, key=key)
+
+
+def latest_params_path() -> Path:
+    """Most recent saved goal engine params."""
+    return latest_model_path("goal_engine")

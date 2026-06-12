@@ -13,6 +13,8 @@ wc26 data status                       # confirm freshness (results/fixtures/mat
 wc26 refit                             # fold new results into all models, version params
 wc26 backtest && uv run pytest         # re-check ALL reality gates after the refit (~2 min)
 wc26 predict                           # today's probabilities (1X2 + props)
+wc26 rankings --diff                   # advancement snapshot + movement vs yesterday (~6 s)
+wc26 sim                               # group standings, statuses, MD3 dead rubbers
 ```
 
 Failure modes:

@@ -1,0 +1,58 @@
+# FIFA World Cup 26 knockout bracket — entered once, by hand, from the
+# official sources (D009: fixtures.parquet carries only the 72 group matches).
+#
+# Sources (verified 2026-06-12, see docs/DATA.md):
+# - FIFA World Cup 2026 Regulations (May 2025), art. 12.5-12.11:
+#   https://digitalhub.fifa.com/m/636f5c9c6f29771f/original/FWC2026_regulations_EN.pdf
+#   (pairings + match numbers; Annex C = data/manual/third_place_allocation.csv)
+# - Dates/venues: FIFA match schedule via en.wikipedia.org/wiki/2026_FIFA_World_Cup_knockout_stage
+#
+# Slot grammar:
+#   1A / 2A      winner / runner-up of group A
+#   third_of     R32 slot taking a third-placed team; the allowed groups are
+#                listed and the concrete group comes from
+#                third_place_allocation.csv (FIFA Annex C, keyed by the set of
+#                eight groups whose thirds qualify)
+#   W73 / L101   winner / loser of match 73 / 101
+#
+# country drives knockout home advantage: a host team playing a knockout
+# match in its own country is modelled as home (CLAUDE.md invariant).
+rounds:
+  r32:
+    - {match: 73, date: 2026-06-28, city: Inglewood, country: United States, team_a: 2A, team_b: 2B}
+    - {match: 74, date: 2026-06-29, city: Foxborough, country: United States, team_a: 1E, third_of: [A, B, C, D, F]}
+    - {match: 75, date: 2026-06-29, city: Guadalupe, country: Mexico, team_a: 1F, team_b: 2C}
+    - {match: 76, date: 2026-06-29, city: Houston, country: United States, team_a: 1C, team_b: 2F}
+    - {match: 77, date: 2026-06-30, city: East Rutherford, country: United States, team_a: 1I, third_of: [C, D, F, G, H]}
+    - {match: 78, date: 2026-06-30, city: Arlington, country: United States, team_a: 2E, team_b: 2I}
+    - {match: 79, date: 2026-06-30, city: Mexico City, country: Mexico, team_a: 1A, third_of: [C, E, F, H, I]}
+    - {match: 80, date: 2026-07-01, city: Atlanta, country: United States, team_a: 1L, third_of: [E, H, I, J, K]}
+    - {match: 81, date: 2026-07-01, city: Santa Clara, country: United States, team_a: 1D, third_of: [B, E, F, I, J]}
+    - {match: 82, date: 2026-07-01, city: Seattle, country: United States, team_a: 1G, third_of: [A, E, H, I, J]}
+    - {match: 83, date: 2026-07-02, city: Toronto, country: Canada, team_a: 2K, team_b: 2L}
+    - {match: 84, date: 2026-07-02, city: Inglewood, country: United States, team_a: 1H, team_b: 2J}
+    - {match: 85, date: 2026-07-02, city: Vancouver, country: Canada, team_a: 1B, third_of: [E, F, G, I, J]}
+    - {match: 86, date: 2026-07-03, city: Miami Gardens, country: United States, team_a: 1J, team_b: 2H}
+    - {match: 87, date: 2026-07-03, city: Kansas City, country: United States, team_a: 1K, third_of: [D, E, I, J, L]}
+    - {match: 88, date: 2026-07-03, city: Arlington, country: United States, team_a: 2D, team_b: 2G}
+  r16:
+    - {match: 89, date: 2026-07-04, city: Philadelphia, country: United States, team_a: W74, team_b: W77}
+    - {match: 90, date: 2026-07-04, city: Houston, country: United States, team_a: W73, team_b: W75}
+    - {match: 91, date: 2026-07-05, city: East Rutherford, country: United States, team_a: W76, team_b: W78}
+    - {match: 92, date: 2026-07-05, city: Mexico City, country: Mexico, team_a: W79, team_b: W80}
+    - {match: 93, date: 2026-07-06, city: Arlington, country: United States, team_a: W83, team_b: W84}
+    - {match: 94, date: 2026-07-06, city: Seattle, country: United States, team_a: W81, team_b: W82}
+    - {match: 95, date: 2026-07-07, city: Atlanta, country: United States, team_a: W86, team_b: W88}
+    - {match: 96, date: 2026-07-07, city: Vancouver, country: Canada, team_a: W85, team_b: W87}
+  qf:
+    - {match: 97, date: 2026-07-09, city: Foxborough, country: United States, team_a: W89, team_b: W90}
+    - {match: 98, date: 2026-07-10, city: Inglewood, country: United States, team_a: W93, team_b: W94}
+    - {match: 99, date: 2026-07-11, city: Miami Gardens, country: United States, team_a: W91, team_b: W92}
+    - {match: 100, date: 2026-07-11, city: Kansas City, country: United States, team_a: W95, team_b: W96}
+  sf:
+    - {match: 101, date: 2026-07-14, city: Arlington, country: United States, team_a: W97, team_b: W98}
+    - {match: 102, date: 2026-07-15, city: Atlanta, country: United States, team_a: W99, team_b: W100}
+  third_place:
+    - {match: 103, date: 2026-07-18, city: Miami Gardens, country: United States, team_a: L101, team_b: L102}
+  final:
+    - {match: 104, date: 2026-07-19, city: East Rutherford, country: United States, team_a: W101, team_b: W102}

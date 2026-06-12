@@ -7,6 +7,38 @@ Every working session must add at least one entry under `[Unreleased]`.
 ## [Unreleased]
 
 ### Added
+- 2026-06-12: Phase 5 — tournament simulator & country rankings
+  (src/wc26/sim/). (1) Group-state tracker: standings under the OFFICIAL
+  2026 tiebreakers (art. 13 verified in the FIFA regulations PDF — h2h
+  among tied teams comes FIRST, unlike 2018/2022; conduct from card counts;
+  FIFA-ranking criterion proxied by as-of Elo; D023), per-team
+  can/secured/eliminated flags from exact 3^k completion enumeration, and
+  MD3 dead-rubber detection (D024). (2) Knockout bracket entered once in
+  data/manual/bracket_2026.yaml + third_place_allocation.csv (FIFA Annex C,
+  all 495 combinations, parsed from the regulations PDF and verified
+  495/495 against Wikipedia's transcription; loaders re-validate on every
+  load; docs/DATA.md). (3) `wc26 sim`: seeded Monte Carlo (mc_runs=20000)
+  of all remaining matches from the goal-engine score grid; played matches
+  are fact; knockout 90' draws resolve via the explicit ET/pens mini-match
+  (Poisson at 1/3 rate, then a fair coin — advancement only, D004/D024);
+  host home advantage in knockouts when playing in-country. (4)
+  `wc26 rankings [--diff]`: P(R32..champion) + expected finish for all 48,
+  dated snapshots in data/processed/rankings/, movement vs the previous
+  match day. (5) Simulator gates AS TESTS on constructed fixtures: decided
+  outcomes collapse to certainty, P(champion) sums to exactly 1,
+  bit-deterministic under the settings seed, eliminated team -> exact 0%
+  everywhere after the result lands; plus tiebreaker unit tests incl.
+  three-way ties and FIFA-pinned bracket/allocation rows. 28 new tests
+  (164 total). Runtime: `wc26 rankings` ~6 s end to end (<60 s gate).
+
+### Fixed
+- 2026-06-12: latest_*_path() (engine/corners/cards) now picks the newest
+  model by (data_cutoff, fitted_at) from the payload instead of a filename
+  sort that tie-broke same-cutoff refits on the git SHA (D023 note).
+- 2026-06-12: retired the Phase 5 CLI stubs + their smoke test (`wc26 sim`
+  and `wc26 rankings` are real commands now).
+
+### Added
 - 2026-06-12: Phase 4 — market layer (src/wc26/markets/): manual line entry
   + edges + append-only ledger + CLV. (1) data/manual/lines.csv format
   finalized (one row per quoted side; decimal AND signed-American odds

@@ -1,5 +1,5 @@
-"""Single Typer entry point. Commands land phase by phase (docs/PLAN.md);
-unbuilt commands say which phase delivers them and exit non-zero.
+"""Single Typer entry point. Commands landed phase by phase (docs/PLAN.md);
+Phase 5 (sim/rankings) completed the set.
 """
 
 from typing import TYPE_CHECKING
@@ -7,14 +7,22 @@ from typing import TYPE_CHECKING
 import typer
 
 if TYPE_CHECKING:
+    from wc26.config import Settings
     from wc26.markets.lines import TwoWayLine
+    from wc26.models.goal_engine import GoalEngineParams
+    from wc26.sim.bracket import Bracket
+    from wc26.sim.tracker import GroupStage
+
+    SimInputs = tuple[
+        Settings,
+        GoalEngineParams,
+        GroupStage,
+        Bracket,
+        dict[frozenset[str], dict[str, str]],
+        dict[str, float],
+    ]
 
 app = typer.Typer(no_args_is_help=True, help="WC26 Edge Model CLI")
-
-
-def _stub(phase: str) -> None:
-    typer.echo(f"Not implemented yet — arrives in {phase}. See STATUS.md / docs/PLAN.md.")
-    raise typer.Exit(code=1)
 
 
 @app.command()
@@ -632,16 +640,115 @@ def backtest() -> None:
         typer.echo(f"{market:8s} n={block['n']}  {line}")
 
 
+def _sim_inputs() -> "SimInputs":
+    """Load everything the simulator needs (the CLI owns all I/O)."""
+    import pandas as pd
+
+    from wc26.config import load_settings
+    from wc26.data.elo import compute_elo_history, ratings_asof
+    from wc26.data.results import PROCESSED_DIR
+    from wc26.data.teams import registry
+    from wc26.models.goal_engine import GoalEngineParams, latest_params_path
+    from wc26.sim.bracket import load_allocation, load_bracket
+    from wc26.sim.tracker import build_group_stage
+
+    settings = load_settings()
+    fixtures = pd.read_parquet(PROCESSED_DIR / "fixtures.parquet")
+    stats = pd.read_parquet(PROCESSED_DIR / "match_stats.parquet")
+    results = pd.read_parquet(PROCESSED_DIR / "results.parquet")
+    params = GoalEngineParams.load(latest_params_path())
+    stage = build_group_stage(fixtures, stats, registry())
+    bracket = load_bracket()
+    allocation = load_allocation(bracket)
+    asof = pd.Timestamp.now(tz="UTC").tz_localize(None).normalize() + pd.Timedelta(days=1)
+    elo_series = ratings_asof(compute_elo_history(results, settings.elo_k), asof)
+    elo = {str(k): float(v) for k, v in elo_series.items()}
+    return settings, params, stage, bracket, allocation, elo
+
+
 @app.command()
 def sim() -> None:
-    """Monte Carlo simulation of the remaining tournament."""
-    _stub("Phase 5")
+    """Monte Carlo of the remaining tournament: group state + advancement.
+
+    Group standings use the official 2026 tiebreakers; statuses mark teams
+    whose advancement is mathematically decided; MD3 dead rubbers
+    (historically the softest lines) are flagged. Advancement probabilities
+    come from the seeded MC — for rankings and knockout context, NEVER for
+    betting futures (PLAN 5.5).
+    """
+    from wc26.sim.mc import run_simulation
+    from wc26.sim.tracker import tournament_state
+
+    settings, params, stage, bracket, allocation, elo = _sim_inputs()
+    state = tournament_state(stage, elo, settings.seed)
+    out = run_simulation(params, stage, bracket, allocation, elo, settings.seed, settings.mc_runs)
+    n = float(out.n_runs)
+    typer.echo(f"model {out.model_version} | {out.n_runs} runs, seed {out.seed}\n")
+    for letter in sorted(stage.groups):
+        ga = state.analyses[letter]
+        typer.echo(f"Group {letter}")
+        for team in ga.order_now:
+            st = ga.statuses[team]
+            i = out.teams.index(team)
+            flag = "  [THROUGH]" if st.secured_advance else ("  [OUT]" if st.eliminated else "")
+            typer.echo(
+                f"  {st.rank_now}. {team:22s} MP{st.played} {st.points}pts "
+                f"gd{st.gd:+d} gf{st.gf:<2d} | win grp {out.group_win[i] / n:5.1%} "
+                f"top2 {out.top2[i] / n:5.1%} 3rd-q {out.third_qualified[i] / n:5.1%} "
+                f"adv {out.reached[i, 1] / n:5.1%}{flag}"
+            )
+    if state.dead_rubbers:
+        typer.echo("\nMD3 dead rubbers (qualification decided for BOTH teams):")
+        for d in state.dead_rubbers:
+            typer.echo(f"  group {d.group}: {d.home_id} v {d.away_id}")
+    typer.echo(
+        "\n(advancement only — the ET/pens layer never prices bets, D004/D023; "
+        "futures are not bettable, PLAN 5.5)"
+    )
 
 
 @app.command()
 def rankings(diff: bool = typer.Option(False, help="Show movement vs previous snapshot")) -> None:
-    """Per-team advancement/champion probabilities for all 48 teams."""
-    _stub("Phase 5")
+    """Per-team P(R32..champion) + expected finish for all 48; dated snapshot."""
+    import datetime as dt
+
+    import pandas as pd
+
+    from wc26.sim.mc import rankings_frame, run_simulation
+    from wc26.sim.snapshots import diff_frames, previous_snapshot, save_snapshot
+
+    settings, params, stage, bracket, allocation, elo = _sim_inputs()
+    out = run_simulation(params, stage, bracket, allocation, elo, settings.seed, settings.mc_runs)
+    frame = rankings_frame(out)
+    today = dt.datetime.now(tz=dt.UTC).date()
+    path = save_snapshot(frame, today, out.model_version, out.n_runs, out.seed)
+
+    typer.echo(f"model {out.model_version} | {out.n_runs} runs, seed {out.seed}")
+    typer.echo(
+        f"\n{'rk':>3s} {'team':22s} {'grp':3s} {'R32':>6s} {'R16':>6s} {'QF':>6s} "
+        f"{'SF':>6s} {'final':>6s} {'champ':>6s} {'E[stage]':>8s}"
+    )
+    for r in frame.itertuples(index=False):
+        typer.echo(
+            f"{r.rank:3d} {r.team_id:22s} {r.group:3s} {r.p_r32:6.1%} {r.p_r16:6.1%} "
+            f"{r.p_qf:6.1%} {r.p_sf:6.1%} {r.p_final:6.1%} {r.p_champion:6.1%} "
+            f"{r.exp_stage:8.2f}"
+        )
+    typer.echo(f"\nsnapshot {path}")
+
+    if diff:
+        prev_path = previous_snapshot(today)
+        if prev_path is None:
+            typer.echo("no earlier snapshot to diff against")
+            raise typer.Exit(code=0)
+        moves = diff_frames(frame, pd.read_parquet(prev_path))
+        typer.echo(f"\nmovement vs {prev_path.name}:")
+        typer.echo(f"{'rk':>3s} {'mv':>3s} {'team':22s} {'dR32':>7s} {'dQF':>7s} {'dchamp':>7s}")
+        for r in moves.itertuples(index=False):
+            typer.echo(
+                f"{r.rank:3d} {r.rank_move:+3d} {r.team_id:22s} {r.d_p_r32:+7.3f} "
+                f"{r.d_p_qf:+7.3f} {r.d_p_champion:+7.3f}"
+            )
 
 
 data_app = typer.Typer(no_args_is_help=True, help="Ingest and inspect data tables.")

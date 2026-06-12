@@ -31,13 +31,12 @@ def test_cli_help_lists_commands() -> None:
         assert cmd in result.output
 
 
-def test_stub_commands_fail_loudly() -> None:
-    # Phase 2 delivered predict/refit/backtest, Phase 4 the market commands;
-    # the Phase 5 simulator commands remain stubs.
+def test_no_stub_commands_remain() -> None:
+    # Phase 5 delivered sim/rankings, completing the CLI surface: every
+    # command responds to --help (stubs used to exit 1 with a phase pointer).
     for cmd in ("sim", "rankings"):
-        result = runner.invoke(app, [cmd])
-        assert result.exit_code == 1
-        assert "Not implemented" in result.output
+        result = runner.invoke(app, [cmd, "--help"])
+        assert result.exit_code == 0
 
 
 def test_settings_load_and_guard_rails() -> None:

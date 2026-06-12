@@ -238,3 +238,48 @@ Phase 4 fixes the quantities the money decisions run on:
 - log-bet requires the market to exist two-sided in lines.csv so the logged
   edge uses the identical de-vig as `wc26 edges` (no one-sided edge guesses);
   odds actually taken may override the quoted side's price.
+
+## D023 — 2026-06-12 — Group tiebreakers: official 2026 rules + proxies
+The simulator implements FIFA World Cup 2026 Regulations art. 13 EXACTLY as
+published (May 2025 PDF, verified) — which is NOT the 2018/2022 procedure:
+head-to-head among the tied teams comes FIRST (h2h points → h2h GD → h2h
+goals, re-applied among teams still tied if the set shrank), and only then
+overall GD → overall GF → team conduct → FIFA/Coca-Cola World Ranking. There
+is no drawing of lots in the official group ranking. Thirds rank on points →
+GD → GF → conduct → FIFA ranking. Two proxies, both documented limitations:
+- CONDUCT: our sources carry yellow/red COUNTS only, so the score is
+  -1/yellow -4/red; the -3 (second yellow) and -5 (yellow+direct red) grades
+  are indistinguishable from counts. Simulated matches contribute 0.
+- FIFA RANKING (criteria g/h): proxied by our leak-free as-of Elo —
+  deterministic and close in spirit; we have no FIFA-ranking ingest. A
+  residual exact tie falls to a seeded drawing of lots.
+Either proxy can matter only after points, h2h, GD and GF are ALL equal —
+vanishingly rare, and the Monte Carlo averages over it.
+Also fixed here: latest_*_path() picks models by (data_cutoff, fitted_at)
+read from the payload instead of a pure filename sort, which tie-broke
+same-cutoff refits on the meaningless git SHA.
+
+## D024 — 2026-06-12 — Simulator: ET/pens rule + qualification analysis
+- EXTRA TIME / PENALTIES (advancement ONLY, never pricing — D004): a 90'
+  knockout draw sampled from the engine grid is resolved by an explicit
+  mini-match: each side scores ET goals ~ Poisson(lambda * 30/90) with the
+  SAME lambdas as the 90' grid (incl. host home advantage where it applied),
+  independently; if still level, a 50/50 penalty shootout. Strength-weighted
+  conditional on the draw, zero new parameters, nothing exported to
+  src/wc26/markets. We have no shootout-skill data, hence the fair coin.
+- KNOCKOUT HOME ADVANTAGE: a host federation playing a knockout match in its
+  own country is the home side (USA/Mexico/Canada only, CLAUDE.md); all
+  other knockout matches are neutral.
+- QUALIFICATION FLAGS (can/secured/eliminated): exact enumeration of all
+  3^k W/D/L completions per group. Score margins are unbounded, so
+  margin-dependent comparisons resolve for the team under test in `can_*`
+  (its wins by 99, rivals' by 1) and against it in `secured_*` (inverted) —
+  exact at the points level; cross-group third comparisons additionally use
+  exact (pts, gd, gf) profiles once both groups are complete. The MC remains
+  the authoritative probability source; flags are operational labels.
+- MD3 DEAD RUBBER := both teams' advancement already decided (secured or
+  eliminated). Bracket-slot routing may still motivate secured teams — the
+  per-team flags printed alongside make that visible; the flag marks
+  no-qualification-stakes matches (historically the softest lines).
+- Lots/permutations and every sampled score derive from settings.yaml seed;
+  `wc26 sim`/`wc26 rankings` are bit-reproducible (gate-tested).

@@ -204,13 +204,10 @@ def fit_cards(
 
 
 def latest_cards_path() -> Path:
-    """Most recent saved cards model (filename-sorted, like the engine's)."""
-    from wc26.models.goal_engine import MODELS_DIR
+    """Most recent saved cards model (cutoff + fit time, like the engine's)."""
+    from wc26.models.goal_engine import latest_model_path
 
-    candidates = sorted(MODELS_DIR.glob("cards_*.json"))
-    if not candidates:
-        raise FileNotFoundError(f"no fitted cards model under {MODELS_DIR} — run `wc26 refit`")
-    return candidates[-1]
+    return latest_model_path("cards")
 
 
 def predict_cards(
