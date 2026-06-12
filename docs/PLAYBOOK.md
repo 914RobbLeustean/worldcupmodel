@@ -1,19 +1,104 @@
 # Daily tournament playbook
 
-> The exact match-day routine, for the user or an agent. Finalized in Phase 4;
-> draft below reflects the target flow.
+> The exact match-day routine, for the user or an agent. Finalized in Phase 4.
+> Every command below is `uv run wc26 ...` (or plain `wc26 ...` inside the venv).
+> Total time: ~10 minutes.
 
-1. `wc26 data scrape --tournament wc2026 && wc26 data sync` — pull yesterday's
-   finals (score, corners, cards, ref) from ESPN automatically. Fallback if
-   ESPN is down or wrong: `wc26 add-result` manual entry.
-2. `wc26 refit` — per refit policy (see DECISIONS.md once decided).
-3. `wc26 predict --date <today>` — model probabilities for today's matches.
-4. `wc26 rankings --diff` — updated tournament rankings, movement vs yesterday.
-5. Enter today's prop lines from the book into data/manual/lines.csv.
-6. `wc26 edges` — review +EV table; bet only edges ≥ threshold (settings.yaml).
-7. `wc26 log-bet` — record every bet immediately, with odds actually taken.
-8. At kickoff: record closing lines; `wc26 settle` yesterday's bets.
-9. Weekly: `wc26 clv-report` — if CLV ≤ 0 after 50 bets, stop betting, review.
+## 1. Morning — data + model (~3 min, agent-runnable)
 
-Money rules (non-negotiable): flat 1.5% units, 5% edge floor, no Kelly until
-CLV > 0 over 50+ bets, no futures bets without a healthy simulator and CLV.
+```
+wc26 data scrape --tournament wc2026   # yesterday's finals from ESPN (cached, resumable)
+wc26 data sync                         # write finished results into the patch + re-ingest
+wc26 data status                       # confirm freshness (results/fixtures/match_stats)
+wc26 refit                             # fold new results into all models, version params
+wc26 backtest && uv run pytest         # re-check ALL reality gates after the refit (~2 min)
+wc26 predict                           # today's probabilities (1X2 + props)
+```
+
+Failure modes:
+- ESPN down/wrong → `wc26 add-result` (manual score/corners/cards/ref entry).
+- "Unknown team name X" → add the spelling to `aliases` in config/teams.yaml.
+  Fix the alias; NEVER loosen the strict resolution.
+- Referee announced (~2 days out) → add a row to
+  data/manual/ref_assignments.csv (`date,home_id,away_id,referee`, ESPN
+  spelling) so cards output flips to ref-known. (Reference only — D021.)
+
+## 2. Settle yesterday's bets (when you have the closing line)
+
+For each open bet, with the closing quote of BOTH sides read off the book
+just before kickoff (write them down at kickoff time!):
+
+```
+wc26 settle B0001 --closing-over 1.85 --closing-under 1.95
+```
+
+- The result is read from the results table automatically.
+- **Extra time (knockouts):** ALL bets settle on the 90-minute score (D004),
+  but stored knockout scores include ET (D012) — `settle` detects this and
+  refuses; re-run with `--goals <the team's 90' goal count>`.
+- Mis-entered a settlement? Corrections are NEW rows (the ledger is
+  append-only, D006): re-settling a settled bet is blocked, so append a
+  correcting row manually with the same bet_id — never edit existing rows.
+
+## 3. Enter today's lines (user, from the sportsbook)
+
+Edit `data/manual/lines.csv` — delete yesterday's rows, one row per quoted
+side (both sides required, that's what de-vig needs):
+
+```csv
+ts_utc,match,market,line,side,odds,book
+2026-06-12T07:45:00,USA v Paraguay,team_total:USA,1.5,over,2.60,bet365
+2026-06-12T07:45:00,USA v Paraguay,team_total:USA,1.5,under,1.50,bet365
+```
+
+- `ts_utc`: when you read the quote (UTC). Quotes >24 h old are refused.
+- `match`: `<home> v <away>` — any spelling from config/teams.yaml.
+- `market`: `team_total:<team>` is the ONLY priceable market (match totals
+  D019, corners/cards D021 are quarantined; entering them is refused).
+- `line`: half-goal lines only (1.5, not 2).
+- `odds`: decimal (`1.91`) or American (`-110`, `+120`) — sign required for
+  American.
+- `book`: same market at two books = two row pairs with different `book`.
+
+## 4. Edges → bet → log (~2 min)
+
+```
+wc26 edges      # table sorted by edge; BET rows are >= the 5% threshold
+```
+
+Reading the table: `fair` = de-vigged probability of the recommended side,
+`edge` = model_p − fair, `ev` = expected profit per unit at the quoted odds.
+Only bet `BET` rows; a positive edge with negative `ev` means the vig eats
+the edge — that's why the threshold exists.
+
+For every bet actually placed (at the book, or on paper), log it
+IMMEDIATELY with the odds you actually got:
+
+```
+wc26 log-bet --match "USA v Paraguay" --team USA --line 1.5 --side under --odds 1.52
+```
+
+Money rules (non-negotiable, enforced in code): flat 1.5% units, 5% edge
+floor, no Kelly until CLV > 0 over 50+ settled bets, no futures without a
+healthy simulator + CLV.
+
+## 5. Weekly — review
+
+```
+wc26 clv-report   # cumulative CLV, ROI, win rate vs model_p, by market
+```
+
+- CLV is the success metric, not P&L. If mean CLV ≤ 0 after 50 settled
+  bets: STOP betting, review (CLAUDE.md invariant).
+- After the group stage: Phase 6 recalibration checkpoint (re-gate match
+  totals + corners/cards, D019/D021).
+
+## Agent notes
+
+- Steps 1–2 are fully agent-runnable at session start; step 3 needs the
+  user's book; steps 4–5 are agent-runnable once lines.csv is filled.
+- All guards are hard errors by design (stale lines, unknown teams,
+  quarantined markets, unpredicted matches, one-sided quotes). Fix the
+  input, never the guard.
+- Before ending a session: `make test && make lint`, update STATUS.md,
+  CHANGELOG.md, commit (ledger + lines.csv are in git on purpose).

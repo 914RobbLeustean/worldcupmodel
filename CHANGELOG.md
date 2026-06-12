@@ -7,6 +7,39 @@ Every working session must add at least one entry under `[Unreleased]`.
 ## [Unreleased]
 
 ### Added
+- 2026-06-12: Phase 4 — market layer (src/wc26/markets/): manual line entry
+  + edges + append-only ledger + CLV. (1) data/manual/lines.csv format
+  finalized (one row per quoted side; decimal AND signed-American odds
+  parsed at the boundary, stored decimal-only) and `wc26 edges`:
+  multiplicative de-vig of two-way quotes via penaltyblog (D005), edge =
+  model_p − fair_p vs the 5% threshold, flat-stake recommendation, table
+  sorted by edge. HARD GUARDS as tests: only gate-cleared markets priceable
+  (team totals ONLY today; match totals D019 and corners/cards D021 refused
+  with their decision ids), matches without a prediction refused, stale
+  quotes (>24 h) refused, strict team resolution, one-sided quotes refused.
+  (2) Ledger: bets.csv schema finalized pre-first-bet (D022); `wc26 log-bet`
+  appends open rows (edge recomputed through the same de-vig as edges),
+  `wc26 settle` grades on the 90' score (D004 — auto-read from results only
+  when no extra_time flag, else --goals mandatory since stored ET scores are
+  120', D012) + manually entered closing two-way quote → CLV = odds_taken ×
+  fair_closing_p − 1; `wc26 clv-report` prints CLV/ROI/win-rate-vs-model_p
+  by market. Append-only enforced by construction + tests (settled rows are
+  new rows; re-settling blocked). (3) Hand-computed de-vig/edge/CLV fixture
+  tests (PLAN verification). (4) docs/PLAYBOOK.md finalized — exact daily
+  routine for user + agent. (5) `wc26 odds-check` (PLAN 4.3, optional): The
+  Odds API h2h sanity check vs model 1X2, persisted monthly credit counter
+  hard-capped at 150 (D007), charged before each request; needs
+  ODDS_API_KEY. Dry-run on today's real match day: representative paper
+  lines entered, edge report rendered, paper bet B0001 logged (USA U1.5);
+  settlement tonight after the match completes the acceptance cycle.
+
+### Fixed
+- 2026-06-12: results patch keying — `_apply_patch` now joins raw and patch
+  rows on canonical team ids (lenient resolution), not raw spellings.
+  `wc26 data sync` writes registry names ("Czechia") while the upstream CSV
+  says "Czech Republic", so the South Korea v Czechia result duplicated its
+  fixture row with a null city and broke ingest. Regression test added.
+
 - 2026-06-12: Phase 3 — prop models, walk-forward-validated. (1) Team totals
   (src/wc26/models/team_totals.py): direct marginals of the goal-engine
   grid; gates GREEN (count log-loss 1.405 vs naive 1.475, O1.5 calibration

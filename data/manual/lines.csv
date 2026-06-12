@@ -1,1 +1,7 @@
 ts_utc,match,market,line,side,odds,book
+2026-06-12T07:45:00,Canada v Bosnia,team_total:Canada,1.5,over,-120,paper
+2026-06-12T07:45:00,Canada v Bosnia,team_total:Canada,1.5,under,+100,paper
+2026-06-12T07:45:00,USA v Paraguay,team_total:USA,1.5,over,2.60,paper
+2026-06-12T07:45:00,USA v Paraguay,team_total:USA,1.5,under,1.50,paper
+2026-06-12T07:45:00,USA v Paraguay,team_total:Paraguay,0.5,over,1.40,paper
+2026-06-12T07:45:00,USA v Paraguay,team_total:Paraguay,0.5,under,2.90,paper

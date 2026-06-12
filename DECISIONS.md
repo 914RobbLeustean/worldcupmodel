@@ -209,3 +209,32 @@ DECISIONS entry, not a silent flip). Further feature surgery was rejected as
 backtest fishing. Re-gate at the Phase 6 post-group recalibration when ~70
 WC26 matches and richer referee careers exist. The only Phase 3 model
 cleared to price is TEAM TOTALS.
+
+## D022 — 2026-06-12 — Market-layer definitions: edge, CLV, ledger format
+Phase 4 fixes the quantities the money decisions run on:
+- EDGE = model_p − fair_p (probability points), where fair_p is the
+  multiplicative de-vig (D005) of BOTH quoted sides; settings.edge_threshold
+  (5%) gates on this. EV = model_p × decimal_odds − 1 is printed for context
+  (a positive edge can still have negative EV once the vig is paid — such
+  quotes are correctly not flagged).
+- CLV per bet = odds_taken × fair_closing_p − 1 with fair_closing_p from the
+  de-vigged manually-entered closing two-way quote: positive = beat the
+  close. clv-report shows mean and stake-weighted CLV, ROI, and win rate vs
+  mean bet-on model_p (a bucketed reliability curve is noise below ~50 bets).
+- lines.csv: one row per quoted side; both sides required (refused
+  otherwise) — de-vig needs the pair. Markets keyed `team_total:<team>`;
+  the priceable set is a frozen constant (PRICEABLE_MARKETS in
+  src/wc26/markets/lines.py) so un-quarantining a market is a code change
+  with a DECISIONS entry, not a data edit. Half-goal lines only (pushes out
+  of scope for v1).
+- ledger/bets.csv schema finalized BEFORE the first bet (bet_id + side +
+  match_date + closing both-sides odds + goals_90 added to the Phase 0 draft
+  header): a bet's life is one `open` row then one `settled` row, same
+  bet_id, last row per bet_id wins; `wc26 settle` blocks re-settling
+  (corrections = manual new rows, D006). Settlement takes goals_90 — the 90'
+  count (D004) — read from results automatically only when match_stats shows
+  no extra_time flag, else --goals is mandatory (stored ET scores are 120',
+  D012).
+- log-bet requires the market to exist two-sided in lines.csv so the logged
+  edge uses the identical de-vig as `wc26 edges` (no one-sided edge guesses);
+  odds actually taken may override the quoted side's price.

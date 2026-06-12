@@ -32,13 +32,12 @@ def test_cli_help_lists_commands() -> None:
 
 
 def test_stub_commands_fail_loudly() -> None:
-    # predict/refit/backtest landed in Phase 2; these remain stubs.
-    result = runner.invoke(app, ["edges"])
-    assert result.exit_code == 1
-    assert "Not implemented" in result.output
-    result = runner.invoke(app, ["sim"])
-    assert result.exit_code == 1
-    assert "Not implemented" in result.output
+    # Phase 2 delivered predict/refit/backtest, Phase 4 the market commands;
+    # the Phase 5 simulator commands remain stubs.
+    for cmd in ("sim", "rankings"):
+        result = runner.invoke(app, [cmd])
+        assert result.exit_code == 1
+        assert "Not implemented" in result.output
 
 
 def test_settings_load_and_guard_rails() -> None:

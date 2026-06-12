@@ -2,7 +2,12 @@
 unbuilt commands say which phase delivers them and exit non-zero.
 """
 
+from typing import TYPE_CHECKING
+
 import typer
+
+if TYPE_CHECKING:
+    from wc26.markets.lines import TwoWayLine
 
 app = typer.Typer(no_args_is_help=True, help="WC26 Edge Model CLI")
 
@@ -118,28 +123,368 @@ def predict(date: str = typer.Option(None, help="YYYY-MM-DD, default today")) ->
     )
 
 
+def _model_p_over(quote: "TwoWayLine") -> tuple[float, str]:
+    """Model P(over) for a team-total quote + the model version that priced it.
+
+    Markets code never computes model probabilities (architecture rule);
+    this CLI-layer glue asks the goal engine and hands floats down.
+    """
+    from wc26.models.goal_engine import GoalEngineParams, latest_params_path, predict_grid
+    from wc26.models.team_totals import goal_marginals, p_over
+
+    params = GoalEngineParams.load(latest_params_path())
+    grid = predict_grid(params, quote.home_id, quote.away_id, neutral=quote.neutral)
+    home_dist, away_dist = goal_marginals(grid)
+    dist = home_dist if quote.team_id == quote.home_id else away_dist
+    return p_over(dist, quote.line), params.version
+
+
 @app.command()
 def edges() -> None:
-    """Compare model vs data/manual/lines.csv and print +EV bets."""
-    _stub("Phase 4")
+    """Compare model vs data/manual/lines.csv and print +EV bets.
+
+    Hard guards (refuse, never skip): quarantined/unknown markets, matches
+    without a prediction, stale quotes (>24 h), unknown teams.
+    """
+    import pandas as pd
+
+    from wc26.config import load_settings
+    from wc26.data.results import PROCESSED_DIR
+    from wc26.markets.edges import evaluate, rank
+    from wc26.markets.lines import LINES_PATH, load_lines
+
+    settings = load_settings()
+    fixtures = pd.read_parquet(PROCESSED_DIR / "fixtures.parquet")
+    quotes = load_lines(fixtures)
+    if not quotes:
+        typer.echo(f"no lines in {LINES_PATH} — enter today's book quotes first")
+        raise typer.Exit(code=1)
+
+    evaluated = []
+    version = ""
+    for quote in quotes:
+        p_over_model, version = _model_p_over(quote)
+        evaluated.append(evaluate(quote, p_over_model))
+
+    typer.echo(
+        f"model {version} | edge threshold {settings.edge_threshold:.0%} | "
+        f"flat stake {settings.unit_stake:.2f} ({settings.unit_pct:.1%} of {settings.bankroll:.0f})"
+    )
+    typer.echo(
+        f"\n{'':4s}{'match':32s} {'market':22s} {'book':10s} "
+        f"{'odds':>6s} {'fair':>6s} {'model':>6s} {'edge':>7s} {'ev':>7s} {'stake':>6s}"
+    )
+    for e in rank(evaluated):
+        bet = e.edge >= settings.edge_threshold
+        stake = f"{settings.unit_stake:.2f}" if bet else "-"
+        typer.echo(
+            f"{'BET ' if bet else '    '}{e.quote.match:32s} {e.market_label:22s} "
+            f"{e.quote.book:10s} {e.odds:6.2f} {e.fair_p:6.3f} {e.model_p:6.3f} "
+            f"{e.edge:+7.3f} {e.ev:+7.3f} {stake:>6s}"
+        )
+    typer.echo(
+        "\n(edge = model_p - de-vigged fair_p, D005/D022; flat stakes only — no "
+        "Kelly. Log every bet taken with `wc26 log-bet`.)"
+    )
 
 
 @app.command(name="log-bet")
-def log_bet() -> None:
-    """Append a bet to the append-only ledger."""
-    _stub("Phase 4")
+def log_bet(
+    match: str = typer.Option(..., prompt=True, help="'<home> v <away>', any known alias"),
+    team: str = typer.Option(..., prompt=True, help="Team the total is on"),
+    line: float = typer.Option(..., prompt=True, help="Half-goal line, e.g. 1.5"),
+    side: str = typer.Option(..., prompt=True, help="over | under"),
+    odds: str = typer.Option(
+        "", help="Odds actually taken (decimal or American); default: the lines.csv quote"
+    ),
+    book: str = typer.Option("", help="Book (required if several books quote this market)"),
+    stake: float = typer.Option(0.0, help="Default: flat unit from settings.yaml"),
+    note: str = typer.Option("", help="Free-text note"),
+) -> None:
+    """Append a bet to the append-only ledger (D006).
+
+    The market must be present in data/manual/lines.csv with BOTH sides so the
+    logged edge uses the same de-vig as `wc26 edges`.
+    """
+    import pandas as pd
+
+    from wc26.config import load_settings
+    from wc26.data.results import PROCESSED_DIR
+    from wc26.data.teams import registry
+    from wc26.markets.edges import evaluate
+    from wc26.markets.ledger import BetRow, append_row, next_bet_id, read_ledger
+    from wc26.markets.lines import LineError, load_lines
+    from wc26.markets.odds import parse_odds
+
+    settings = load_settings()
+    fixtures = pd.read_parquet(PROCESSED_DIR / "fixtures.parquet")
+    reg = registry()
+    team_id = reg.resolve(team)
+    pair = frozenset(reg.resolve(p.strip()) for p in match.split(" v "))
+    side = side.strip().lower()
+    if side not in ("over", "under"):
+        raise LineError(f"side must be over/under, got {side!r}")
+
+    candidates = [
+        q
+        for q in load_lines(fixtures)
+        if frozenset((q.home_id, q.away_id)) == pair
+        and q.team_id == team_id
+        and q.line == line
+        and (not book or q.book == book)
+    ]
+    if not candidates:
+        raise LineError(
+            f"no two-way quote for {team_id} O/U {line} in lines.csv — enter both "
+            f"sides there first so the logged edge matches `wc26 edges`"
+        )
+    if len(candidates) > 1:
+        raise LineError(
+            f"market quoted at several books ({sorted(q.book for q in candidates)}) — pass --book"
+        )
+    quote = candidates[0]
+
+    p_over_model, version = _model_p_over(quote)
+    evaluated = evaluate(quote, p_over_model)
+    model_p = p_over_model if side == "over" else 1.0 - p_over_model
+    fair_p = evaluated.fair_p_over if side == "over" else 1.0 - evaluated.fair_p_over
+    odds_taken = (
+        parse_odds(odds) if odds else (quote.over_odds if side == "over" else quote.under_odds)
+    )
+    edge = model_p - fair_p
+
+    history = read_ledger()
+    row = BetRow(
+        bet_id=next_bet_id(history),
+        ts_utc=pd.Timestamp.now(tz="UTC").isoformat(timespec="seconds"),
+        match=quote.match,
+        match_date=str(quote.match_date.date()),
+        market=quote.market,
+        line=quote.line,
+        side=side,
+        odds_taken=odds_taken,
+        stake=stake if stake > 0 else settings.unit_stake,
+        model_prob=model_p,
+        model_version=version,
+        edge=edge,
+        book=quote.book,
+        status="open",
+        note=note or None,
+    )
+    append_row(row)
+    flag = "" if edge >= settings.edge_threshold else "  [WARNING: below edge threshold]"
+    typer.echo(
+        f"logged {row.bet_id}: {row.match} {row.market} {side} {line} @ {odds_taken:.3f} "
+        f"stake {row.stake:.2f} | model {model_p:.3f} fair {fair_p:.3f} "
+        f"edge {edge:+.3f}{flag}"
+    )
 
 
 @app.command()
-def settle() -> None:
-    """Record results + closing lines for open bets; compute CLV."""
-    _stub("Phase 4")
+def settle(
+    bet_id: str = typer.Argument(..., help="e.g. B0001"),
+    closing_over: str = typer.Option(..., prompt="Closing OVER odds"),
+    closing_under: str = typer.Option(..., prompt="Closing UNDER odds"),
+    goals: int = typer.Option(
+        -1,
+        help="Bet team's goals after 90 minutes (D004). Default: read from the "
+        "results table — refused if the match went to extra time, because "
+        "stored scores include ET (D012); then this flag is mandatory.",
+    ),
+    note: str = typer.Option(""),
+) -> None:
+    """Record the result + manually entered closing line; compute CLV.
+
+    Settlement is ALWAYS on the 90-minute score (D004): a knockout team-total
+    settles on the 90' count even if the match went to extra time.
+    """
+    import pandas as pd
+
+    from wc26.data.results import PROCESSED_DIR
+    from wc26.markets.ledger import BetRow, append_row, latest_view, read_ledger, settle_bet
+    from wc26.markets.odds import parse_odds
+
+    history = read_ledger()
+    current = latest_view(history)
+    hit = current[current["bet_id"] == bet_id]
+    if hit.empty:
+        typer.echo(f"no bet {bet_id} in the ledger")
+        raise typer.Exit(code=1)
+    bet = hit.iloc[0]
+    if bet["status"] != "open":
+        typer.echo(f"{bet_id} is already {bet['status']} — corrections are new rows")
+        raise typer.Exit(code=1)
+
+    home_id, away_id = str(bet["match"]).split(" v ")
+    team_id = str(bet["market"]).partition(":")[2]
+    if goals < 0:
+        match_date = pd.Timestamp(str(bet["match_date"]))
+        stats = pd.read_parquet(PROCESSED_DIR / "match_stats.parquet")
+        near = (stats["date"] - match_date).abs() <= pd.Timedelta(days=1)
+        pair = (stats["home_id"].isin([home_id, away_id])) & (
+            stats["away_id"].isin([home_id, away_id])
+        )
+        played_stats = stats[near & pair]
+        if not played_stats.empty and bool(played_stats.iloc[0]["extra_time"]):
+            typer.echo(
+                f"{bet['match']} went to EXTRA TIME — stored scores include ET "
+                f"(D012) but the bet settles on 90' (D004). Re-run with "
+                f"--goals <{team_id}'s 90-minute goal count>."
+            )
+            raise typer.Exit(code=1)
+        results = pd.read_parquet(PROCESSED_DIR / "results.parquet")
+        row = results[
+            ((results["date"] - match_date).abs() <= pd.Timedelta(days=1))
+            & (results["home_id"].isin([home_id, away_id]))
+            & (results["away_id"].isin([home_id, away_id]))
+        ]
+        if row.empty:
+            typer.echo(
+                f"{bet['match']} not in the results table yet — run "
+                f"`wc26 data scrape --tournament wc2026 && wc26 data sync`, "
+                f"or pass --goals"
+            )
+            raise typer.Exit(code=1)
+        result_row = row.iloc[0]
+        goals = int(
+            result_row["home_score"]
+            if str(result_row["home_id"]) == team_id
+            else result_row["away_score"]
+        )
+
+    over_dec, under_dec = parse_odds(closing_over), parse_odds(closing_under)
+    settlement = settle_bet(
+        side=str(bet["side"]),
+        line=float(bet["line"]),
+        goals_90=goals,
+        odds_taken=float(bet["odds_taken"]),
+        stake=float(bet["stake"]),
+        closing_over_odds=over_dec,
+        closing_under_odds=under_dec,
+    )
+    append_row(
+        BetRow(
+            bet_id=bet_id,
+            ts_utc=pd.Timestamp.now(tz="UTC").isoformat(timespec="seconds"),
+            match=str(bet["match"]),
+            match_date=str(bet["match_date"]),
+            market=str(bet["market"]),
+            line=float(bet["line"]),
+            side=str(bet["side"]),
+            odds_taken=float(bet["odds_taken"]),
+            stake=float(bet["stake"]),
+            model_prob=float(bet["model_prob"]),
+            model_version=str(bet["model_version"]),
+            edge=float(bet["edge"]),
+            book=str(bet["book"]),
+            status="settled",
+            closing_over_odds=over_dec,
+            closing_under_odds=under_dec,
+            clv=settlement.clv,
+            goals_90=goals,
+            result=settlement.result,
+            pnl=settlement.pnl,
+            note=note or None,
+        )
+    )
+    typer.echo(
+        f"{bet_id} {settlement.result.upper()}: {team_id} scored {goals} in 90' vs "
+        f"{bet['side']} {bet['line']} | pnl {settlement.pnl:+.2f} | "
+        f"closing fair p {settlement.fair_closing_p:.3f} -> CLV {settlement.clv:+.3%}"
+    )
 
 
 @app.command(name="clv-report")
 def clv_report() -> None:
-    """Cumulative CLV, ROI, and calibration of logged bets."""
-    _stub("Phase 4")
+    """Cumulative CLV, ROI, and calibration of logged bets, by market."""
+    from wc26.markets.ledger import clv_report as build_report
+    from wc26.markets.ledger import latest_view, read_ledger
+
+    history = read_ledger()
+    if history.empty:
+        typer.echo("ledger is empty — no bets logged yet")
+        raise typer.Exit(code=0)
+    current = latest_view(history)
+    n_open = int((current["status"] == "open").sum())
+    report = build_report(history)
+    if report.empty:
+        typer.echo(f"{n_open} open bet(s), none settled yet — nothing to report")
+        raise typer.Exit(code=0)
+
+    typer.echo(f"settled bets by market ({n_open} still open):\n")
+    typer.echo(
+        f"{'market':14s} {'bets':>4s} {'staked':>8s} {'pnl':>8s} {'roi':>8s} "
+        f"{'CLV':>8s} {'CLVxStk':>8s} {'model_p':>8s} {'win%':>6s}"
+    )
+    for r in report.itertuples(index=False):
+        typer.echo(
+            f"{r.market:14s} {r.bets:4d} {r.staked:8.2f} {r.pnl:+8.2f} {r.roi:+8.1%} "
+            f"{r.mean_clv:+8.2%} {r.stake_wtd_clv:+8.2%} {r.mean_model_p:8.3f} "
+            f"{r.win_rate:6.1%}"
+        )
+    typer.echo(
+        "\n(CLV = odds_taken x de-vigged closing prob - 1; positive = beat the "
+        "close. Kelly stays off until CLV > 0 over 50+ bets.)"
+    )
+
+
+@app.command(name="odds-check")
+def odds_check() -> None:
+    """Budgeted live h2h sanity check vs The Odds API (1 credit, D007 cap).
+
+    Compares model 1X2 to de-vigged market averages for upcoming WC26
+    fixtures — a drift alarm, never a pricing path (prop lines stay manual).
+    """
+    import os
+
+    import numpy as np
+    import pandas as pd
+
+    from wc26.backtest.baselines import devig_1x2
+    from wc26.config import load_settings
+    from wc26.data.odds_api import fetch_h2h
+    from wc26.data.results import PROCESSED_DIR
+    from wc26.models.goal_engine import GoalEngineParams, latest_params_path, predict_grid
+
+    api_key = os.environ.get("ODDS_API_KEY", "")
+    if not api_key:
+        typer.echo("ODDS_API_KEY is not set — get a free key at the-odds-api.com (D007)")
+        raise typer.Exit(code=1)
+    settings = load_settings()
+    quotes = fetch_h2h(api_key, settings.odds_api_budget)
+    if not quotes:
+        typer.echo("no upcoming WC26 h2h markets returned")
+        raise typer.Exit(code=1)
+
+    fixtures = pd.read_parquet(PROCESSED_DIR / "fixtures.parquet")
+    params = GoalEngineParams.load(latest_params_path())
+    typer.echo(f"model {params.version} vs {len(quotes)} market h2h averages\n")
+    worst = 0.0
+    for q in quotes:
+        fix = fixtures[
+            (fixtures["home_id"] == q.home_id)
+            & (fixtures["away_id"] == q.away_id)
+            & (~fixtures["played"])
+        ]
+        if fix.empty:
+            typer.echo(f"  {q.home_id} v {q.away_id}: no unplayed fixture — skipped")
+            continue
+        grid = predict_grid(params, q.home_id, q.away_id, neutral=bool(fix.iloc[0]["neutral"]))
+        model = np.array(grid.home_draw_away, dtype=np.float64)
+        market = devig_1x2(np.array([[q.home_odds, q.draw_odds, q.away_odds]]))[0]
+        diff = float(np.max(np.abs(model - market)))
+        worst = max(worst, diff)
+        flag = "  <-- CHECK" if diff > settings.backtest.sanity_max_abs_diff else ""
+        typer.echo(
+            f"  {q.home_id:18s} v {q.away_id:18s} model "
+            f"{model[0]:.2f}/{model[1]:.2f}/{model[2]:.2f} market "
+            f"{market[0]:.2f}/{market[1]:.2f}/{market[2]:.2f} "
+            f"max diff {diff:.3f} ({q.n_books} books){flag}"
+        )
+    typer.echo(
+        f"\nworst per-outcome diff {worst:.3f} "
+        f"(sanity ceiling {settings.backtest.sanity_max_abs_diff}, D016)"
+    )
 
 
 @app.command(name="add-result")

@@ -1,1 +1,2 @@
-ts_utc,match,market,line,side,odds_taken,stake,model_prob,model_version,edge,status,closing_odds,result,note
+bet_id,ts_utc,match,match_date,market,line,side,odds_taken,stake,model_prob,model_version,edge,book,status,closing_over_odds,closing_under_odds,clv,goals_90,result,pnl,note
+B0001,2026-06-12T07:46:35+00:00,united_states v paraguay,2026-06-12,team_total:united_states,1.5,under,1.5,15.0,0.7066022493532751,goal_engine 2026-06-13 @f355f46,0.07245590788986056,paper,open,,,,,,,"paper bet — representative line (book quote not available programmatically), Phase 4 dry-run"

@@ -40,6 +40,29 @@ def test_build_results_with_patch_override() -> None:
     assert fixtures[fixtures["city"] == "Mexico City"].iloc[0]["high_altitude"]
 
 
+def test_patch_matches_on_canonical_ids_not_spelling(tmp_path: Path) -> None:
+    """Regression: the raw CSV says "Czech Republic", sync writes the registry
+    name "Czechia" — the patch must still override the fixture row (keyed on
+    canonical ids), not append a duplicate with no city (broke ingest
+    2026-06-12)."""
+    raw = tmp_path / "raw.csv"
+    raw.write_text(
+        "date,home_team,away_team,home_score,away_score,tournament,city,country,neutral\n"
+        "2026-06-11,South Korea,Czech Republic,NA,NA,FIFA World Cup,Zapopan,Mexico,TRUE\n"
+    )
+    patch = tmp_path / "patch.csv"
+    patch.write_text(
+        "date,home_team,away_team,home_score,away_score,tournament,neutral\n"
+        "2026-06-11,South Korea,Czechia,2,1,FIFA World Cup,TRUE\n"
+    )
+    results, fixtures = build_results(raw, patch)
+    assert len(results) == 1
+    assert len(fixtures) == 1
+    row = fixtures.iloc[0]
+    assert row["city"] == "Zapopan" and row["high_altitude"] and bool(row["played"])
+    assert (row["home_score"], row["away_score"]) == (2, 1)
+
+
 def test_elo_basics() -> None:
     results, _ = build_results(FIXTURE_RAW, FIXTURE_PATCH)
     k = load_settings().elo_k

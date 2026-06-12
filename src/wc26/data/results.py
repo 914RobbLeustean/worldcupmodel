@@ -101,18 +101,35 @@ def _read_patch(path: Path) -> pd.DataFrame:
 
 
 def _apply_patch(raw: pd.DataFrame, patch: pd.DataFrame) -> pd.DataFrame:
-    """Patch rows override raw rows with the same (date, home_team, away_team)."""
+    """Patch rows override raw rows with the same (date, home_id, away_id).
+
+    Keys use canonical team ids (lenient resolution), not raw spellings: the
+    upstream CSV and the patch may spell the same team differently (e.g.
+    "Czech Republic" vs the registry name "Czechia"), and a spelling mismatch
+    here would silently duplicate the fixture instead of patching it.
+    """
     if patch.empty:
         return raw
+    reg = registry()
     cols = ["date", "home_team", "away_team", "home_score", "away_score", "tournament", "neutral"]
     patch = patch.reindex(columns=cols)
-    key = ["date", "home_team", "away_team"]
-    merged = raw.set_index(key)
-    override = patch.set_index(key)
+
+    def key_frame(df: pd.DataFrame) -> pd.DataFrame:
+        return df.assign(
+            _home_key=df["home_team"].map(reg.resolve_lenient),
+            _away_key=df["away_team"].map(reg.resolve_lenient),
+        ).set_index(["date", "_home_key", "_away_key"])
+
+    key = ["date", "_home_key", "_away_key"]
+    merged = key_frame(raw)
+    override = key_frame(patch)
+    if not override.index.is_unique:
+        dupes = override.index[override.index.duplicated()].tolist()
+        raise ValueError(f"results_patch.csv has duplicate match keys: {dupes}")
     merged.update(override[["home_score", "away_score"]])
     new_rows = override.loc[override.index.difference(merged.index)]
     out = pd.concat([merged, new_rows]).reset_index()
-    return out.sort_values("date").reset_index(drop=True)
+    return out.sort_values("date").reset_index(drop=True).drop(columns=key[1:])
 
 
 def _normalize(df: pd.DataFrame) -> pd.DataFrame:
