@@ -35,25 +35,59 @@
      (anchored pricing supersedes shrinkage if adopted; else shrinkage applies).
    - Owner: AGENT.
 
-3. **Historical prop-line sample (the unfulfilled PLAN 3.4 item)** — [edge] — **IN PROGRESS: user collects manually (chosen 2026-06-13); agent builds the eval script once rows land**
-   - ~50–100 team-total/corners/cards closing lines for WC22/Euro24 matches
-     from OddsPortal archives → measures (a) how soft these books actually are
-     (the project's founding premise, currently unmeasured), (b) a market
-     baseline for team totals (the live model has only ever beaten a no-skill
-     naive), (c) a data-derived edge_threshold.
-   - Owner: HUMAN (~2–4 h manual collection into a CSV template the agent
-     provides), or AGENT-with-Chrome if the user connects the browser
-     extension. Eval script: AGENT.
-   - Template ready: data/manual/historical_prop_lines.csv. How to fill:
-     OddsPortal → tournament archive (WC 2022, Euro 2024) → match page →
-     "Over/Under" / "Corners" / "Cards" tabs → use the CLOSING odds (the
-     last value, shown on hover), average across books or one named book —
-     set `book` accordingly and `is_closing` TRUE. market is one of
-     `team_total:home`, `team_total:away`, `match_total`, `corners`,
-     `cards`; decimal odds; one row per line per match. ~50 matches with
-     the team-total markets is the minimum useful sample; corners/cards
-     rows are bonus. Team names as shown on the site — the eval script
-     resolves aliases.
+3. **Historical prop-line sample (the unfulfilled PLAN 3.4 item)** — [edge] — **IN PROGRESS (2026-06-13): user is collecting manually; agent builds the eval script. Full standalone spec below — the chat that produced it was cleared, so everything needed is here.**
+
+   WHY: measure (a) how well-calibrated soft-book CLOSING prop lines are (the
+   project's founding premise — that they're soft — is still UNMEASURED),
+   (b) a real market baseline for team totals (the live model has only ever
+   beaten a no-skill Poisson naive, never a market price), (c) a data-derived
+   `edge_threshold` to replace the Phase-0 guess of 0.05 (backlog #8).
+
+   HONEST CAVEAT: free archives carry the CONSENSUS close, not Superbet's. So
+   this measures whether the consensus close is well-calibrated (a sanity
+   check on D028 anchoring) and speeds up the threshold — it does NOT measure
+   Superbet's own softness. Superbet softness is measured FORWARD by live CLV
+   vs the snapshot close (already running). Both are complementary.
+
+   STEP 0 — REALITY CHECK (10 min, do FIRST): historical *team*-total closing
+   lines are a niche market free archives often lack. Open oddsportal.com,
+   find a finished match (e.g. Spain v England, Euro 2024 final 2024-07-14),
+   and check which market tabs exist. Likely present: 1X2, Over/Under (MATCH
+   total), BTTS. Maybe absent: individual team totals. Decide the plan:
+   - team totals present  -> collect them (the gold data).
+   - only match O/U present (likely) -> collect MATCH O/U 2.5 + 1X2 instead.
+     Still useful: validates anchoring historically + a match-total baseline;
+     the team-total threshold then comes forward from live CLV.
+
+   COLLECTION: source = OddsPortal archives (WC 2022: 64 matches, Euro 2024:
+   51). For a finished match the table already shows the CLOSING odds; use the
+   "Average" row (or Pinnacle's row). Aim ~30–50 matches; 20 is a useful start
+   — don't grind to burnout. One row per market per match.
+
+   TEMPLATE: data/manual/historical_prop_lines.csv (header already in git):
+   `tournament,date,home_team,away_team,market,line,over_odds,under_odds,book,is_closing,source_url`
+   - market: `match_total` | `team_total:home` | `team_total:away` |
+     `corners` | `cards`  (:home/:away = the listed home/away team)
+   - line: half-goal (2.5 for match O/U, 1.5 for a team total)
+   - over_odds/under_odds: decimal; book: `oddsportal_avg` (or the named book);
+     is_closing: TRUE. Team names as shown on the site (eval resolves aliases).
+   Example rows:
+   `UEFA Euro,2024-07-14,Spain,England,match_total,2.5,2.10,1.75,oddsportal_avg,TRUE,https://...`
+   `FIFA World Cup,2022-12-18,Argentina,France,match_total,2.5,1.95,1.90,oddsportal_avg,TRUE,https://...`
+
+   EVAL SCRIPT (AGENT, build once rows land — suggest src/wc26/backtest/
+   prop_lines.py + `wc26 eval-prop-lines`): join each row to the realized 90'
+   result (results.parquet / match_stats.parquet, team pair ±1 day D013, ET
+   rows excluded D017), de-vig each two-way close (D005), and report per market
+   family: (1) the closing line's calibration vs outcomes (binary log-loss +
+   calibration slope of the de-vigged closing prob) — i.e. how sharp the
+   close is; (2) for team totals, compare the model/anchored prob to the
+   closing prob (model-vs-line hit rate, the PLAN 3.4 ask); (3) the
+   distribution of |closing_fair_p − outcome| → a defensible edge_threshold
+   (#8). Pin the verdict in a test like the other experiments.
+
+   Owner: HUMAN (collection, ~2–4 h) or AGENT-with-Chrome if the extension is
+   connected; eval script + threshold derivation: AGENT.
 
 4. **WC scoring-environment offset in the engine** — [accuracy, modest edge] — **DONE 2026-06-13 (D035): built + walk-forward validated (improves WC 1X2/team/match log-loss, holds gates, doesn't fix slope). Default OFF — pricing-irrelevant post-pivot; activation at the July-3 recalibration.**
    - D019 documented the engine under-predicting WC scoring (2.20 vs 2.66

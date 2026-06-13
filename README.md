@@ -18,8 +18,9 @@ This repo is operated by AI agents across sessions. Start by reading, in order:
 
 1. [CLAUDE.md](CLAUDE.md) — operating manual, domain invariants, code practices
 2. [STATUS.md](STATUS.md) — current phase, next task, blockers
-3. [docs/PLAN.md](docs/PLAN.md) — the full phased build plan
-4. [CHANGELOG.md](CHANGELOG.md) / [DECISIONS.md](DECISIONS.md) — history & rationale
+3. [docs/BACKLOG.md](docs/BACKLOG.md) — prioritized open work + standalone task specs
+4. [docs/PLAN.md](docs/PLAN.md) — the full phased build plan
+5. [CHANGELOG.md](CHANGELOG.md) / [DECISIONS.md](DECISIONS.md) — history & rationale
 
 ## North star
 

@@ -48,22 +48,15 @@ What exists now (Phase 6.1, on top of the full Phase 0–5 stack):
   2. **Historical prop-line sample (backlog #3, USER)** — collect into
      data/manual/historical_prop_lines.csv; unblocks the data-derived
      edge_threshold (#8). Then the agent builds the eval script.
-  3. **Phase 6.2 recalibration checkpoint — ~2026-07-03** (D030): corners/cards
-     re-gate on ~72 WC26 matches (pre-registered: a second failure is
-     acceptable); ACTIVATE the WC scoring offset (backlog #4/D035 — built +
-     validated, default OFF; wire apply_finals_offset through all predict_grid
-     sites + re-run gates here); group-state cards stakes feature; bracket flip.
-  5. **Phase 6.2 recalibration checkpoint — NEXT MILESTONE, ~2026-07-03**
-   (after the 72 group matches; do NOT start early — pre-registered
-   expectations in D030): compare predicted vs realized over the group
-   stage; re-gate match totals (D019) and corners/cards (D021) through the
-   walk-forward harness (a pass needs a new DECISIONS entry, never a silent
-   flip); add the knockout flag + group-state stakes feature (elimination
-   risk from sim/tracker.py TeamStatus) to the cards model; flip the
-   simulator's R32 slots from projected to actual (the KO-facts path from
-   6.1 is the mechanism). NOT calendar-gated (D030): the D019 WC
-   scoring-environment engine fix (backlog #4) — harness-validated on
-   pre-2026 data, can ship any day.
+  3. **Phase 6.2 recalibration checkpoint — ~2026-07-03** (D030; do NOT start
+     early): compare predicted vs realized over the group stage; re-gate match
+     totals (D019) and corners/cards (D021) through the walk-forward harness (a
+     pass needs a new DECISIONS entry, never a silent flip; pre-registered that
+     a second corners/cards failure is acceptable); ACTIVATE the WC scoring
+     offset (backlog #4/D035 — built + validated, default OFF; wire
+     apply_finals_offset through all predict_grid sites + re-run gates);
+     add the group-state cards stakes feature (sim/tracker.py TeamStatus);
+     flip the simulator's R32 slots from projected to actual (KO-facts path).
 
 ## Blockers
 None. Betting resumes under anchored pricing (D032). 0 bets open — all 5
@@ -76,30 +69,35 @@ over side of all of them (validated end-to-end, D032).
 ## Daily during tournament (~10 min, see docs/PLAYBOOK.md for the full version)
 `uv run wc26 data scrape --tournament wc2026 && uv run wc26 data sync` →
 `wc26 data status` → `uv run wc26 refit` → `uv run wc26 backtest && uv run
-pytest` (re-check gates) → `uv run wc26 predict` → settle yesterday's open
-bets (closing quotes!) → user enters today's 1X2 anchors (anchors.csv) +
-team-total lines (lines.csv) → `wc26 edges` →
-`wc26 log-bet` each bet taken → `wc26 rankings --diff` (movement snapshot).
+pytest` (re-check gates) → `uv run wc26 predict` → `wc26 settle` yesterday's
+open bets (auto-CLV from the snapshot if no prop close, D034) → user enters
+today's team-total lines (lines.csv) + ideally the book's 1X2 (anchors.csv) →
+`wc26 snapshot-odds` near each kickoff (consensus anchor + closing, D033) →
+`wc26 edges` → `wc26 log-bet` each bet → `wc26 rankings --diff`.
 
-## Data inventory (all verified)
-- results.parquet: 49,407 played internationals 1872→now + patch layer
+## Data inventory (run `wc26 data status` for live counts)
+- results.parquet: ~49,409 played internationals 1872→now + patch layer
 - fixtures.parquet: 72 WC26 group matches, venues, altitude, played flags
 - bracket_2026.yaml + third_place_allocation.csv: knockout structure
   (manual, in git, FIFA-verified 2026-06-12)
-- match_stats.parquet: 675 matches — 211 majors + 462 UEFA WC qualifiers
+- match_stats.parquet: ~677 matches — 211 majors + 462 UEFA WC qualifiers
   (D020, training-only) + WC26 accumulating daily; extra_time flags verified;
-  NEW: shootout_winner_id for pens matches (20 historical, all verified)
+  shootout_winner_id for pens matches (20 historical, all verified)
 - market_odds.parquet: 211 historical 1X2 average odds (D015)
 - referees.parquet: 122 refs with card rates (2022+ majors, 2025-26 quals)
 - Elo: leak-free as-of-date snapshots, top-12 sanity-checked
 - Models (data/processed/models/): goal_engine + corners + cards, versioned
-  `<name>_<cutoff>_<sha7>.json`; latest fit 2026-06-13 @508c267 (engine
-  9,509 matches; props 650). latest-model selection by (cutoff, fitted_at)
-  now pinned by a test (audit finding 2).
-- Backtest artifacts: data/processed/backtest/ — all gate tests green
-- Rankings snapshots: data/processed/rankings/rankings_2026-06-12.parquet
-  - Ledger: ledger/bets.csv — all 5 settled. Real: B0002/B0003/B0005 lost,
-    B0004 won; all 4 negative CLV. B0001 paper (lost). 0 open.
+  `<name>_<cutoff>_<sha7>.json`; latest fit @8678a8d (engine ~9,504 matches).
+  Params now carry finals_scoring_offset (D035, default-OFF). latest-model
+  selection by (cutoff, fitted_at), pinned by a test.
+- Manual/durable inputs IN git: data/manual/lines.csv (team-total quotes),
+  data/manual/anchors.csv (book 1X2 per match, D032),
+  data/odds_snapshots.csv (append-only consensus 1X2+totals, D033),
+  data/manual/historical_prop_lines.csv (#3 template, awaiting rows).
+- Backtest artifacts: data/processed/backtest/ — gate tests green; experiments
+  market_anchor_summary.json (D028) + wc_offset_summary.json (D035).
+- Ledger: ledger/bets.csv — all 5 settled. Real: B0002/B0003/B0005 lost,
+  B0004 won; all 4 negative CLV. B0001 paper (lost). 0 open.
 
 ## Last session summary
   - 2026-06-13 (f): finished the NOW automation backlog — #15 (settle
@@ -241,8 +239,9 @@ team-total lines (lines.csv) → `wc26 edges` →
 - [x] Phase 3 — Prop models (team totals LIVE; corners/cards quarantined D021)
 - [x] Phase 4 — Market layer (edges, ledger, CLV) — acceptance MET 2026-06-13:
       all 5 bets settled (USA v Paraguay 4-1), clv-report renders. Pricing
-      pivots to market-anchored under D028 (live wiring = Phase 6 next task).
+      pivoted to market-anchored, live (D028/D032 wiring DONE).
 - [x] Phase 5 — Tournament simulator & country rankings
 - [ ] Phase 6 — Tournament ops: 6.1 knockout readiness DONE (KO facts, KO
-      predict, D025 cadence, audit); 6.2 recalibration checkpoint
-      calendar-gated ~2026-07-03 (next task 4)
+      predict, D025 cadence, audit); anchored pricing + snapshot + auto-CLV
+      loop DONE (D032/D033/D034); 6.2 recalibration checkpoint
+      calendar-gated ~2026-07-03 (next task 3)

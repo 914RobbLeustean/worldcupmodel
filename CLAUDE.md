@@ -17,8 +17,14 @@ A task is not done until tests pass and docs reflect it.
 - `make test`          pytest (must pass before any commit)
 - `make lint`          ruff check + format check + mypy
 - `wc26 predict --date YYYY-MM-DD`   model probabilities for that day's matches
-- `wc26 edges`         compare model vs data/manual/lines.csv, print +EV bets
-- `wc26 log-bet` / `wc26 settle` / `wc26 clv-report`   ledger ops
+- `wc26 edges`         price team totals MARKET-ANCHORED (D028/D032): from the
+  book's 1X2 in data/manual/anchors.csv (or the odds snapshot), NOT the engine
+  grid; compare to lines.csv and print +EV bets. No anchor = unpriceable.
+- `wc26 snapshot-odds`  capture consensus 1X2 + match totals to
+  data/odds_snapshots.csv (D033; needs ODDS_API_KEY) — closing anchor + the
+  auto-anchor fallback for edges/log-bet. Run near each kickoff.
+- `wc26 log-bet` / `wc26 settle` / `wc26 clv-report`   ledger ops (settle
+  auto-derives CLV from the snapshot/1X2 anchor if no prop close given, D034)
 - `wc26 add-result`    append a finished match (Kaggle lags during tournament)
 - `wc26 refit`         re-fit models on latest data, version the params
 - `wc26 backtest`      walk-forward backtest vs Elo + market baselines;
