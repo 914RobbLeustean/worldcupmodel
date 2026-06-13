@@ -11,5 +11,9 @@ __pycache__/
 data/raw/
 data/processed/
 
+# secrets — never commit API keys (ODDS_API_KEY lives in the shell env, D007/D033)
+.env
+*.env
+
 # misc
 .DS_Store
