@@ -216,13 +216,61 @@ def test_clv_report_aggregates_by_market(tmp_path: Path) -> None:
     history = read_ledger(path)
     report = clv_report(history)
 
-    assert list(report["market"]) == ["team_total", "TOTAL"]
-    total = report[report["market"] == "TOTAL"].iloc[0]
+    assert list(report["market"]) == ["team_total", "TOTAL (real)"]
+    total = report[report["market"] == "TOTAL (real)"].iloc[0]
     assert total["bets"] == 1  # open bets are excluded
     assert total["pnl"] == pytest.approx(13.65)
     assert total["roi"] == pytest.approx(13.65 / 15.0)
     assert total["mean_clv"] == pytest.approx(0.0774359)
     assert total["win_rate"] == pytest.approx(1.0)
+
+
+def test_clv_report_splits_paper_from_real(tmp_path: Path) -> None:
+    """Backlog #14: paper bets (book=paper) must not pollute the real-money
+    total — they sit on their own excluded line, and the real total ignores
+    them (the B0001-distorts-the-headline bug from 2026-06-13)."""
+    path = tmp_path / "bets.csv"
+    # One real losing bet, one paper bet with a big notional that would wreck
+    # the headline ROI if blended in.
+    append_row(_bet("B0001", book="superbet", stake=3.0), path)
+    append_row(
+        _bet(
+            "B0001",
+            book="superbet",
+            stake=3.0,
+            status="settled",
+            clv=-0.05,
+            goals_90=1,
+            result="lost",
+            pnl=-3.0,
+        ),
+        path,
+    )
+    append_row(_bet("B0002", book="paper", stake=15.0), path)
+    append_row(
+        _bet(
+            "B0002",
+            book="paper",
+            stake=15.0,
+            status="settled",
+            clv=-0.02,
+            goals_90=1,
+            result="lost",
+            pnl=-15.0,
+        ),
+        path,
+    )
+    report = clv_report(read_ledger(path))
+
+    assert "TOTAL (real)" in set(report["market"])
+    assert "paper (excl.)" in set(report["market"])
+    real = report[report["market"] == "TOTAL (real)"].iloc[0]
+    assert real["bets"] == 1
+    assert real["staked"] == pytest.approx(3.0)  # paper's 15 is NOT counted
+    assert real["pnl"] == pytest.approx(-3.0)
+    assert real["roi"] == pytest.approx(-1.0)
+    paper = report[report["market"] == "paper (excl.)"].iloc[0]
+    assert paper["staked"] == pytest.approx(15.0)
 
 
 def test_clv_report_empty_when_nothing_settled(tmp_path: Path) -> None:

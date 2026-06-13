@@ -505,7 +505,8 @@ def clv_report() -> None:
         )
     typer.echo(
         "\n(CLV = odds_taken x de-vigged closing prob - 1; positive = beat the "
-        "close. Kelly stays off until CLV > 0 over 50+ bets.)"
+        "close. Kelly stays off until CLV > 0 over 50+ bets. 'TOTAL (real)' is "
+        "real money only; paper bets are on their own excluded line.)"
     )
 
 

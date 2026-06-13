@@ -176,6 +176,13 @@ def settle_bet(
 def clv_report(history: pd.DataFrame) -> pd.DataFrame:
     """Per-market and overall: bets, stake, P&L, ROI, CLV, calibration.
 
+    REAL money and PAPER bets are reported separately (backlog #14): paper
+    bets (book == "paper") carry representative notionals that would distort
+    the real-money ROI/CLV the project is actually steering by. The per-market
+    breakdown and the "TOTAL (real)" row are real money only; paper sits on
+    its own clearly-excluded line. The 50-bet CLV/Kelly gate reads the real
+    total.
+
     Calibration here = mean bet-on model probability vs realized win rate;
     with the bet counts this project sees, a bucketed reliability curve would
     be noise (revisit at 50+ settled bets).
@@ -186,6 +193,9 @@ def clv_report(history: pd.DataFrame) -> pd.DataFrame:
         return pd.DataFrame()
     settled["market_family"] = settled["market"].str.partition(":")[0]
     settled["won"] = (settled["result"] == "won").astype(float)
+    is_paper = settled["book"].fillna("").str.lower() == "paper"
+    real = settled[~is_paper]
+    paper = settled[is_paper]
 
     def block(df: pd.DataFrame, label: str) -> dict[str, object]:
         staked = float(df["stake"].sum())
@@ -201,6 +211,9 @@ def clv_report(history: pd.DataFrame) -> pd.DataFrame:
             "win_rate": float(df["won"].mean()),
         }
 
-    rows = [block(g, str(family)) for family, g in settled.groupby("market_family", sort=True)]
-    rows.append(block(settled, "TOTAL"))
+    rows = [block(g, str(family)) for family, g in real.groupby("market_family", sort=True)]
+    if not real.empty:
+        rows.append(block(real, "TOTAL (real)"))
+    if not paper.empty:
+        rows.append(block(paper, "paper (excl.)"))
     return pd.DataFrame(rows)
