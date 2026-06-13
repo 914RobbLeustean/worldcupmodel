@@ -215,7 +215,12 @@ def edges() -> None:
 
     from wc26.config import load_settings
     from wc26.data.results import PROCESSED_DIR
-    from wc26.markets.anchors import ANCHORS_PATH, anchor_for, load_anchors
+    from wc26.markets.anchors import (
+        ANCHORS_PATH,
+        load_anchors,
+        load_snapshot_anchors,
+        pick_anchor,
+    )
     from wc26.markets.edges import evaluate, rank
     from wc26.markets.lines import LINES_PATH, load_lines
 
@@ -225,53 +230,57 @@ def edges() -> None:
     if not quotes:
         typer.echo(f"no lines in {LINES_PATH} — enter today's book quotes first")
         raise typer.Exit(code=1)
-    anchors = load_anchors(fixtures)
+    manual = load_anchors(fixtures)
+    snaps = load_snapshot_anchors(fixtures)
     params = _load_engine_params()
 
-    priceable = []  # (Edge, engine_p_over, cross_book)
-    unpriced = []  # quotes with no anchor
+    priceable = []  # (Edge, engine_p_over, source_label)
+    unpriced = []  # quotes with no anchor at all
     version = f"anchor+{params.version}"
     for quote in quotes:
-        anchor = anchor_for(anchors, quote.match, quote.book)
+        anchor, label = pick_anchor(manual, snaps, quote.match, quote.book)
         eng_p = _engine_p_over(params, quote)
         if anchor is None:
             unpriced.append(quote)
             continue
         p_over_anchor, _ = _anchored_p_over(params, quote, anchor)
-        priceable.append((evaluate(quote, p_over_anchor), eng_p, anchor.book != quote.book))
+        priceable.append((evaluate(quote, p_over_anchor), eng_p, label))
 
     typer.echo(
         f"pricing {version} | edge threshold {settings.edge_threshold:.0%} | "
         f"flat stake {settings.unit_stake:.2f} ({settings.unit_pct:.1%} of {settings.bankroll:.0f})"
     )
     typer.echo(
-        f"\n{'':4s}{'match':30s} {'market':20s} {'book':9s} "
+        f"\n{'':4s}{'match':28s} {'market':18s} {'book':9s} {'src':6s} "
         f"{'odds':>6s} {'fair':>6s} {'anchor':>7s} {'eng':>6s} {'edge':>7s} "
         f"{'ev':>7s} {'stake':>6s}"
     )
     ranked = rank([e for e, _, _ in priceable])
-    ctx = {id(e): (eng_p, xb) for e, eng_p, xb in priceable}
+    ctx = {id(e): (eng_p, label) for e, eng_p, label in priceable}
+    _src_tag = {"book": "book", "snapshot": "snap"}
     for e in ranked:
-        eng_p, cross_book = ctx[id(e)]
+        eng_p, label = ctx[id(e)]
         bet = e.edge >= settings.edge_threshold
         stake = f"{settings.unit_stake:.2f}" if bet else "-"
-        tag = "BET*" if bet and cross_book else ("BET " if bet else "    ")
+        tag = "BET*" if bet and label != "book" else ("BET " if bet else "    ")
+        src = _src_tag.get(label, "xbook")
         typer.echo(
-            f"{tag}{e.quote.match:30s} {e.market_label:20s} "
-            f"{e.quote.book:9s} {e.odds:6.2f} {e.fair_p:6.3f} {e.model_p:7.3f} "
+            f"{tag}{e.quote.match:28s} {e.market_label:18s} {e.quote.book:9s} {src:6s} "
+            f"{e.odds:6.2f} {e.fair_p:6.3f} {e.model_p:7.3f} "
             f"{(eng_p if e.side == 'over' else 1 - eng_p):6.3f} "
             f"{e.edge:+7.3f} {e.ev:+7.3f} {stake:>6s}"
         )
     for quote in unpriced:
         typer.echo(
-            f"  · {quote.match:30s} {quote.team_id + ' ' + str(quote.line):20s} "
-            f"{quote.book:9s}   NO ANCHOR — enter the book's 1X2 in {ANCHORS_PATH.name} (D028)"
+            f"  · {quote.match:28s} {quote.team_id + ' ' + str(quote.line):18s} "
+            f"{quote.book:9s}        NO ANCHOR — enter the book's 1X2 in "
+            f"{ANCHORS_PATH.name} or run `wc26 snapshot-odds` (D028/D033)"
         )
     typer.echo(
         "\n(edge = anchored model_p - de-vigged fair_p; 'anchor' = P(side) from "
-        "the book's 1X2, 'eng' = engine grid (context only, D028). BET* = anchor "
-        "is a different book than the quote. Flat stakes only — no Kelly. Log "
-        "every bet with `wc26 log-bet`.)"
+        "the 1X2, 'eng' = engine grid (context only, D028). src: book = your "
+        "book's anchor, xbook = another book, snap = odds-snapshot fallback; "
+        "BET* = non-own-book anchor. Flat stakes — no Kelly.)"
     )
 
 
@@ -299,7 +308,12 @@ def log_bet(
     from wc26.config import load_settings
     from wc26.data.results import PROCESSED_DIR
     from wc26.data.teams import registry
-    from wc26.markets.anchors import ANCHORS_PATH, anchor_for, load_anchors
+    from wc26.markets.anchors import (
+        ANCHORS_PATH,
+        load_anchors,
+        load_snapshot_anchors,
+        pick_anchor,
+    )
     from wc26.markets.edges import evaluate
     from wc26.markets.ledger import (
         BetRow,
@@ -339,12 +353,15 @@ def log_bet(
         )
     quote = candidates[0]
 
-    anchor = anchor_for(load_anchors(fixtures), quote.match, quote.book)
+    anchor, label = pick_anchor(
+        load_anchors(fixtures), load_snapshot_anchors(fixtures), quote.match, quote.book
+    )
     if anchor is None:
         raise LineError(
-            f"no 1X2 anchor for {quote.match} in {ANCHORS_PATH.name} — pricing is "
-            f"market-anchored (D028) and betting is refused without one. Enter the "
-            f"book's home/draw/away odds for this match, then retry."
+            f"no 1X2 anchor for {quote.match} in {ANCHORS_PATH.name} (and no "
+            f"odds-snapshot fallback) — pricing is market-anchored (D028) and "
+            f"betting is refused without one. Enter the book's home/draw/away "
+            f"odds for this match, or run `wc26 snapshot-odds`, then retry."
         )
     params = _load_engine_params()
     p_over_model, version = _anchored_p_over(params, quote, anchor)
@@ -355,8 +372,8 @@ def log_bet(
         parse_odds(odds) if odds else (quote.over_odds if side == "over" else quote.under_odds)
     )
     edge = model_p - fair_p
-    if anchor.book != quote.book:
-        note = (note + " | " if note else "") + f"cross-book anchor ({anchor.book})"
+    if label != "book":
+        note = (note + " | " if note else "") + f"anchor source: {label} ({anchor.book})"
 
     history = read_ledger()
     conflicts = open_market_conflicts(history, quote.match, quote.market)
@@ -630,6 +647,53 @@ def odds_check() -> None:
         f"\nworst per-outcome diff {worst:.3f} "
         f"(sanity ceiling {settings.backtest.sanity_max_abs_diff}, D016)"
     )
+
+
+@app.command(name="snapshot-odds")
+def snapshot_odds() -> None:
+    """Capture a point-in-time 1X2 + match-total snapshot (D033, 2 credits).
+
+    Appends market-averaged odds to data/odds_snapshots.csv (in git,
+    append-only) and caches the raw response. Run it near each kickoff: the
+    latest pre-kickoff snapshot per match is the fallback CLOSING anchor (so a
+    missed manual capture no longer loses CLV) and the auto-anchor for
+    `wc26 edges`/`log-bet` when no anchors.csv row exists (D028/D032).
+    """
+    import os
+
+    from wc26.config import load_settings
+    from wc26.data.odds_api import (
+        SNAPSHOTS_PATH,
+        append_snapshots,
+        fetch_odds_snapshot,
+    )
+
+    api_key = os.environ.get("ODDS_API_KEY", "")
+    if not api_key:
+        typer.echo("ODDS_API_KEY is not set — get a free key at the-odds-api.com (D007)")
+        raise typer.Exit(code=1)
+    settings = load_settings()
+    snapshots, snapshot_ts = fetch_odds_snapshot(api_key, settings.odds_api_budget)
+    if not snapshots:
+        typer.echo("no upcoming WC26 markets returned — nothing captured")
+        raise typer.Exit(code=1)
+    append_snapshots(snapshots, snapshot_ts)
+    with_totals = sum(1 for s in snapshots if s.total_line is not None)
+    typer.echo(
+        f"captured {len(snapshots)} match snapshots @ {snapshot_ts} "
+        f"({with_totals} with totals) -> {SNAPSHOTS_PATH.name}"
+    )
+    for s in snapshots:
+        tot = (
+            f" | O/U {s.total_line} {s.over_odds:.2f}/{s.under_odds:.2f}"
+            if s.total_line is not None and s.over_odds is not None and s.under_odds is not None
+            else ""
+        )
+        typer.echo(
+            f"  {s.home_id:18s} v {s.away_id:18s} "
+            f"1X2 {s.home_odds:.2f}/{s.draw_odds:.2f}/{s.away_odds:.2f} "
+            f"({s.n_books_h2h} books){tot}"
+        )
 
 
 @app.command(name="add-result")

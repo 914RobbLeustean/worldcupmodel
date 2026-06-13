@@ -11,7 +11,15 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from wc26.markets.anchors import anchor_for, devig_1x2, load_anchors
+from wc26.data.odds_api import MatchOddsSnapshot, append_snapshots
+from wc26.markets.anchors import (
+    MatchAnchor,
+    anchor_for,
+    devig_1x2,
+    load_anchors,
+    load_snapshot_anchors,
+    pick_anchor,
+)
 from wc26.markets.lines import LineError
 
 NOW = pd.Timestamp("2026-06-18T12:00:00")
@@ -142,3 +150,107 @@ def test_anchored_p_over_matches_direct_solve(tmp_path: Path) -> None:
     got, version = _anchored_p_over(_Params(), quote, anchor)  # type: ignore[arg-type]
     assert got == pytest.approx(expected)
     assert version.startswith("anchor+")
+
+
+# ── snapshot fallback anchors (D033) ───────────────────────────────────────
+
+
+def test_load_snapshot_anchors_skips_played_and_stale(tmp_path: Path) -> None:
+    path = tmp_path / "odds_snapshots.csv"
+    append_snapshots(
+        [
+            # unplayed fixture -> becomes an anchor
+            MatchOddsSnapshot(
+                "mexico",
+                "south_korea",
+                "2026-06-18T18:00:00Z",
+                5,
+                1.70,
+                3.60,
+                5.00,
+                3,
+                2.5,
+                1.9,
+                1.9,
+            ),
+            # played fixture (mexico v south_africa) -> skipped, not raised
+            MatchOddsSnapshot(
+                "mexico",
+                "south_africa",
+                "2026-06-11T18:00:00Z",
+                5,
+                1.50,
+                4.00,
+                6.00,
+                0,
+                None,
+                None,
+                None,
+            ),
+        ],
+        "2026-06-18T08:00:00+00:00",
+        path,
+    )
+    anchors = load_snapshot_anchors(FIXTURES, path, now=NOW)
+    assert set(anchors) == {"mexico v south_korea"}
+    a = anchors["mexico v south_korea"]
+    assert a.fair_p_home > a.fair_p_away  # mexico 1.70 favored
+    assert a.book == "the_odds_api_eu_avg"
+
+    # a snapshot older than 24h is not priced off
+    stale = load_snapshot_anchors(FIXTURES, path, now=pd.Timestamp("2026-06-20T00:00:00"))
+    assert stale == {}
+
+
+def test_load_snapshot_anchors_orientation_flip(tmp_path: Path) -> None:
+    """Snapshot stored with home=south_korea (API order) maps to the fixtures
+    AWAY side."""
+    path = tmp_path / "odds_snapshots.csv"
+    append_snapshots(
+        [
+            MatchOddsSnapshot(
+                "south_korea",
+                "mexico",
+                "2026-06-18T18:00:00Z",
+                5,
+                5.00,
+                3.60,
+                1.70,
+                0,
+                None,
+                None,
+                None,
+            )
+        ],
+        "2026-06-18T08:00:00+00:00",
+        path,
+    )
+    a = load_snapshot_anchors(FIXTURES, path, now=NOW)["mexico v south_korea"]
+    assert a.home_id == "mexico" and a.fair_p_home > a.fair_p_away  # mexico (1.70) still favored
+
+
+def _anchor(book: str) -> MatchAnchor:
+    return MatchAnchor(
+        ts=NOW,
+        match_date=pd.Timestamp("2026-06-18"),
+        home_id="mexico",
+        away_id="south_korea",
+        neutral=False,
+        fair_p_home=0.5,
+        fair_p_draw=0.3,
+        fair_p_away=0.2,
+        book=book,
+    )
+
+
+def test_pick_anchor_priority() -> None:
+    mk = "mexico v south_korea"
+    manual = {(mk, "superbet"): _anchor("superbet"), (mk, "bet365"): _anchor("bet365")}
+    snaps = {mk: _anchor("the_odds_api_eu_avg")}
+
+    assert pick_anchor(manual, snaps, mk, "superbet") == (manual[(mk, "superbet")], "book")
+    a, label = pick_anchor(manual, snaps, mk, "pinnacle")  # no same-book manual
+    assert label == "cross-book(superbet)" and a.book == "superbet"
+    a, label = pick_anchor({}, snaps, mk, "superbet")  # no manual at all
+    assert label == "snapshot" and a.book == "the_odds_api_eu_avg"
+    assert pick_anchor({}, {}, mk, "superbet") == (None, "none")

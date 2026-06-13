@@ -20,6 +20,20 @@ wc26 rankings --diff                   # advancement snapshot + movement vs yest
 wc26 sim                               # group standings, statuses, MD3 dead rubbers
 ```
 
+**Near each kickoff — capture the closing odds (D033, needs ODDS_API_KEY):**
+
+```
+wc26 snapshot-odds                     # 1X2 + match totals for all upcoming
+                                       # matches -> data/odds_snapshots.csv
+                                       # (2 credits; 400/mo cap, D031)
+```
+
+Run it as late as you can before a kickoff (cron it if you have a server):
+the latest pre-kickoff snapshot per match is its CLOSING anchor — it removes
+the need to be awake to hand-capture, and auto-anchors pricing for any match
+you didn't type a 1X2 for. The free tier serves current (near-closing) odds,
+a closing proxy (D015).
+
 Failure modes:
 - ESPN down/wrong → `wc26 add-result` (manual score/corners/cards/ref entry).
 - "Unknown team name X" → add the spelling to `aliases` in config/teams.yaml.
@@ -48,8 +62,11 @@ wc26 settle B0001 --closing-over 1.85 --closing-under 1.95
 ## 3. Enter today's lines AND the 1X2 anchor (user, from the sportsbook)
 
 Pricing is market-anchored (D028): a team total is priced off the book's
-own 1X2, so you enter TWO files per match. Both are required — a team total
-with no 1X2 anchor is unpriceable and betting on it is refused.
+own 1X2, so you enter TWO files per match. The 1X2 anchor is required — but
+if you ran `wc26 snapshot-odds` (step 1), the snapshot is used automatically
+when you skip anchors.csv (shown as src=snap / BET* in `edges`). Entering the
+book's own 1X2 is still better (it measures THAT book's prop-vs-1X2
+inconsistency); the snapshot is the fallback.
 
 **3a. `data/manual/anchors.csv`** — the book's 1X2 (one row per match):
 

@@ -69,7 +69,7 @@
      already exists; zero code). Best-of-N quotes is plausibly worth more EV
      than any model change on this list.
 
-6. **Automated closing-line backup** — [protects the success metric] — **APPROVED: Odds API cap 150→400 (D031); snapshot code TODO next session**
+6. **Automated closing-line backup** — [protects the success metric] — **DONE 2026-06-13 (D033): `wc26 snapshot-odds` captures 1X2+totals to data/odds_snapshots.csv (append-only, in git); auto-anchors edges/log-bet when no anchors.csv row. Run near each kickoff (cron-able). Needs ODDS_API_KEY.**
    - STATUS.md: "Closing lines must be captured at kickoff or CLV is lost."
      Snapshot the already-ingested BetExplorer odds at kickoff as a fallback
      closing proxy (1X2/match totals; the prop close itself stays manual).
@@ -104,17 +104,16 @@
 
 ## Small fixes (found in use)
 
-14. **clv-report should split paper vs real money** — [reporting] — TODO.
-    Surfaced 2026-06-13: B0001 is a paper bet (book=paper, 15-unit notional)
-    and it inflates the headline ROI/CLV alongside the 4 real Superbet bets.
-    clv-report should segment on `book == "paper"` (or a paper flag) so the
-    real-money line is honest. Trivial; AGENT.
-15. **Settlement should accept a market-anchor CLV source explicitly** —
-    [data integrity] — TODO. 2026-06-13 reconstructed B0004/B0005 CLV by
-    hand-feeding vig-free odds derived from a recalled 1X2. A first-class
-    `wc26 settle --anchor-1x2 H/D/A` path (de-vig → anchor → fair team-total
-    prob, stamped as a degraded CLV source in the note) would make this
-    repeatable and auditable instead of ad-hoc. AGENT; pairs with #6.
+14. **clv-report should split paper vs real money** — [reporting] —
+    **DONE 2026-06-13**: real money reports on a "TOTAL (real)" line, paper is
+    excluded. Real CLV -12.4% on 4 bets.
+15. **Settlement auto-CLV from the odds snapshot** — [data integrity] —
+    TODO, now the highest-value small item. The snapshot store (D033) holds a
+    near-closing 1X2 per match; `wc26 settle` should auto-derive the anchored
+    fair team-total prob from the latest pre-kickoff snapshot (or a
+    `--anchor-1x2 H/D/A` flag) and stamp the CLV source, instead of taking a
+    manual two-way prop close. This fully automates the CLV loop end to end
+    (snapshot -> price -> bet -> settle). AGENT.
 
 ## Before ~June 22 (MD3 starts), if capacity allows
 

@@ -145,3 +145,80 @@ def anchor_for(
         return exact
     same_match = [a for (mk, _), a in anchors.items() if mk == match_key]
     return same_match[0] if same_match else None
+
+
+def load_snapshot_anchors(
+    fixtures: pd.DataFrame,
+    path: Path | None = None,
+    now: pd.Timestamp | None = None,
+) -> dict[str, MatchAnchor]:
+    """Auto-anchors from the odds-snapshot store (D033): {match_key: anchor}.
+
+    The latest non-stale snapshot per match, de-vigged to fixtures
+    orientation, source-tagged SNAPSHOT_SOURCE. Best-effort: a snapshot for a
+    played/absent fixture is skipped (not raised) — it is a fallback, used
+    only when the user typed no anchors.csv row for the match.
+    """
+    from wc26.data.odds_api import SNAPSHOT_SOURCE, SNAPSHOTS_PATH, load_snapshots
+
+    now = now if now is not None else pd.Timestamp.now(tz="UTC").tz_localize(None)
+    rows = load_snapshots(path if path is not None else SNAPSHOTS_PATH)
+    latest: dict[frozenset[str], dict[str, str]] = {}
+    for r in rows:
+        pair = frozenset((r["home_id"], r["away_id"]))
+        if pair not in latest or r["snapshot_ts"] > latest[pair]["snapshot_ts"]:
+            latest[pair] = r
+
+    out: dict[str, MatchAnchor] = {}
+    for r in latest.values():
+        ts = pd.Timestamp(r["snapshot_ts"])
+        if ts.tzinfo is not None:
+            ts = ts.tz_convert("UTC").tz_localize(None)
+        if now - ts > MAX_AGE:
+            continue  # stale snapshot — don't price off it
+        try:
+            match_date, home_id, away_id, neutral = resolve_fixture(
+                r["home_id"], r["away_id"], fixtures
+            )
+        except LineError:
+            continue  # played or absent fixture — skip, it's only a fallback
+        fa, fdraw, fb = devig_1x2(
+            float(r["home_odds"]), float(r["draw_odds"]), float(r["away_odds"])
+        )
+        fp_home, fp_away = (fa, fb) if r["home_id"] == home_id else (fb, fa)
+        out[f"{home_id} v {away_id}"] = MatchAnchor(
+            ts=ts,
+            match_date=match_date,
+            home_id=home_id,
+            away_id=away_id,
+            neutral=neutral,
+            fair_p_home=fp_home,
+            fair_p_draw=fdraw,
+            fair_p_away=fp_away,
+            book=SNAPSHOT_SOURCE,
+        )
+    return out
+
+
+def pick_anchor(
+    manual: dict[tuple[str, str], MatchAnchor],
+    snapshots: dict[str, MatchAnchor],
+    match_key: str,
+    book: str,
+) -> tuple[MatchAnchor | None, str]:
+    """Resolve the anchor for a quote and label its source.
+
+    Priority: the book's own anchors.csv row -> another book's anchors.csv row
+    (cross-book) -> the odds-snapshot fallback (D033) -> none. The label drives
+    the edges display and the log-bet note.
+    """
+    same_book = manual.get((match_key, book))
+    if same_book is not None:
+        return same_book, "book"
+    other = [a for (mk, _), a in manual.items() if mk == match_key]
+    if other:
+        return other[0], f"cross-book({other[0].book})"
+    snap = snapshots.get(match_key)
+    if snap is not None:
+        return snap, "snapshot"
+    return None, "none"

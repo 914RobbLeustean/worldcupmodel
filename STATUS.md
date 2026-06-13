@@ -44,18 +44,17 @@ What exists now (Phase 6.1, on top of the full Phase 0–5 stack):
      quotes in lines.csv (PLAYBOOK §3), then `wc26 edges` (anchored) →
      `wc26 log-bet` (refuses any match with no anchor). First live anchored
      bets pending the next match day's quotes.
-  2. **Automated kickoff odds snapshot (backlog #6, Odds API cap now 400 /
-     D031)** — so a missed manual capture (as happened 2026-06-13) no longer
-     loses CLV: snapshot 1X2 + match-total at each kickoff as a fallback
-     anchor (doubles as an auto-anchor source for #1). The 2026-06-13 miss is
-     exactly the failure this prevents. NEXT agent task.
+  2. **`wc26 settle` auto-CLV from the odds snapshot (backlog #15, D033)** —
+     now the highest-value small item: derive the anchored fair team-total
+     prob from the latest pre-kickoff snapshot (or --anchor-1x2) so settling
+     no longer needs a hand-captured prop close. Fully automates the CLV loop.
   3. **WC scoring-environment engine fix (backlog #4, D019/D030)** — not
      calendar-gated; harness-validated on pre-2026 data. Improves the engine
      that still supplies rho + corners/cards features even under anchoring.
-  4. User commitments (see docs/BACKLOG.md): collect the historical prop-line
-     sample into data/manual/historical_prop_lines.csv (BACKLOG #3) — feeds
-     the data-derived edge_threshold (#8). Line shopping (#5) DEFERRED.
-  4. **Phase 6.2 recalibration checkpoint — NEXT MILESTONE, ~2026-07-03**
+  4. User: set ODDS_API_KEY (free at the-odds-api.com) so `wc26 snapshot-odds`
+     runs in the daily loop near kickoffs; collect the historical prop-line
+     sample (BACKLOG #3, feeds edge_threshold #8). Line shopping (#5) DEFERRED.
+  5. **Phase 6.2 recalibration checkpoint — NEXT MILESTONE, ~2026-07-03**
    (after the 72 group matches; do NOT start early — pre-registered
    expectations in D030): compare predicted vs realized over the group
    stage; re-gate match totals (D019) and corners/cards (D021) through the
@@ -104,6 +103,18 @@ team-total lines (lines.csv) → `wc26 edges` →
     B0004 won; all 4 negative CLV. B0001 paper (lost). 0 open.
 
 ## Last session summary
+  - 2026-06-13 (e): automated kickoff odds snapshots (D033, backlog #6) —
+    closes the manual-capture single point of failure that lost CLV this
+    morning. New `wc26 snapshot-odds`: one budgeted Odds API call (h2h+totals,
+    2 credits, 400 cap) captures every upcoming match's averaged 1X2 + consensus
+    total to data/odds_snapshots.csv (in git, append-only; raw JSON cached under
+    data/raw/odds_api/). edges/log-bet now fall back to the latest non-stale
+    snapshot when anchors.csv has no row (pick_anchor priority: own-book →
+    cross-book → snapshot → none; src=snap/BET* in the table). Validated
+    end-to-end via CLI (a line with no manual anchor priced off a snapshot) +
+    6 new tests (consensus-total parse, append-only store, fallback priority,
+    orientation). 224 tests, lint clean. Needs ODDS_API_KEY to run live.
+    Remaining loop gap filed #15 (settle auto-CLV from the snapshot).
   - 2026-06-13 (d): wired market-anchored pricing into the live path (D032,
     backlog #1) — betting un-paused. New data/manual/anchors.csv (book's 1X2
     per match, markets/anchors.py parser, same guards as lines.py, orientation

@@ -447,3 +447,29 @@ direct solve). The engine is retained for context, simulator, corners/cards
 features, and gate iii. CLAUDE.md's "markets never compute model
 probabilities" is respected: the grid solve lives in models/market_anchor.py,
 the CLI glues; anchors.py only parses and de-vigs.
+
+## D033 — 2026-06-13 — Kickoff odds snapshots + auto-anchor fallback (backlog #6)
+Closes the manual-capture single-point-of-failure that lost CLV on 2026-06-13
+(user asleep at the 01:00 UTC kickoff). New `wc26 snapshot-odds`:
+- One budgeted Odds API request (regions=eu, markets=h2h,totals = 2 credits,
+  within the 400 cap / D031) captures every upcoming WC26 match's
+  book-AVERAGED 1X2 + consensus match total. Raw JSON cached forever under
+  data/raw/odds_api/ (git-ignored); parsed rows appended to
+  data/odds_snapshots.csv (in git, append-only like the ledger — point-in-time
+  records are not rebuildable). Run it near each kickoff; the latest non-stale
+  pre-kickoff snapshot per match is that match's closing anchor.
+- AUTO-ANCHOR: markets/anchors.load_snapshot_anchors turns the latest snapshot
+  per unplayed fixture into a MatchAnchor (de-vigged, fixtures orientation,
+  book=the_odds_api_eu_avg). pick_anchor priority for edges/log-bet:
+  own-book anchors.csv -> cross-book anchors.csv -> snapshot -> none. So if the
+  user enters no anchors.csv row, pricing still works off the snapshot (tagged
+  src=snap / BET*), and log-bet only refuses when there is NO anchor anywhere.
+- Consensus total: per book take the O/U pair nearest 2.5, then the modal
+  point across books, averaged. Totals are a bonus cross-check; the 1X2 is the
+  anchor. Unknown team names still raise (alias drift), like odds-check.
+LIMITATION: the free tier serves CURRENT odds, so a snapshot is near-closing,
+not the exact close (same closing-proxy caveat as D015). Scheduling is the
+user's (cron near kickoffs); not wired to a scheduler here. REMAINING GAP
+(filed backlog #15): `wc26 settle` still takes a manual closing two-way prop
+quote — it does not yet auto-derive an anchored CLV from the snapshot 1X2;
+that settle-assist is the next step to fully automate the CLV loop.

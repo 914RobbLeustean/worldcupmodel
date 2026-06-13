@@ -7,6 +7,22 @@ Every working session must add at least one entry under `[Unreleased]`.
 ## [Unreleased]
 
 ### Added
+- 2026-06-13 (e): automated kickoff odds snapshots (D033, backlog #6) — the
+    manual-capture single point of failure (which lost CLV this morning) is
+    closed. New `wc26 snapshot-odds`: one budgeted Odds API request
+    (regions=eu, markets=h2h,totals = 2 credits, within the 400 cap/D031)
+    captures every upcoming WC26 match's book-averaged 1X2 + consensus match
+    total, appends to data/odds_snapshots.csv (in git, append-only) and caches
+    the raw JSON under data/raw/odds_api/. markets/anchors.load_snapshot_anchors
+    + pick_anchor make the latest non-stale snapshot an automatic pricing
+    anchor: `wc26 edges`/`log-bet` priority is own-book anchors.csv →
+    cross-book → snapshot → none (src=snap / BET* shown; log-bet only refuses
+    when there is no anchor anywhere). Validated end-to-end (a team-total line
+    with no manual anchor priced off a snapshot via the CLI) + 6 new tests.
+    224 tests, make lint clean. Needs ODDS_API_KEY. Remaining loop gap filed
+    backlog #15 (settle auto-CLV from the snapshot 1X2).
+
+### Added
 - 2026-06-13 (d): live market-anchored pricing (D032, backlog #1) — betting
     un-paused. New data/manual/anchors.csv carries the book's 1X2 per match
     (markets/anchors.py: de-vig + orientation-flip to fixtures order + the
