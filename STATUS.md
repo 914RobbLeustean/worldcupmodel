@@ -3,12 +3,12 @@
 > Single source of truth for "where are we". Update before ending every session.
 
 ## Current phase
-**Phase 6 — IN PROGRESS. 6.1 (knockout readiness) DONE 2026-06-12; the 6.2
-recalibration checkpoint is calendar-gated (~2026-07-03, after the group
-stage). Phase 4 acceptance STILL time-gated** on USA v Paraguay (kickoff
-~02:00 UTC 2026-06-13 — the match had still not been played as of this
-session's end at 16:15 UTC 2026-06-12, so settling B0001 would again mean
-inventing a result; refused again).
+**Phase 6 — IN PROGRESS. 6.1 (knockout readiness) DONE 2026-06-12; Phase 4
+acceptance now CLOSED (2026-06-13: USA v Paraguay 4-1 settled all 5 bets,
+clv-report renders). The 6.2 recalibration checkpoint is calendar-gated
+(~2026-07-03, after the group stage).** Live betting is PAUSED pending the
+D028 market-anchored pricing wiring (raw engine edges are noise: blend
+w*=0.00).
 
 What exists now (Phase 6.1, on top of the full Phase 0–5 stack):
 - KO-facts path: once knockout results land in fixtures.parquet, the
@@ -40,23 +40,22 @@ What exists now (Phase 6.1, on top of the full Phase 0–5 stack):
   the advancing team.
 
 ## Next task
-  1. **Settle the USA v Paraguay bets** (match still unplayed —
-     kickoff slipped; do NOT settle until it finishes): B0001 (paper),
-     B0004 Paraguay O0.5, B0005 Paraguay O1.5 — capture closing lines at its
-     real kickoff. Settling completes the Phase 4 acceptance cycle. The two
-     Canada bets (B0002/B0003) are SETTLED — both lost, both negative CLV.
-  2. **Wire market-anchored pricing into the live path (D028, backlog #1)** —
-     NEW BETS ARE PAUSED until this lands (D028: blend w*=0.00 means raw
-     engine edges are noise). Needs: lines.csv schema extension for the
-     book's 1X2 + match-total quotes (user types 2-3 extra rows per match),
-     `wc26 edges`/`log-bet` computing the anchored P(over) (rho from the
-     latest engine fit) and flagging on anchored edge; PLAYBOOK §3 update.
-  3. User commitments (answered 2026-06-13, see docs/BACKLOG.md): captures
-     TONIGHT's USA v Paraguay closing quotes at kickoff (alarm set); collects
-     the historical prop-line sample manually into
-     data/manual/historical_prop_lines.csv (instructions in BACKLOG #3);
-     Odds API cap raised 150->400 (D031) — agent builds kickoff snapshots
-     next session. Line shopping (#5) DEFERRED by user for now.
+  1. **Wire market-anchored pricing into the live path (D028, backlog #1)** —
+     THE unblock for resuming betting. NEW BETS ARE PAUSED until this lands
+     (D028: blend w*=0.00 means raw engine edges are noise). Needs: lines.csv
+     schema extension for the book's 1X2 + match-total quotes (user types 2-3
+     extra rows per match), `wc26 edges`/`log-bet` computing the anchored
+     P(over) (rho from the latest engine fit) and flagging on anchored edge;
+     a hard betting-pause guard in `log-bet` until the wiring is in;
+     PLAYBOOK §3 update. The settle path proved the anchor works end-to-end
+     (B0004/B0005 CLV reconstructed from a remembered 1X2, engine-free).
+  2. **Automated kickoff odds snapshot (backlog #6, Odds API cap now 400 /
+     D031)** — so a missed manual capture (as happened 2026-06-13) no longer
+     loses CLV: snapshot 1X2 + match-total at each kickoff as a fallback
+     anchor. The 2026-06-13 miss is exactly the failure this prevents.
+  3. User commitments (see docs/BACKLOG.md): collect the historical prop-line
+     sample into data/manual/historical_prop_lines.csv (instructions in
+     BACKLOG #3). Line shopping (#5) DEFERRED for now.
   4. **Phase 6.2 recalibration checkpoint — NEXT MILESTONE, ~2026-07-03**
    (after the 72 group matches; do NOT start early — pre-registered
    expectations in D030): compare predicted vs realized over the group
@@ -70,9 +69,11 @@ What exists now (Phase 6.1, on top of the full Phase 0–5 stack):
    pre-2026 data, can ship any day.
 
 ## Blockers
-NEW BETS PAUSED until anchored pricing lands (D028; next task 2). 3 bets
-open (B0001/B0004/B0005, USA v Paraguay) awaiting result + settlement;
-closing lines must be captured at kickoff or CLV is lost for those bets.
+NEW BETS PAUSED until anchored pricing lands (D028; next task 1). 0 bets
+open — all 5 settled. Real-money CLV 4/4 NEGATIVE (mean ~-12%): B0002 -5.0%,
+B0003 -5.5% (captured close), B0004 -12.5%, B0005 -26.5% (T-2h 1X2 anchor,
+degraded — prop close missed at kickoff). n=4, but 4/4 is mechanism-
+consistent with the D028 adverse-selection finding, not just variance.
 
 ## Daily during tournament (~10 min, see docs/PLAYBOOK.md for the full version)
 `uv run wc26 data scrape --tournament wc2026 && uv run wc26 data sync` →
@@ -98,10 +99,24 @@ bets (closing quotes!) → user enters today's lines → `wc26 edges` →
   now pinned by a test (audit finding 2).
 - Backtest artifacts: data/processed/backtest/ — all gate tests green
 - Rankings snapshots: data/processed/rankings/rankings_2026-06-12.parquet
-  - Ledger: ledger/bets.csv — 2 settled (B0002/B0003, both lost, CLV neg),
-    3 open (B0001/B0004/B0005, USA v Paraguay unplayed)
+  - Ledger: ledger/bets.csv — all 5 settled. Real: B0002/B0003/B0005 lost,
+    B0004 won; all 4 negative CLV. B0001 paper (lost). 0 open.
 
 ## Last session summary
+  - 2026-06-13 (c): USA v Paraguay finished 4-1 (results 49,408 -> scraped/
+    synced; refit @8678a8d on 9,504 matches, ha 0.235; backtest + 208 tests
+    green, all gate numbers unchanged). Settled the final 3 open bets: B0004
+    Paraguay O0.5 WON (+1.80), B0005 Paraguay O1.5 LOST (-3.00), B0001 USA
+    U1.5 paper LOST. The closing prop quotes were MISSED (user asleep at the
+    ~01:00 UTC kickoff) — exactly the manual-capture fragility the review
+    flagged. Recovered CLV by anchoring the user's recalled T-2h 1X2
+    (2.12/3.30/4.09) through the new market-anchor module (D028), engine-free:
+    B0004 CLV -12.5%, B0005 -26.5% (both flagged DEGRADED in the ledger note;
+    the book's 1X2 and O/U disagreed ~7pts on the total but both bets are
+    negative-CLV under either reconstruction). Real-money CLV now 4/4 negative
+    — strengthens the D028 pivot. clv-report renders (note: it mixes the
+    paper B0001's 15-unit notional into the headline ROI; real-money staked is
+    12 RON, pnl -7.20). Phase 4 acceptance CLOSED. New bets remain paused.
   - 2026-06-13 (b): strategic review actioned (docs/BACKLOG.md = the full
     prioritized improvement list). Built and ran the market-anchor experiment
     (D028): team totals priced from DC grids solved to reproduce the de-vigged
@@ -183,8 +198,9 @@ bets (closing quotes!) → user enters today's lines → `wc26 edges` →
 - [x] Phase 1 — Data layer (teams, results, Elo, match stats, referees)
 - [x] Phase 2 — Goal engine + walk-forward backtest harness
 - [x] Phase 3 — Prop models (team totals LIVE; corners/cards quarantined D021)
-- [x] Phase 4 — Market layer (edges, ledger, CLV) — acceptance: settle B0001
-      after tonight's match (next session, step 1 above)
+- [x] Phase 4 — Market layer (edges, ledger, CLV) — acceptance MET 2026-06-13:
+      all 5 bets settled (USA v Paraguay 4-1), clv-report renders. Pricing
+      pivots to market-anchored under D028 (live wiring = Phase 6 next task).
 - [x] Phase 5 — Tournament simulator & country rankings
 - [ ] Phase 6 — Tournament ops: 6.1 knockout readiness DONE (KO facts, KO
       predict, D025 cadence, audit); 6.2 recalibration checkpoint

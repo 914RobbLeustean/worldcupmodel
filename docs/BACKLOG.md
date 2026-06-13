@@ -102,6 +102,20 @@
     leak-free validation, else unshippable. Partially redundant with #1.
 12. **Knockout-stage stakes features + bracket flip** (existing STATUS items).
 
+## Small fixes (found in use)
+
+14. **clv-report should split paper vs real money** — [reporting] — TODO.
+    Surfaced 2026-06-13: B0001 is a paper bet (book=paper, 15-unit notional)
+    and it inflates the headline ROI/CLV alongside the 4 real Superbet bets.
+    clv-report should segment on `book == "paper"` (or a paper flag) so the
+    real-money line is honest. Trivial; AGENT.
+15. **Settlement should accept a market-anchor CLV source explicitly** —
+    [data integrity] — TODO. 2026-06-13 reconstructed B0004/B0005 CLV by
+    hand-feeding vig-free odds derived from a recalled 1X2. A first-class
+    `wc26 settle --anchor-1x2 H/D/A` path (de-vig → anchor → fair team-total
+    prob, stamped as a degraded CLV source in the note) would make this
+    repeatable and auditable instead of ad-hoc. AGENT; pairs with #6.
+
 ## Before ~June 22 (MD3 starts), if capacity allows
 
 13. **Dead-rubber/MD3 lambda adjustment** — [both, small] — the simulator

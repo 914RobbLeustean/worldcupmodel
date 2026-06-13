@@ -7,6 +7,24 @@ Every working session must add at least one entry under `[Unreleased]`.
 ## [Unreleased]
 
 ### Added
+- 2026-06-13 (c): USA v Paraguay 4-1 ingested; final 3 bets settled; Phase 4
+    acceptance CLOSED. Daily routine ran clean (scrape/sync appended result
+    49,408; refit @8678a8d, 9,504 matches, ha 0.235; backtest + 208 tests
+    green, every gate number unchanged; predict + rankings --diff rendered —
+    Paraguay -13 places, P(advance) -0.362). Settled B0004 Paraguay O0.5 WON
+    (+1.80), B0005 Paraguay O1.5 LOST (-3.00), B0001 USA U1.5 paper LOST.
+    The closing prop quotes were MISSED at the ~01:00 UTC kickoff (the
+    manual-capture fragility the 2026-06-13 review flagged); CLV recovered by
+    anchoring the user's recalled T-2h Superbet 1X2 (2.12/3.30/4.09) through
+    the market-anchor module (D028), ENGINE-FREE — B0004 CLV -12.5%, B0005
+    -26.5%, both noted DEGRADED in the ledger (the recalled 1X2 vs O/U
+    disagreed ~7pts on the total, but both bets are negative-CLV under either
+    reconstruction). Real-money CLV now 4/4 NEGATIVE (mean ~-12%), tightening
+    the case for the D028 pivot. KNOWN gap surfaced: clv-report blends the
+    paper B0001's 15-unit notional into the headline ROI — real-money staked
+    is 12 RON, pnl -7.20 (filed: clv-report should split paper vs real).
+
+### Added
 - 2026-06-13 (b): strategic review actioned — market-anchor experiment,
     betting pivot, correlation guard. (1) docs/BACKLOG.md: full prioritized
     improvement backlog from the review (NOW / July-3 / rejected, with owners
