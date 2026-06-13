@@ -148,6 +148,36 @@ class Settlement:
     fair_closing_p: float
 
 
+def grade_bet(
+    side: str,
+    line: float,
+    goals_90: int,
+    odds_taken: float,
+    stake: float,
+    fair_closing_p: float,
+) -> Settlement:
+    """Grade a team-total bet on the 90' score (D004) against a precomputed
+    closing fair probability of the bet side.
+
+    The fair prob may come from a de-vigged prop close (settle_bet) or from a
+    market-anchored 1X2 close (D033/#15) — the CLV math is identical either
+    way; only the source differs.
+    """
+    if (2 * line) % 2 != 1:
+        raise ValueError(f"line must be a half-integer, got {line}")
+    if side not in ("over", "under"):
+        raise ValueError(f"side must be over/under, got {side!r}")
+    if not 0.0 < fair_closing_p < 1.0:
+        raise ValueError(f"fair_closing_p must be in (0, 1), got {fair_closing_p}")
+    won = (goals_90 > line) == (side == "over")
+    return Settlement(
+        result="won" if won else "lost",
+        pnl=stake * (odds_taken - 1.0) if won else -stake,
+        clv=odds_taken * fair_closing_p - 1.0,
+        fair_closing_p=fair_closing_p,
+    )
+
+
 def settle_bet(
     side: str,
     line: float,
@@ -157,20 +187,10 @@ def settle_bet(
     closing_over_odds: float,
     closing_under_odds: float,
 ) -> Settlement:
-    """Grade a team-total bet on the 90' score (D004) and compute CLV."""
-    if (2 * line) % 2 != 1:
-        raise ValueError(f"line must be a half-integer, got {line}")
-    if side not in ("over", "under"):
-        raise ValueError(f"side must be over/under, got {side!r}")
-    won = (goals_90 > line) == (side == "over")
+    """Grade a team-total bet from a de-vigged two-way prop close (D004)."""
     fair_over, fair_under = devig_two_way(closing_over_odds, closing_under_odds)
     fair_p = fair_over if side == "over" else fair_under
-    return Settlement(
-        result="won" if won else "lost",
-        pnl=stake * (odds_taken - 1.0) if won else -stake,
-        clv=odds_taken * fair_p - 1.0,
-        fair_closing_p=fair_p,
-    )
+    return grade_bet(side, line, goals_90, odds_taken, stake, fair_p)
 
 
 def clv_report(history: pd.DataFrame) -> pd.DataFrame:

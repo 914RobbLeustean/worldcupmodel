@@ -42,14 +42,27 @@ Failure modes:
   data/manual/ref_assignments.csv (`date,home_id,away_id,referee`, ESPN
   spelling) so cards output flips to ref-known. (Reference only — D021.)
 
-## 2. Settle yesterday's bets (when you have the closing line)
+## 2. Settle yesterday's bets
 
-For each open bet, with the closing quote of BOTH sides read off the book
-just before kickoff (write them down at kickoff time!):
+The result is read from the results table automatically; you only supply the
+CLOSING line. Three ways, in order of preference (D034):
 
 ```
+# A) you captured the book's prop close (best):
 wc26 settle B0001 --closing-over 1.85 --closing-under 1.95
+
+# B) you have the closing 1X2 but not the prop close:
+wc26 settle B0001 --anchor-1x2 2.12/3.30/4.09
+
+# C) nothing captured — use the odds snapshot automatically (D033):
+wc26 settle B0001          # uses the latest pre-kickoff snapshot for the match
 ```
+
+If you ran `wc26 snapshot-odds` near kickoff (step 1), option C needs no
+input at all. The CLV source is recorded in the ledger note
+(`clv_src=...`). Snapshot/1X2 CLV is a consensus close (not Superbet's own —
+D033), so it's a slightly conservative proxy; a captured prop close (A) is
+the most precise.
 
 - The result is read from the results table automatically.
 - **Extra time (knockouts):** ALL bets settle on the 90-minute score (D004),

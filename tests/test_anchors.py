@@ -16,6 +16,7 @@ from wc26.markets.anchors import (
     MatchAnchor,
     anchor_for,
     devig_1x2,
+    latest_snapshot_1x2,
     load_anchors,
     load_snapshot_anchors,
     pick_anchor,
@@ -254,3 +255,88 @@ def test_pick_anchor_priority() -> None:
     a, label = pick_anchor({}, snaps, mk, "superbet")  # no manual at all
     assert label == "snapshot" and a.book == "the_odds_api_eu_avg"
     assert pick_anchor({}, {}, mk, "superbet") == (None, "none")
+
+
+def test_latest_snapshot_1x2_for_settlement(tmp_path: Path) -> None:
+    """#15: settle CLV reads the LATEST snapshot per pair (played-agnostic, no
+    staleness), de-vigged & oriented to the requested home_id."""
+    path = tmp_path / "odds_snapshots.csv"
+    append_snapshots(
+        [
+            MatchOddsSnapshot(
+                "united_states",
+                "paraguay",
+                "2026-06-12T22:00:00Z",
+                20,
+                2.30,
+                3.20,
+                3.90,
+                0,
+                None,
+                None,
+                None,
+            )
+        ],
+        "2026-06-12T20:00:00+00:00",
+        path,
+    )
+    append_snapshots(  # later capture, closer to kickoff -> this one wins
+        [
+            MatchOddsSnapshot(
+                "united_states",
+                "paraguay",
+                "2026-06-12T22:00:00Z",
+                25,
+                2.12,
+                3.30,
+                4.09,
+                0,
+                None,
+                None,
+                None,
+            )
+        ],
+        "2026-06-12T23:55:00+00:00",
+        path,
+    )
+    fp_home, _, ts = latest_snapshot_1x2("united_states", "paraguay", path)
+    assert ts == "2026-06-12T23:55:00+00:00"  # latest wins
+    # 2.12 home favorite -> de-vigged home prob ~0.46
+    assert fp_home == pytest.approx(devig_1x2(2.12, 3.30, 4.09)[0])
+    # orientation flips when asked from paraguay's side
+    _, pa_away, _ = latest_snapshot_1x2("paraguay", "united_states", path)
+    assert pa_away == pytest.approx(fp_home)
+    assert latest_snapshot_1x2("brazil", "morocco", path) is None
+
+
+def test_closing_over_source_priority(tmp_path: Path) -> None:
+    """#15: settle resolves the closing fair P(over) by priority — explicit
+    prop close -> manual 1X2 -> snapshot -> error."""
+    from wc26.cli import SettleDataError, closing_over_source
+
+    class _Params:
+        rho = -0.05
+        version = "goal_engine 2026-06-14 @abcdef0"
+
+    params = _Params()
+    # 1) explicit prop close: de-vig of 1.90/1.95 (over side)
+    p, over, _, src = closing_over_source(
+        params, "united_states", "paraguay", "paraguay", 0.5, "1.90", "1.95", ""
+    )
+    assert src == "prop-close" and over == 1.90 and 0.0 < p < 1.0
+    # 2) manual 1X2 anchor: paraguay (away) team total, anchored
+    p2, over2, _, src2 = closing_over_source(
+        params, "united_states", "paraguay", "paraguay", 0.5, "", "", "2.12/3.30/4.09"
+    )
+    assert src2 == "anchor:manual-1x2"
+    assert over2 == pytest.approx(round(1.0 / p2, 4))  # reconstructed vig-free
+    # 3) no source at all -> error
+    import wc26.markets.anchors as anchors_mod
+
+    orig = anchors_mod.latest_snapshot_1x2
+    anchors_mod.latest_snapshot_1x2 = lambda *a, **k: None  # type: ignore[assignment]
+    try:
+        with pytest.raises(SettleDataError, match="no closing source"):
+            closing_over_source(params, "united_states", "paraguay", "paraguay", 0.5, "", "", "")
+    finally:
+        anchors_mod.latest_snapshot_1x2 = orig  # type: ignore[assignment]

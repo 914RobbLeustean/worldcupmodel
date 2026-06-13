@@ -200,6 +200,33 @@ def load_snapshot_anchors(
     return out
 
 
+def latest_snapshot_1x2(
+    home_id: str, away_id: str, path: Path | None = None
+) -> tuple[float, float, str] | None:
+    """Latest odds-snapshot 1X2 for a team pair, de-vigged & oriented to the
+    GIVEN home_id (for settlement CLV — D033/#15).
+
+    Returns (fair_p_home, fair_p_away, snapshot_ts) or None. Unlike
+    load_snapshot_anchors this does NOT require an unplayed fixture: at settle
+    time the match is played, and the latest pre-kickoff snapshot per match is
+    its closing proxy. No staleness filter for the same reason (a bet settled
+    days later still has a valid pre-kickoff close).
+    """
+    from wc26.data.odds_api import SNAPSHOTS_PATH, load_snapshots
+
+    rows = load_snapshots(path if path is not None else SNAPSHOTS_PATH)
+    pair = frozenset((home_id, away_id))
+    matching = [r for r in rows if frozenset((r["home_id"], r["away_id"])) == pair]
+    if not matching:
+        return None
+    latest = max(matching, key=lambda r: r["snapshot_ts"])
+    fa, _, fb = devig_1x2(
+        float(latest["home_odds"]), float(latest["draw_odds"]), float(latest["away_odds"])
+    )
+    fp_home, fp_away = (fa, fb) if latest["home_id"] == home_id else (fb, fa)
+    return fp_home, fp_away, latest["snapshot_ts"]
+
+
 def pick_anchor(
     manual: dict[tuple[str, str], MatchAnchor],
     snapshots: dict[str, MatchAnchor],

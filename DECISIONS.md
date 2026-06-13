@@ -473,3 +473,26 @@ user's (cron near kickoffs); not wired to a scheduler here. REMAINING GAP
 (filed backlog #15): `wc26 settle` still takes a manual closing two-way prop
 quote — it does not yet auto-derive an anchored CLV from the snapshot 1X2;
 that settle-assist is the next step to fully automate the CLV loop.
+
+## D034 — 2026-06-13 — Settlement auto-CLV from the odds snapshot (backlog #15)
+`wc26 settle` no longer requires a hand-captured prop close. Closing-source
+priority: (1) the book's two-way prop close (--closing-over/--closing-under,
+de-vigged — best when you have it); (2) a manual --anchor-1x2 HOME/DRAW/AWAY;
+(3) the latest odds snapshot for the match (D033) — fully automatic if
+`wc26 snapshot-odds` ran before kickoff. The anchored paths de-vig the 1X2,
+solve the team-total marginal via market_anchored_grid with the LATEST ENGINE
+RHO — the SAME grid `edges`/`log-bet` price with, so a bet is priced and its
+CLV graded on one consistent surface (no spurious CLV from a rho mismatch).
+ledger.grade_bet(side, line, goals, odds, stake, fair_closing_p) is the new
+primitive; settle_bet keeps its prop-close signature and delegates to it. The
+CLV source is stamped in the ledger note (clv_src=prop-close /
+anchor:manual-1x2 / anchor:snapshot <ts>) for audit and so degraded sources
+can be down-weighted later. latest_snapshot_1x2() reads the closing proxy
+without the unplayed-fixture or staleness guards (settlement is post-match;
+the latest pre-kickoff snapshot is the close). Reconstructed vig-free odds are
+stored so the ledger row re-de-vigs to the recorded fair prob.
+NOTE: the B0004/B0005 rows settled overnight used a rho=0 manual
+reconstruction (fair 0.547/0.188); the rho-consistent path gives 0.578/0.211.
+Both negative CLV; those rows stand (append-only) and were flagged degraded.
+This closes the automation loop: snapshot -> price -> bet -> settle, no manual
+capture required (a consensus close, not Superbet's own — see D033).

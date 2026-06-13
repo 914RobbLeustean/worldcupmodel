@@ -197,6 +197,22 @@ def _anchored_p_over(
     return p_over(dist, quote.line), f"anchor+{params.version}"
 
 
+def _anchored_fair_p_over(
+    params: "GoalEngineParams",
+    fair_p_home: float,
+    fair_p_away: float,
+    team_is_home: bool,
+    line: float,
+) -> float:
+    """P(team over `line`) from the grid anchored on a de-vigged 1X2 (D033/#15)."""
+    from wc26.models.market_anchor import market_anchored_grid
+    from wc26.models.team_totals import goal_marginals, p_over
+
+    grid = market_anchored_grid(fair_p_home, fair_p_away, rho=params.rho)
+    home_dist, away_dist = goal_marginals(grid)
+    return p_over(home_dist if team_is_home else away_dist, line)
+
+
 @app.command()
 def edges() -> None:
     """Compare market-anchored pricing vs data/manual/lines.csv; print +EV bets.
@@ -465,11 +481,68 @@ def goals_90_from_tables(
     )
 
 
+def closing_over_source(
+    params: "GoalEngineParams",
+    home_id: str,
+    away_id: str,
+    team_id: str,
+    line: float,
+    closing_over: str,
+    closing_under: str,
+    anchor_1x2: str,
+) -> tuple[float, float, float, str]:
+    """Resolve the closing fair P(team over `line`) for settlement (#15).
+
+    Returns (p_over, over_odds_to_store, under_odds_to_store, source_label).
+    Priority: an explicit de-vigged prop close -> a manual --anchor-1x2
+    H/D/A -> the latest odds snapshot for the match (D033). The anchor paths
+    reconstruct vig-free two-way odds so the stored ledger row re-de-vigs to
+    the same fair prob. Raises SettleDataError if no source is available.
+    """
+    from wc26.markets.anchors import devig_1x2, latest_snapshot_1x2
+    from wc26.markets.edges import devig_two_way
+    from wc26.markets.odds import parse_odds
+
+    if closing_over and closing_under:
+        over, under = parse_odds(closing_over), parse_odds(closing_under)
+        fair_over, _ = devig_two_way(over, under)
+        return fair_over, over, under, "prop-close"
+
+    team_is_home = team_id == home_id
+    if anchor_1x2:
+        try:
+            h, d, a = (parse_odds(x) for x in anchor_1x2.split("/"))
+        except ValueError as exc:
+            raise SettleDataError(
+                f"--anchor-1x2 must be 'HOME/DRAW/AWAY' decimal or American odds, "
+                f"got {anchor_1x2!r}"
+            ) from exc
+        fp_home, _, fp_away = devig_1x2(h, d, a)
+        source = "anchor:manual-1x2"
+    else:
+        snap = latest_snapshot_1x2(home_id, away_id)
+        if snap is None:
+            raise SettleDataError(
+                f"no closing source for {home_id} v {away_id}: pass "
+                f"--closing-over/--closing-under (the book's prop close), or "
+                f"--anchor-1x2 HOME/DRAW/AWAY, or run `wc26 snapshot-odds` before "
+                f"kickoff so a snapshot anchor exists (D033)"
+            )
+        fp_home, fp_away, ts = snap
+        source = f"anchor:snapshot {ts}"
+
+    p_over = _anchored_fair_p_over(params, fp_home, fp_away, team_is_home, line)
+    return p_over, round(1.0 / p_over, 4), round(1.0 / (1.0 - p_over), 4), source
+
+
 @app.command()
 def settle(
     bet_id: str = typer.Argument(..., help="e.g. B0001"),
-    closing_over: str = typer.Option(..., prompt="Closing OVER odds"),
-    closing_under: str = typer.Option(..., prompt="Closing UNDER odds"),
+    closing_over: str = typer.Option("", help="Book's closing OVER odds (the prop close)"),
+    closing_under: str = typer.Option("", help="Book's closing UNDER odds"),
+    anchor_1x2: str = typer.Option(
+        "", help="Closing 1X2 as HOME/DRAW/AWAY (e.g. 2.12/3.30/4.09) to anchor CLV"
+    ),
     goals: int = typer.Option(
         -1,
         help="Bet team's goals after 90 minutes (D004). Default: read from the "
@@ -478,16 +551,18 @@ def settle(
     ),
     note: str = typer.Option(""),
 ) -> None:
-    """Record the result + manually entered closing line; compute CLV.
+    """Record the result + closing line; compute CLV.
 
-    Settlement is ALWAYS on the 90-minute score (D004): a knockout team-total
-    settles on the 90' count even if the match went to extra time.
+    Closing source priority (#15): the book's two-way prop close
+    (--closing-over/--closing-under) -> a manual --anchor-1x2 -> the latest
+    odds snapshot for the match (D033, fully automatic if `wc26 snapshot-odds`
+    ran before kickoff). The CLV source is stamped in the ledger note.
+    Settlement is ALWAYS on the 90-minute score (D004).
     """
     import pandas as pd
 
     from wc26.data.results import PROCESSED_DIR
-    from wc26.markets.ledger import BetRow, append_row, latest_view, read_ledger, settle_bet
-    from wc26.markets.odds import parse_odds
+    from wc26.markets.ledger import BetRow, append_row, grade_bet, latest_view, read_ledger
 
     history = read_ledger()
     current = latest_view(history)
@@ -502,6 +577,8 @@ def settle(
 
     home_id, away_id = str(bet["match"]).split(" v ")
     team_id = str(bet["market"]).partition(":")[2]
+    side = str(bet["side"])
+    line = float(bet["line"])
     if goals < 0:
         stats = pd.read_parquet(PROCESSED_DIR / "match_stats.parquet")
         results = pd.read_parquet(PROCESSED_DIR / "results.parquet")
@@ -513,16 +590,31 @@ def settle(
             typer.echo(str(exc))
             raise typer.Exit(code=1) from exc
 
-    over_dec, under_dec = parse_odds(closing_over), parse_odds(closing_under)
-    settlement = settle_bet(
-        side=str(bet["side"]),
-        line=float(bet["line"]),
+    try:
+        p_over, over_dec, under_dec, source = closing_over_source(
+            _load_engine_params(),
+            home_id,
+            away_id,
+            team_id,
+            line,
+            closing_over,
+            closing_under,
+            anchor_1x2,
+        )
+    except SettleDataError as exc:
+        typer.echo(str(exc))
+        raise typer.Exit(code=1) from exc
+
+    fair_p = p_over if side == "over" else 1.0 - p_over
+    settlement = grade_bet(
+        side=side,
+        line=line,
         goals_90=goals,
         odds_taken=float(bet["odds_taken"]),
         stake=float(bet["stake"]),
-        closing_over_odds=over_dec,
-        closing_under_odds=under_dec,
+        fair_closing_p=fair_p,
     )
+    src_note = f"clv_src={source}"
     append_row(
         BetRow(
             bet_id=bet_id,
@@ -530,8 +622,8 @@ def settle(
             match=str(bet["match"]),
             match_date=str(bet["match_date"]),
             market=str(bet["market"]),
-            line=float(bet["line"]),
-            side=str(bet["side"]),
+            line=line,
+            side=side,
             odds_taken=float(bet["odds_taken"]),
             stake=float(bet["stake"]),
             model_prob=float(bet["model_prob"]),
@@ -545,13 +637,13 @@ def settle(
             goals_90=goals,
             result=settlement.result,
             pnl=settlement.pnl,
-            note=note or None,
+            note=f"{note} | {src_note}" if note else src_note,
         )
     )
     typer.echo(
         f"{bet_id} {settlement.result.upper()}: {team_id} scored {goals} in 90' vs "
-        f"{bet['side']} {bet['line']} | pnl {settlement.pnl:+.2f} | "
-        f"closing fair p {settlement.fair_closing_p:.3f} -> CLV {settlement.clv:+.3%}"
+        f"{side} {line} | pnl {settlement.pnl:+.2f} | closing fair p "
+        f"{settlement.fair_closing_p:.3f} ({source}) -> CLV {settlement.clv:+.3%}"
     )
 
 

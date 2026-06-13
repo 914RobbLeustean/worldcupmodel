@@ -12,6 +12,7 @@ from wc26.markets.ledger import (
     BetRow,
     append_row,
     clv_report,
+    grade_bet,
     latest_view,
     next_bet_id,
     open_market_conflicts,
@@ -194,6 +195,23 @@ def test_settle_rejects_whole_line_and_bad_side() -> None:
         settle_bet("over", 2.0, 2, 1.91, 10.0, 1.91, 1.91)
     with pytest.raises(ValueError, match="side"):
         settle_bet("middle", 1.5, 2, 1.91, 10.0, 1.91, 1.91)
+
+
+def test_grade_bet_with_precomputed_fair_p() -> None:
+    """#15: grade_bet takes a fair closing prob directly (anchored-CLV path)
+    and produces the same CLV as feeding the equivalent vig-free two-way."""
+    g = grade_bet(side="over", line=1.5, goals_90=2, odds_taken=2.0, stake=3.0, fair_closing_p=0.40)
+    assert g.result == "won"
+    assert g.pnl == pytest.approx(3.0)
+    assert g.clv == pytest.approx(2.0 * 0.40 - 1.0)  # -0.20
+    # equivalence: settle_bet with vig-free odds 1/0.4 over, 1/0.6 under
+    s = settle_bet("over", 1.5, 2, 2.0, 3.0, 1.0 / 0.40, 1.0 / 0.60)
+    assert s.clv == pytest.approx(g.clv)
+
+
+def test_grade_bet_rejects_degenerate_fair_p() -> None:
+    with pytest.raises(ValueError, match="fair_closing_p"):
+        grade_bet("over", 1.5, 2, 2.0, 3.0, 0.0)
 
 
 def test_clv_report_aggregates_by_market(tmp_path: Path) -> None:

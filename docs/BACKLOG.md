@@ -108,7 +108,9 @@
     **DONE 2026-06-13**: real money reports on a "TOTAL (real)" line, paper is
     excluded. Real CLV -12.4% on 4 bets.
 15. **Settlement auto-CLV from the odds snapshot** — [data integrity] —
-    TODO, now the highest-value small item. The snapshot store (D033) holds a
+    **DONE 2026-06-13 (D034)**: settle resolves the closing fair prob from
+    prop-close -> --anchor-1x2 -> snapshot, on the same rho-consistent grid
+    as pricing; CLV source stamped in the note. Originally: The snapshot store (D033) holds a
     near-closing 1X2 per match; `wc26 settle` should auto-derive the anchored
     fair team-total prob from the latest pre-kickoff snapshot (or a
     `--anchor-1x2 H/D/A` flag) and stamp the CLV source, instead of taking a
