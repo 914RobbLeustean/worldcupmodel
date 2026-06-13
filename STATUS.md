@@ -45,9 +45,17 @@ What exists now (Phase 6.1, on top of the full Phase 0–5 stack):
   1. **Run the loop on the next match day** — enter Superbet's team-total
      lines (and ideally its own 1X2) per PLAYBOOK §3-4; `wc26 snapshot-odds`
      near each kickoff (cron-able). First live anchored bets pending quotes.
-  2. **Historical prop-line sample (backlog #3, USER)** — collect into
-     data/manual/historical_prop_lines.csv; unblocks the data-derived
-     edge_threshold (#8). Then the agent builds the eval script.
+  2. **Historical prop-line sample (backlog #3) — DONE 2026-06-13 (D036).**
+     User collected Euro24+WC22 OddsPortal consensus closes (match O/U fallback
+     path); ingested to data/manual/historical_prop_lines.csv (688 rows / 115
+     matches), eval is `wc26 eval-prop-lines`. Verdict: the consensus
+     match-total close is near-unpredictable (O2.5 corr 0.094, log-loss ~ naive)
+     — independently vindicates the D019/D028 match-total quarantine; the
+     1X2-anchored grid reproduces the independent total close (corr 0.93),
+     confirming D028 anchoring. #8 unblocked: 0.05 sits below the median
+     anchor-vs-close disagreement (0.064) but the disagreement edge is not
+     bankable (n~100, flips past t=0.10) — keep 0.05 as a FLOOR; the TEAM-total
+     threshold stays forward-derived from live CLV (D033/D034), already running.
   3. **Phase 6.2 recalibration checkpoint — ~2026-07-03** (D030; do NOT start
      early): compare predicted vs realized over the group stage; re-gate match
      totals (D019) and corners/cards (D021) through the walk-forward harness (a
@@ -93,13 +101,33 @@ today's team-total lines (lines.csv) + ideally the book's 1X2 (anchors.csv) →
 - Manual/durable inputs IN git: data/manual/lines.csv (team-total quotes),
   data/manual/anchors.csv (book 1X2 per match, D032),
   data/odds_snapshots.csv (append-only consensus 1X2+totals, D033),
-  data/manual/historical_prop_lines.csv (#3 template, awaiting rows).
+  data/manual/historical_prop_lines.csv (#3: 688 rows / 115 Euro24+WC22
+  consensus match-total closes, D036; raw under data/manual/sources/).
 - Backtest artifacts: data/processed/backtest/ — gate tests green; experiments
-  market_anchor_summary.json (D028) + wc_offset_summary.json (D035).
+  market_anchor_summary.json (D028) + wc_offset_summary.json (D035) +
+  prop_lines_summary.json (D036, regenerate with `wc26 eval-prop-lines`).
 - Ledger: ledger/bets.csv — all 5 settled. Real: B0002/B0003/B0005 lost,
   B0004 won; all 4 negative CLV. B0001 paper (lost). 0 open.
 
 ## Last session summary
+  - 2026-06-13 (g): backlog #3 DONE (D036) — historical prop-line eval. User
+    supplied Euro24+WC22 OddsPortal consensus closes (1X2 + full match O/U
+    ladder; team totals absent on the site, so the pre-registered match-O/U
+    fallback). Verified the file first: 115/115 matches, near-closing quality
+    (user 1X2 vs market_odds mean 0.0082), 7 small fixes (spellings + 2 decimal
+    typos + 2 dropped tail lines). Built a self-checking ingest
+    (historical_prop_lines.py -> CSV, 688 rows) that backfills ids+dates from
+    market_odds keyed by (tournament, pair) — caught France-Poland recurring
+    across both tournaments and the Croatia-Morocco WC22 rematch. Built
+    prop_lines.py + `wc26 eval-prop-lines` (rho=0), with a verified 90'-total
+    patch for the 10 extra-time matches (ET-inclusive scores in results.parquet
+    would mis-score ~2 at O2.5). Findings: consensus match-total close is
+    near-unpredictable (O2.5 corr 0.094, log-loss ~ naive) — independently
+    confirms the D019/D028 match-total quarantine; anchoring reproduces the
+    independent close (corr 0.93) — confirms D028; #8 — 0.05 is below the median
+    disagreement (0.064) but the edge isn't bankable, keep 0.05 as a floor,
+    team threshold forward from live CLV. 12 tests (244 total), lint clean.
+    No betting-path change (match totals stay quarantined; nothing live touched).
   - 2026-06-13 (f): finished the NOW automation backlog — #15 (settle
     auto-CLV) + #4 (WC scoring offset). #15 (D034): `wc26 settle` resolves the
     closing fair prob prop-close -> --anchor-1x2 -> latest odds snapshot, on

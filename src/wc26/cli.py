@@ -988,6 +988,49 @@ def backtest() -> None:
     )
 
 
+@app.command()
+def eval_prop_lines() -> None:
+    """Score the historical consensus match-total closes (backlog #3/#8, D036)."""
+    import pandas as pd
+
+    from wc26.backtest.prop_lines import run_prop_lines_eval, write_prop_lines_artifacts
+    from wc26.data.historical_prop_lines import load_historical_prop_lines
+    from wc26.data.results import PROCESSED_DIR
+
+    prop = load_historical_prop_lines()
+    results = pd.read_parquet(PROCESSED_DIR / "results.parquet")
+    stats = pd.read_parquet(PROCESSED_DIR / "match_stats.parquet")
+    odds = pd.read_parquet(PROCESSED_DIR / "market_odds.parquet")
+    df, summary = run_prop_lines_eval(prop, results, stats, odds)
+    for path_str in write_prop_lines_artifacts(df, summary):
+        typer.echo(f"wrote {path_str}")
+
+    cal = summary["close_calibration"]["2.5"]
+    anc = summary["anchoring"]
+    slope = cal["calibration_slope"]
+    slope_str = f"{slope:.2f}" if slope is not None else "n/a"
+    typer.echo(
+        f"prop-lines n={summary['n_matches']} matches ({summary['n_lines']} lines)  "
+        f"consensus close (D036)"
+    )
+    typer.echo(
+        f"  O2.5 close: log-loss {cal['close_log_loss']:.4f} vs naive "
+        f"{cal['naive_log_loss']:.4f} (skill {cal['log_loss_skill_vs_naive']:+.4f}), "
+        f"discrimination corr {cal['corr_with_outcome']:.3f}, slope {slope_str}"
+    )
+    typer.echo(
+        f"  anchoring (D028): anchored vs close P(O2.5) corr {anc['corr_p_over']:.3f}, "
+        f"mean|Δ| {anc['mean_abs_diff_p_over']:.4f}; "
+        f"anchored LL {anc['anchored_log_loss']:.4f} ~ close LL {anc['close_log_loss']:.4f}"
+    )
+    et = summary["edge_threshold"]
+    q = et["abs_edge_quantiles"]
+    typer.echo(
+        f"  #8 anchor-vs-close edge: median|edge| {q['0.5']:.3f}, p75 {q['0.75']:.3f}; "
+        f"current threshold 0.05 sits below the median disagreement"
+    )
+
+
 def _sim_inputs() -> "SimInputs":
     """Load everything the simulator needs (the CLI owns all I/O)."""
     import pandas as pd

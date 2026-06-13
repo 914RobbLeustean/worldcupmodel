@@ -1,37 +1,71 @@
 ts_utc,match,market,line,side,odds,book
-2026-06-12T17:54:00,Canada v Bosnia,team_total:Canada,0.5,over,1.23,superbet
-2026-06-12T17:54:00,Canada v Bosnia,team_total:Canada,0.5,under,3.90,superbet
-2026-06-12T17:54:00,Canada v Bosnia,team_total:Canada,1.5,over,2.10,superbet
-2026-06-12T17:54:00,Canada v Bosnia,team_total:Canada,1.5,under,1.69,superbet
-2026-06-12T17:54:00,Canada v Bosnia,team_total:Canada,2.5,over,4.40,superbet
-2026-06-12T17:54:00,Canada v Bosnia,team_total:Canada,2.5,under,1.19,superbet
-2026-06-12T17:54:00,Canada v Bosnia,team_total:Canada,3.5,over,10.00,superbet
-2026-06-12T17:54:00,Canada v Bosnia,team_total:Canada,3.5,under,1.04,superbet
-2026-06-12T17:54:00,Canada v Bosnia,team_total:Canada,4.5,over,26.00,superbet
-2026-06-12T17:54:00,Canada v Bosnia,team_total:Canada,4.5,under,1.004,superbet
-2026-06-12T17:54:00,Canada v Bosnia,team_total:Bosnia,0.5,over,1.65,superbet
-2026-06-12T17:54:00,Canada v Bosnia,team_total:Bosnia,0.5,under,2.17,superbet
-2026-06-12T17:54:00,Canada v Bosnia,team_total:Bosnia,1.5,over,4.15,superbet
-2026-06-12T17:54:00,Canada v Bosnia,team_total:Bosnia,1.5,under,1.21,superbet
-2026-06-12T17:54:00,Canada v Bosnia,team_total:Bosnia,2.5,over,12.00,superbet
-2026-06-12T17:54:00,Canada v Bosnia,team_total:Bosnia,2.5,under,1.03,superbet
-2026-06-12T17:54:00,Canada v Bosnia,team_total:Bosnia,3.5,over,39.00,superbet
-2026-06-12T17:54:00,Canada v Bosnia,team_total:Bosnia,3.5,under,1.002,superbet
-2026-06-12T18:22:00,USA v Paraguay,team_total:United States,0.5,over,1.30,superbet
-2026-06-12T18:22:00,USA v Paraguay,team_total:United States,0.5,under,3.35,superbet
-2026-06-12T18:22:00,USA v Paraguay,team_total:United States,1.5,over,2.40,superbet
-2026-06-12T18:22:00,USA v Paraguay,team_total:United States,1.5,under,1.53,superbet
-2026-06-12T18:22:00,USA v Paraguay,team_total:United States,2.5,over,5.45,superbet
-2026-06-12T18:22:00,USA v Paraguay,team_total:United States,2.5,under,1.13,superbet
-2026-06-12T18:22:00,USA v Paraguay,team_total:United States,3.5,over,14.00,superbet
-2026-06-12T18:22:00,USA v Paraguay,team_total:United States,3.5,under,1.02,superbet
-2026-06-12T18:22:00,USA v Paraguay,team_total:United States,4.5,over,38.00,superbet
-2026-06-12T18:22:00,USA v Paraguay,team_total:United States,4.5,under,1.002,superbet
-2026-06-12T18:22:00,USA v Paraguay,team_total:Paraguay,0.5,over,1.60,superbet
-2026-06-12T18:22:00,USA v Paraguay,team_total:Paraguay,0.5,under,2.25,superbet
-2026-06-12T18:22:00,USA v Paraguay,team_total:Paraguay,1.5,over,3.90,superbet
-2026-06-12T18:22:00,USA v Paraguay,team_total:Paraguay,1.5,under,1.23,superbet
-2026-06-12T18:22:00,USA v Paraguay,team_total:Paraguay,2.5,over,11.00,superbet
-2026-06-12T18:22:00,USA v Paraguay,team_total:Paraguay,2.5,under,1.03,superbet
-2026-06-12T18:22:00,USA v Paraguay,team_total:Paraguay,3.5,over,35.00,superbet
-2026-06-12T18:22:00,USA v Paraguay,team_total:Paraguay,3.5,under,1.003,superbet
+2026-06-13T18:24:00,Qatar v Switzerland,team_total:Qatar,0.5,over,2.32,superbet
+2026-06-13T18:24:00,Qatar v Switzerland,team_total:Qatar,0.5,under,1.57,superbet
+2026-06-13T18:24:00,Qatar v Switzerland,team_total:Qatar,1.5,over,8.00,superbet
+2026-06-13T18:24:00,Qatar v Switzerland,team_total:Qatar,1.5,under,1.06,superbet
+2026-06-13T18:24:00,Qatar v Switzerland,team_total:Qatar,2.5,over,32.00,superbet
+2026-06-13T18:24:00,Qatar v Switzerland,team_total:Qatar,2.5,under,1.003,superbet
+2026-06-13T18:24:00,Qatar v Switzerland,team_total:Switzerland,0.5,over,1.05,superbet
+2026-06-13T18:24:00,Qatar v Switzerland,team_total:Switzerland,0.5,under,8.80,superbet
+2026-06-13T18:24:00,Qatar v Switzerland,team_total:Switzerland,1.5,over,1.33,superbet
+2026-06-13T18:24:00,Qatar v Switzerland,team_total:Switzerland,1.5,under,3.15,superbet
+2026-06-13T18:24:00,Qatar v Switzerland,team_total:Switzerland,2.5,over,2.02,superbet
+2026-06-13T18:24:00,Qatar v Switzerland,team_total:Switzerland,2.5,under,1.75,superbet
+2026-06-13T18:24:00,Qatar v Switzerland,team_total:Switzerland,3.5,over,3.60,superbet
+2026-06-13T18:24:00,Qatar v Switzerland,team_total:Switzerland,3.5,under,1.26,superbet
+2026-06-13T18:24:00,Qatar v Switzerland,team_total:Switzerland,4.5,over,6.90,superbet
+2026-06-13T18:24:00,Qatar v Switzerland,team_total:Switzerland,4.5,under,1.08,superbet
+2026-06-13T18:24:00,Brazil v Morocco,team_total:Brazil,0.5,over,1.19,superbet
+2026-06-13T18:24:00,Brazil v Morocco,team_total:Brazil,0.5,under,4.40,superbet
+2026-06-13T18:24:00,Brazil v Morocco,team_total:Brazil,1.5,over,1.92,superbet
+2026-06-13T18:24:00,Brazil v Morocco,team_total:Brazil,1.5,under,1.83,superbet
+2026-06-13T18:24:00,Brazil v Morocco,team_total:Brazil,2.5,over,3.80,superbet
+2026-06-13T18:24:00,Brazil v Morocco,team_total:Brazil,2.5,under,1.24,superbet
+2026-06-13T18:24:00,Brazil v Morocco,team_total:Brazil,3.5,over,8.40,superbet
+2026-06-13T18:24:00,Brazil v Morocco,team_total:Brazil,3.5,under,1.05,superbet
+2026-06-13T18:24:00,Brazil v Morocco,team_total:Brazil,4.5,over,21.00,superbet
+2026-06-13T18:24:00,Brazil v Morocco,team_total:Brazil,4.5,under,1.007,superbet
+2026-06-13T18:24:00,Brazil v Morocco,team_total:Morocco,0.5,over,1.75,superbet
+2026-06-13T18:24:00,Brazil v Morocco,team_total:Morocco,0.5,under,2.00,superbet
+2026-06-13T18:24:00,Brazil v Morocco,team_total:Morocco,1.5,over,4.55,superbet
+2026-06-13T18:24:00,Brazil v Morocco,team_total:Morocco,1.5,under,1.18,superbet
+2026-06-13T18:24:00,Brazil v Morocco,team_total:Morocco,2.5,over,14.00,superbet
+2026-06-13T18:24:00,Brazil v Morocco,team_total:Morocco,2.5,under,1.02,superbet
+2026-06-13T18:24:00,Brazil v Morocco,team_total:Morocco,3.5,over,45.00,superbet
+2026-06-13T18:24:00,Brazil v Morocco,team_total:Morocco,3.5,under,1.001,superbet
+2026-06-13T18:24:00,Haiti v Scotland,team_total:Haiti,0.5,over,1.53,superbet
+2026-06-13T18:24:00,Haiti v Scotland,team_total:Haiti,0.5,under,2.40,superbet
+2026-06-13T18:24:00,Haiti v Scotland,team_total:Haiti,1.5,over,3.55,superbet
+2026-06-13T18:24:00,Haiti v Scotland,team_total:Haiti,1.5,under,1.27,superbet
+2026-06-13T18:24:00,Haiti v Scotland,team_total:Haiti,2.5,over,9.40,superbet
+2026-06-13T18:24:00,Haiti v Scotland,team_total:Haiti,2.5,under,1.04,superbet
+2026-06-13T18:24:00,Haiti v Scotland,team_total:Haiti,3.5,over,29.00,superbet
+2026-06-13T18:24:00,Haiti v Scotland,team_total:Haiti,3.5,under,1.003,superbet
+2026-06-13T18:24:00,Haiti v Scotland,team_total:Scotland,0.5,over,1.10,superbet
+2026-06-13T18:24:00,Haiti v Scotland,team_total:Scotland,0.5,under,6.20,superbet
+2026-06-13T18:24:00,Haiti v Scotland,team_total:Scotland,1.5,over,1.56,superbet
+2026-06-13T18:24:00,Haiti v Scotland,team_total:Scotland,1.5,under,2.35,superbet
+2026-06-13T18:24:00,Haiti v Scotland,team_total:Scotland,2.5,over,2.65,superbet
+2026-06-13T18:24:00,Haiti v Scotland,team_total:Scotland,2.5,under,1.44,superbet
+2026-06-13T18:24:00,Haiti v Scotland,team_total:Scotland,3.5,over,5.25,superbet
+2026-06-13T18:24:00,Haiti v Scotland,team_total:Scotland,3.5,under,1.14,superbet
+2026-06-13T18:24:00,Haiti v Scotland,team_total:Scotland,4.5,over,11.00,superbet
+2026-06-13T18:24:00,Haiti v Scotland,team_total:Scotland,4.5,under,1.03,superbet
+2026-06-13T18:24:00,Australia v Turkey,team_total:Australia,0.5,over,1.61,superbet
+2026-06-13T18:24:00,Australia v Turkey,team_total:Australia,0.5,under,2.22,superbet
+2026-06-13T18:24:00,Australia v Turkey,team_total:Australia,1.5,over,3.90,superbet
+2026-06-13T18:24:00,Australia v Turkey,team_total:Australia,1.5,under,1.23,superbet
+2026-06-13T18:24:00,Australia v Turkey,team_total:Australia,2.5,over,11.00,superbet
+2026-06-13T18:24:00,Australia v Turkey,team_total:Australia,2.5,under,1.03,superbet
+2026-06-13T18:24:00,Australia v Turkey,team_total:Australia,3.5,over,36.00,superbet
+2026-06-13T18:24:00,Australia v Turkey,team_total:Australia,3.5,under,1.003,superbet
+2026-06-13T18:24:00,Australia v Turkey,team_total:Turkey,0.5,over,1.18,superbet
+2026-06-13T18:24:00,Australia v Turkey,team_total:Turkey,0.5,under,4.50,superbet
+2026-06-13T18:24:00,Australia v Turkey,team_total:Turkey,1.5,over,1.88,superbet
+2026-06-13T18:24:00,Australia v Turkey,team_total:Turkey,1.5,under,1.85,superbet
+2026-06-13T18:24:00,Australia v Turkey,team_total:Turkey,2.5,over,3.70,superbet
+2026-06-13T18:24:00,Australia v Turkey,team_total:Turkey,2.5,under,1.25,superbet
+2026-06-13T18:24:00,Australia v Turkey,team_total:Turkey,3.5,over,8.10,superbet
+2026-06-13T18:24:00,Australia v Turkey,team_total:Turkey,3.5,under,1.06,superbet
+2026-06-13T18:24:00,Australia v Turkey,team_total:Turkey,4.5,over,20.00,superbet
+2026-06-13T18:24:00,Australia v Turkey,team_total:Turkey,4.5,under,1.009,superbet

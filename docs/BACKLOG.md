@@ -35,7 +35,7 @@
      (anchored pricing supersedes shrinkage if adopted; else shrinkage applies).
    - Owner: AGENT.
 
-3. **Historical prop-line sample (the unfulfilled PLAN 3.4 item)** — [edge] — **IN PROGRESS (2026-06-13): user is collecting manually; agent builds the eval script. Full standalone spec below — the chat that produced it was cleared, so everything needed is here.**
+3. **Historical prop-line sample (the unfulfilled PLAN 3.4 item)** — [edge] — **DONE 2026-06-13 (D036): user collected Euro24+WC22 OddsPortal consensus closes (match-O/U fallback path); ingested to data/manual/historical_prop_lines.csv (688 rows / 115 matches), eval `wc26 eval-prop-lines`. Verdict: consensus match-total close near-unpredictable (O2.5 corr 0.094, log-loss ~ naive) — independently vindicates the D019/D028 match-total quarantine; the 1X2-anchored grid reproduces the independent total close (corr 0.93) — confirms D028 anchoring. Spec retained below for provenance.**
 
    WHY: measure (a) how well-calibrated soft-book CLOSING prop lines are (the
    project's founding premise — that they're soft — is still UNMEASURED),
@@ -117,10 +117,17 @@
      50-bet CLV gate assumes rough independence.
    - Owner: AGENT.
 
-8. **Re-derive edge_threshold from data** — [edge] — **TODO, BLOCKED(#3)**
+8. **Re-derive edge_threshold from data** — [edge] — **RESOLVED 2026-06-13 (D036): keep 0.05 as a FLOOR; team-total threshold stays forward-derived from live CLV.**
    - 0.05 was a Phase-0 guess; it is below the measured mean model-market
-     disagreement (0.074), so it filters model opinion, not book error.
-     Re-set from the #3 sample's measured book error distribution.
+     disagreement (0.074). The #3 sample confirms this: the live anchor-vs-close
+     edge has median |edge| 0.064 (p75 0.087), so 0.05 sits below the median
+     disagreement. BUT the disagreement edge is not bankable on this sample
+     (hit 58-61% at t<=0.07 on a 0.03 corr gap at n~100, flips negative past
+     t=0.10 where the grid is miscalibrated), and these are MATCH not TEAM
+     totals on consensus (not Superbet) prices. So the data does not justify
+     lowering 0.05, and raising toward p75 would chase grid artifacts. The
+     team-total threshold is set FORWARD from live CLV vs the snapshot close
+     (D033/D034), already running — not from this sample.
 
 ## JULY-3 checkpoint (needs WC26 group-stage outcomes — keep calendar-gated)
 

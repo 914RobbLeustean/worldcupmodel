@@ -1,1 +1,689 @@
 tournament,date,home_team,away_team,market,line,over_odds,under_odds,book,is_closing,source_url
+UEFA Euro,2024-06-14,germany,scotland,match_total,0.5,1.04,14.5,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-14,germany,scotland,match_total,1.5,1.2,5.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-14,germany,scotland,match_total,2.5,1.65,2.38,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-14,germany,scotland,match_total,3.5,2.6,1.55,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-14,germany,scotland,match_total,4.5,4.8,1.22,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-14,germany,scotland,match_total,5.5,9.9,1.09,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-15,hungary,switzerland,match_total,0.5,1.13,7.5,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-15,hungary,switzerland,match_total,1.5,1.55,2.9,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-15,hungary,switzerland,match_total,2.5,2.65,1.63,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-15,hungary,switzerland,match_total,3.5,5.3,1.22,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-15,hungary,switzerland,match_total,4.5,12.5,1.06,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-15,hungary,switzerland,match_total,5.5,31.0,1.02,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-15,spain,croatia,match_total,0.5,1.09,9.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-15,spain,croatia,match_total,1.5,1.38,3.3,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-15,spain,croatia,match_total,2.5,2.17,1.76,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-15,spain,croatia,match_total,3.5,4.0,1.29,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-15,spain,croatia,match_total,4.5,8.4,1.1,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-15,spain,croatia,match_total,5.5,19.5,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-15,italy,albania,match_total,0.5,1.08,10.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-15,italy,albania,match_total,1.5,1.37,3.4,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-15,italy,albania,match_total,2.5,2.1,1.83,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-15,italy,albania,match_total,3.5,3.8,1.33,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-15,italy,albania,match_total,4.5,7.2,1.11,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-15,italy,albania,match_total,5.5,14.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-16,poland,netherlands,match_total,0.5,1.06,11.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-16,poland,netherlands,match_total,1.5,1.29,3.95,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-16,poland,netherlands,match_total,2.5,1.9,2.02,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-16,poland,netherlands,match_total,3.5,3.25,1.38,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-16,poland,netherlands,match_total,4.5,6.5,1.14,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-16,poland,netherlands,match_total,5.5,14.5,1.05,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-16,slovenia,denmark,match_total,0.5,1.09,8.1,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-16,slovenia,denmark,match_total,1.5,1.44,3.1,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-16,slovenia,denmark,match_total,2.5,2.31,1.7,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-16,slovenia,denmark,match_total,3.5,4.45,1.25,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-16,slovenia,denmark,match_total,4.5,10.0,1.08,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-16,slovenia,denmark,match_total,5.5,23.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-16,serbia,england,match_total,0.5,1.06,13.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-16,serbia,england,match_total,1.5,1.28,4.1,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-16,serbia,england,match_total,2.5,1.85,2.03,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-16,serbia,england,match_total,3.5,3.1,1.4,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-16,serbia,england,match_total,4.5,6.1,1.15,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-16,serbia,england,match_total,5.5,13.5,1.05,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-17,romania,ukraine,match_total,0.5,1.08,9.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-17,romania,ukraine,match_total,1.5,1.37,3.35,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-17,romania,ukraine,match_total,2.5,2.11,1.78,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-17,romania,ukraine,match_total,3.5,3.9,1.3,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-17,romania,ukraine,match_total,4.5,8.3,1.11,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-17,romania,ukraine,match_total,5.5,19.0,1.04,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-17,belgium,slovakia,match_total,0.5,1.05,13.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-17,belgium,slovakia,match_total,1.5,1.26,4.3,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-17,belgium,slovakia,match_total,2.5,1.78,2.13,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-17,belgium,slovakia,match_total,3.5,2.9,1.45,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-17,belgium,slovakia,match_total,4.5,5.4,1.17,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-17,belgium,slovakia,match_total,5.5,10.0,1.06,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-17,austria,france,match_total,0.5,1.06,13.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-17,austria,france,match_total,1.5,1.28,4.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-17,austria,france,match_total,2.5,1.85,2.05,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-17,austria,france,match_total,3.5,3.1,1.41,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-17,austria,france,match_total,4.5,5.8,1.16,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-17,austria,france,match_total,5.5,13.0,1.05,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-18,turkey,georgia,match_total,0.5,1.07,11.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-18,turkey,georgia,match_total,1.5,1.33,3.65,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-18,turkey,georgia,match_total,2.5,1.98,1.9,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-18,turkey,georgia,match_total,3.5,3.4,1.35,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-18,turkey,georgia,match_total,4.5,6.75,1.13,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-18,turkey,georgia,match_total,5.5,13.0,1.04,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-18,portugal,czechia,match_total,0.5,1.03,13.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-18,portugal,czechia,match_total,1.5,1.25,4.25,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-18,portugal,czechia,match_total,2.5,1.8,2.1,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-18,portugal,czechia,match_total,3.5,3.0,1.42,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-18,portugal,czechia,match_total,4.5,5.8,1.16,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-18,portugal,czechia,match_total,5.5,12.5,1.05,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-19,croatia,albania,match_total,0.5,1.08,9.6,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-19,croatia,albania,match_total,1.5,1.37,3.4,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-19,croatia,albania,match_total,2.5,2.11,1.82,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-19,croatia,albania,match_total,3.5,3.85,1.3,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-19,croatia,albania,match_total,4.5,8.4,1.11,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-19,croatia,albania,match_total,5.5,19.5,1.04,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-19,germany,hungary,match_total,0.5,1.03,18.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-19,germany,hungary,match_total,1.5,1.17,5.8,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-19,germany,hungary,match_total,2.5,1.52,2.75,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-19,germany,hungary,match_total,3.5,2.3,1.71,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-19,germany,hungary,match_total,4.5,3.8,1.3,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-19,germany,hungary,match_total,5.5,7.0,1.12,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-19,scotland,switzerland,match_total,0.5,1.1,8.2,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-19,scotland,switzerland,match_total,1.5,1.44,3.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-19,scotland,switzerland,match_total,2.5,2.32,1.67,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-19,scotland,switzerland,match_total,3.5,4.4,1.25,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-19,scotland,switzerland,match_total,4.5,8.8,1.08,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-19,scotland,switzerland,match_total,5.5,19.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-20,slovenia,serbia,match_total,0.5,1.07,11.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-20,slovenia,serbia,match_total,1.5,1.32,3.8,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-20,slovenia,serbia,match_total,2.5,1.98,1.96,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-20,slovenia,serbia,match_total,3.5,3.3,1.38,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-20,slovenia,serbia,match_total,4.5,6.25,1.14,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-20,slovenia,serbia,match_total,5.5,13.0,1.04,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-20,denmark,england,match_total,0.5,1.1,8.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-20,denmark,england,match_total,1.5,1.42,3.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-20,denmark,england,match_total,2.5,2.3,1.67,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-20,denmark,england,match_total,3.5,4.3,1.25,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-20,denmark,england,match_total,4.5,9.0,1.09,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-20,denmark,england,match_total,5.5,19.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-20,spain,italy,match_total,0.5,1.1,8.4,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-20,spain,italy,match_total,1.5,1.42,3.15,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-20,spain,italy,match_total,2.5,2.25,1.7,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-20,spain,italy,match_total,3.5,4.0,1.27,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-20,spain,italy,match_total,4.5,8.2,1.1,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-20,spain,italy,match_total,5.5,16.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-21,slovakia,ukraine,match_total,0.5,1.09,9.2,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-21,slovakia,ukraine,match_total,1.5,1.4,3.4,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-21,slovakia,ukraine,match_total,2.5,2.18,1.8,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-21,slovakia,ukraine,match_total,3.5,3.9,1.29,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-21,slovakia,ukraine,match_total,4.5,8.1,1.1,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-21,slovakia,ukraine,match_total,5.5,18.5,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-21,poland,austria,match_total,0.5,1.08,9.4,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-21,poland,austria,match_total,1.5,1.35,3.45,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-21,poland,austria,match_total,2.5,2.08,1.82,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-21,poland,austria,match_total,3.5,3.8,1.33,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-21,poland,austria,match_total,4.5,7.8,1.12,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-21,poland,austria,match_total,5.5,17.5,1.04,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-21,netherlands,france,match_total,0.5,1.09,9.1,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-21,netherlands,france,match_total,1.5,1.37,3.4,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-21,netherlands,france,match_total,2.5,2.1,1.78,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-21,netherlands,france,match_total,3.5,3.8,1.3,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-21,netherlands,france,match_total,4.5,8.2,1.11,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-21,netherlands,france,match_total,5.5,18.5,1.04,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-22,georgia,czechia,match_total,0.5,1.05,13.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-22,georgia,czechia,match_total,1.5,1.25,4.4,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-22,georgia,czechia,match_total,2.5,1.83,2.15,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-22,georgia,czechia,match_total,3.5,3.05,1.47,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-22,georgia,czechia,match_total,4.5,5.8,1.18,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-22,georgia,czechia,match_total,5.5,11.0,1.07,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-22,turkey,portugal,match_total,0.5,1.05,13.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-22,turkey,portugal,match_total,1.5,1.23,4.7,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-22,turkey,portugal,match_total,2.5,1.73,2.24,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-22,turkey,portugal,match_total,3.5,2.88,1.5,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-22,turkey,portugal,match_total,4.5,5.25,1.19,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-22,turkey,portugal,match_total,5.5,10.5,1.07,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-22,belgium,romania,match_total,0.5,1.04,13.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-22,belgium,romania,match_total,1.5,1.22,4.8,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-22,belgium,romania,match_total,2.5,1.7,2.28,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-22,belgium,romania,match_total,3.5,2.7,1.5,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-22,belgium,romania,match_total,4.5,5.0,1.2,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-22,belgium,romania,match_total,5.5,9.4,1.08,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-23,scotland,hungary,match_total,0.5,1.04,14.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-23,scotland,hungary,match_total,1.5,1.23,4.4,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-23,scotland,hungary,match_total,2.5,1.7,2.23,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-23,scotland,hungary,match_total,3.5,2.75,1.5,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-23,scotland,hungary,match_total,4.5,5.0,1.19,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-23,scotland,hungary,match_total,5.5,10.0,1.07,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-23,switzerland,germany,match_total,0.5,1.06,11.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-23,switzerland,germany,match_total,1.5,1.3,3.85,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-23,switzerland,germany,match_total,2.5,1.91,2.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-23,switzerland,germany,match_total,3.5,3.4,1.4,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-23,switzerland,germany,match_total,4.5,6.6,1.15,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-23,switzerland,germany,match_total,5.5,14.5,1.05,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-24,croatia,italy,match_total,0.5,1.1,8.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-24,croatia,italy,match_total,1.5,1.45,2.95,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-24,croatia,italy,match_total,2.5,2.33,1.65,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-24,croatia,italy,match_total,3.5,4.4,1.24,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-24,croatia,italy,match_total,4.5,9.2,1.08,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-24,croatia,italy,match_total,5.5,20.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-24,albania,spain,match_total,0.5,1.06,13.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-24,albania,spain,match_total,1.5,1.28,4.1,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-24,albania,spain,match_total,2.5,1.85,2.1,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-24,albania,spain,match_total,3.5,3.1,1.43,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-24,albania,spain,match_total,4.5,6.1,1.17,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-24,albania,spain,match_total,5.5,11.5,1.06,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-25,france,poland,match_total,0.5,1.04,14.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-25,france,poland,match_total,1.5,1.21,4.7,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-25,france,poland,match_total,2.5,1.65,2.35,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-25,france,poland,match_total,3.5,2.63,1.55,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-25,france,poland,match_total,4.5,4.8,1.22,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-25,france,poland,match_total,5.5,9.0,1.09,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-25,netherlands,austria,match_total,0.5,1.07,10.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-25,netherlands,austria,match_total,1.5,1.29,3.9,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-25,netherlands,austria,match_total,2.5,1.9,1.96,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-25,netherlands,austria,match_total,3.5,3.2,1.4,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-25,netherlands,austria,match_total,4.5,6.2,1.15,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-25,netherlands,austria,match_total,5.5,13.0,1.05,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-25,england,slovenia,match_total,0.5,1.05,11.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-25,england,slovenia,match_total,1.5,1.28,3.85,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-25,england,slovenia,match_total,2.5,1.9,2.02,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-25,england,slovenia,match_total,3.5,3.2,1.4,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-25,england,slovenia,match_total,4.5,6.25,1.15,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-25,england,slovenia,match_total,5.5,13.0,1.05,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-25,denmark,serbia,match_total,0.5,1.08,8.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-25,denmark,serbia,match_total,1.5,1.4,3.25,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-25,denmark,serbia,match_total,2.5,2.25,1.7,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-25,denmark,serbia,match_total,3.5,4.0,1.29,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-25,denmark,serbia,match_total,4.5,8.0,1.1,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-25,denmark,serbia,match_total,5.5,16.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-26,slovakia,romania,match_total,0.5,1.23,4.7,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-26,slovakia,romania,match_total,1.5,1.7,2.3,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-26,slovakia,romania,match_total,2.5,3.55,1.4,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-26,slovakia,romania,match_total,3.5,6.75,1.17,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-26,slovakia,romania,match_total,4.5,17.0,1.05,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-26,ukraine,belgium,match_total,0.5,1.05,13.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-26,ukraine,belgium,match_total,1.5,1.26,4.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-26,ukraine,belgium,match_total,2.5,1.82,2.07,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-26,ukraine,belgium,match_total,3.5,3.0,1.42,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-26,ukraine,belgium,match_total,4.5,5.8,1.16,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-26,ukraine,belgium,match_total,5.5,11.0,1.06,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-26,georgia,portugal,match_total,0.5,1.05,13.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-26,georgia,portugal,match_total,1.5,1.27,4.33,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-26,georgia,portugal,match_total,2.5,1.82,2.15,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-26,georgia,portugal,match_total,3.5,3.0,1.44,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-26,georgia,portugal,match_total,4.5,5.6,1.17,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-26,georgia,portugal,match_total,5.5,11.0,1.06,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-26,czechia,turkey,match_total,0.5,1.08,9.4,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-26,czechia,turkey,match_total,1.5,1.35,3.4,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-26,czechia,turkey,match_total,2.5,2.1,1.82,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-26,czechia,turkey,match_total,3.5,3.8,1.33,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-26,czechia,turkey,match_total,4.5,7.5,1.11,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-26,czechia,turkey,match_total,5.5,16.0,1.04,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-29,switzerland,italy,match_total,0.5,1.13,6.6,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-29,switzerland,italy,match_total,1.5,1.53,2.6,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-29,switzerland,italy,match_total,2.5,2.65,1.53,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-29,switzerland,italy,match_total,3.5,5.2,1.19,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-29,switzerland,italy,match_total,4.5,11.0,1.06,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-29,switzerland,italy,match_total,5.5,20.0,1.02,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-29,germany,denmark,match_total,0.5,1.06,10.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-29,germany,denmark,match_total,1.5,1.3,3.7,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-29,germany,denmark,match_total,2.5,1.94,1.95,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-29,germany,denmark,match_total,3.5,3.35,1.38,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-29,germany,denmark,match_total,4.5,6.6,1.14,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-29,germany,denmark,match_total,5.5,13.0,1.05,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-30,england,slovakia,match_total,0.5,1.08,9.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-30,england,slovakia,match_total,1.5,1.4,3.2,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-30,england,slovakia,match_total,2.5,2.18,1.75,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-30,england,slovakia,match_total,3.5,4.0,1.28,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-30,england,slovakia,match_total,4.5,8.0,1.1,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-30,england,slovakia,match_total,5.5,17.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-30,spain,georgia,match_total,0.5,1.04,17.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-30,spain,georgia,match_total,1.5,1.22,4.9,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-30,spain,georgia,match_total,2.5,1.65,2.38,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-30,spain,georgia,match_total,3.5,2.6,1.55,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-30,spain,georgia,match_total,4.5,4.6,1.22,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-06-30,spain,georgia,match_total,5.5,8.5,1.09,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-01,france,belgium,match_total,0.5,1.08,9.4,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-01,france,belgium,match_total,1.5,1.34,3.4,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-01,france,belgium,match_total,2.5,2.06,1.88,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-01,france,belgium,match_total,3.5,3.75,1.34,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-01,france,belgium,match_total,4.5,7.9,1.13,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-01,france,belgium,match_total,5.5,18.0,1.05,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-01,portugal,slovenia,match_total,0.5,1.05,13.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-01,portugal,slovenia,match_total,1.5,1.25,4.55,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-01,portugal,slovenia,match_total,2.5,1.75,2.18,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-01,portugal,slovenia,match_total,3.5,2.9,1.46,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-01,portugal,slovenia,match_total,4.5,5.6,1.18,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-01,portugal,slovenia,match_total,5.5,11.5,1.06,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-02,romania,netherlands,match_total,0.5,1.06,13.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-02,romania,netherlands,match_total,1.5,1.27,4.1,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-02,romania,netherlands,match_total,2.5,1.83,2.05,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-02,romania,netherlands,match_total,3.5,3.1,1.42,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-02,romania,netherlands,match_total,4.5,6.1,1.16,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-02,romania,netherlands,match_total,5.5,13.5,1.06,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-02,austria,turkey,match_total,0.5,1.08,9.2,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-02,austria,turkey,match_total,1.5,1.35,3.35,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-02,austria,turkey,match_total,2.5,2.1,1.85,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-02,austria,turkey,match_total,3.5,3.8,1.33,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-02,austria,turkey,match_total,4.5,8.2,1.12,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-02,austria,turkey,match_total,5.5,18.5,1.04,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-05,spain,germany,match_total,0.5,1.07,10.5,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-05,spain,germany,match_total,1.5,1.33,3.75,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-05,spain,germany,match_total,2.5,2.0,1.92,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-05,spain,germany,match_total,3.5,3.55,1.35,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-05,spain,germany,match_total,4.5,7.0,1.13,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-05,spain,germany,match_total,5.5,15.0,1.05,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-05,portugal,france,match_total,0.5,1.1,7.8,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-05,portugal,france,match_total,1.5,1.44,3.05,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-05,portugal,france,match_total,2.5,2.4,1.66,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-05,portugal,france,match_total,3.5,4.6,1.26,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-05,portugal,france,match_total,4.5,9.5,1.06,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-05,portugal,france,match_total,5.5,20.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-06,england,switzerland,match_total,0.5,1.13,6.6,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-06,england,switzerland,match_total,1.5,1.55,2.65,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-06,england,switzerland,match_total,2.5,2.65,1.52,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-06,england,switzerland,match_total,3.5,5.1,1.19,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-06,england,switzerland,match_total,4.5,11.0,1.06,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-06,england,switzerland,match_total,5.5,20.0,1.02,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-06,netherlands,turkey,match_total,0.5,1.06,13.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-06,netherlands,turkey,match_total,1.5,1.3,4.1,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-06,netherlands,turkey,match_total,2.5,1.9,2.04,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-06,netherlands,turkey,match_total,3.5,3.15,1.4,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-06,netherlands,turkey,match_total,4.5,6.25,1.15,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-06,netherlands,turkey,match_total,5.5,13.0,1.05,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-09,spain,france,match_total,0.5,1.12,7.5,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-09,spain,france,match_total,1.5,1.47,2.82,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-09,spain,france,match_total,2.5,2.5,1.6,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-09,spain,france,match_total,3.5,5.0,1.22,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-09,spain,france,match_total,4.5,11.0,1.07,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-09,spain,france,match_total,5.5,25.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-10,netherlands,england,match_total,0.5,1.12,7.6,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-10,netherlands,england,match_total,1.5,1.47,2.9,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-10,netherlands,england,match_total,2.5,2.48,1.6,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-10,netherlands,england,match_total,3.5,4.8,1.22,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-10,netherlands,england,match_total,4.5,11.0,1.08,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-10,netherlands,england,match_total,5.5,25.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-14,spain,england,match_total,0.5,1.13,7.0,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-14,spain,england,match_total,1.5,1.5,2.75,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-14,spain,england,match_total,2.5,2.5,1.57,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-14,spain,england,match_total,3.5,4.7,1.21,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-14,spain,england,match_total,4.5,10.0,1.07,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+UEFA Euro,2024-07-14,spain,england,match_total,5.5,19.0,1.02,oddsportal_avg,True,https://www.oddsportal.com/football/europe/euro-2024/results/
+FIFA World Cup,2022-11-20,qatar,ecuador,match_total,0.5,1.12,7.2,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-20,qatar,ecuador,match_total,1.5,1.55,2.65,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-20,qatar,ecuador,match_total,2.5,3.0,1.53,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-20,qatar,ecuador,match_total,3.5,5.5,1.2,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-20,qatar,ecuador,match_total,4.5,14.0,1.07,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-20,qatar,ecuador,match_total,5.5,35.0,1.02,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-21,england,iran,match_total,0.5,1.1,9.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-21,england,iran,match_total,1.5,1.44,3.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-21,england,iran,match_total,2.5,2.32,1.72,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-21,england,iran,match_total,3.5,4.6,1.23,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-21,england,iran,match_total,4.5,10.5,1.08,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-21,england,iran,match_total,5.5,27.0,1.02,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-21,senegal,netherlands,match_total,0.5,1.1,9.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-21,senegal,netherlands,match_total,1.5,1.44,3.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-21,senegal,netherlands,match_total,2.5,2.3,1.68,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-21,senegal,netherlands,match_total,3.5,4.6,1.24,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-21,senegal,netherlands,match_total,4.5,10.5,1.08,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-21,senegal,netherlands,match_total,5.5,27.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-21,united_states,wales,match_total,0.5,1.11,7.8,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-21,united_states,wales,match_total,1.5,1.47,2.95,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-21,united_states,wales,match_total,2.5,2.48,1.6,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-21,united_states,wales,match_total,3.5,4.9,1.24,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-21,united_states,wales,match_total,4.5,12.0,1.08,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-21,united_states,wales,match_total,5.5,27.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-22,argentina,saudi_arabia,match_total,0.5,1.03,24.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-22,argentina,saudi_arabia,match_total,1.5,1.19,5.8,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-22,argentina,saudi_arabia,match_total,2.5,1.6,2.68,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-22,argentina,saudi_arabia,match_total,3.5,2.47,1.66,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-22,argentina,saudi_arabia,match_total,4.5,4.4,1.26,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-22,argentina,saudi_arabia,match_total,5.5,8.2,1.1,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-22,denmark,tunisia,match_total,0.5,1.09,8.5,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-22,denmark,tunisia,match_total,1.5,1.43,3.1,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-22,denmark,tunisia,match_total,2.5,2.35,1.7,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-22,denmark,tunisia,match_total,3.5,4.6,1.25,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-22,denmark,tunisia,match_total,4.5,10.5,1.08,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-22,denmark,tunisia,match_total,5.5,25.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-22,mexico,poland,match_total,0.5,1.11,8.5,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-22,mexico,poland,match_total,1.5,1.45,2.9,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-22,mexico,poland,match_total,2.5,2.46,1.62,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-22,mexico,poland,match_total,3.5,4.6,1.23,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-22,mexico,poland,match_total,4.5,10.5,1.08,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-22,mexico,poland,match_total,5.5,27.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-22,france,australia,match_total,1.5,1.21,5.1,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-22,france,australia,match_total,2.5,1.7,2.38,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-22,france,australia,match_total,3.5,2.65,1.54,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-22,france,australia,match_total,4.5,5.0,1.21,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-22,france,australia,match_total,5.5,10.5,1.08,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-23,morocco,croatia,match_total,0.5,1.09,9.2,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-23,morocco,croatia,match_total,1.5,1.41,3.15,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-23,morocco,croatia,match_total,2.5,2.2,1.75,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-23,morocco,croatia,match_total,3.5,4.2,1.27,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-23,morocco,croatia,match_total,4.5,9.5,1.1,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-23,morocco,croatia,match_total,5.5,23.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-23,germany,japan,match_total,0.5,1.04,19.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-23,germany,japan,match_total,1.5,1.19,5.3,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-23,germany,japan,match_total,2.5,1.65,2.45,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-23,germany,japan,match_total,3.5,2.48,1.6,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-23,germany,japan,match_total,4.5,4.4,1.24,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-23,germany,japan,match_total,5.5,8.6,1.1,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-23,spain,costa_rica,match_total,0.5,1.03,17.5,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-23,spain,costa_rica,match_total,1.5,1.18,5.7,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-23,spain,costa_rica,match_total,2.5,1.57,2.6,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-23,spain,costa_rica,match_total,3.5,2.41,1.65,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-23,spain,costa_rica,match_total,4.5,4.35,1.28,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-23,spain,costa_rica,match_total,5.5,8.8,1.11,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-23,belgium,canada,match_total,0.5,1.05,15.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-23,belgium,canada,match_total,1.5,1.25,4.2,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-23,belgium,canada,match_total,2.5,1.8,2.18,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-23,belgium,canada,match_total,3.5,2.96,1.47,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-23,belgium,canada,match_total,4.5,5.8,1.18,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-23,belgium,canada,match_total,5.5,13.0,1.07,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-24,switzerland,cameroon,match_total,0.5,1.09,8.5,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-24,switzerland,cameroon,match_total,1.5,1.43,3.05,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-24,switzerland,cameroon,match_total,2.5,2.3,1.7,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-24,switzerland,cameroon,match_total,3.5,4.5,1.24,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-24,switzerland,cameroon,match_total,4.5,10.5,1.08,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-24,switzerland,cameroon,match_total,5.5,26.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-24,uruguay,south_korea,match_total,0.5,1.09,9.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-24,uruguay,south_korea,match_total,1.5,1.42,3.05,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-24,uruguay,south_korea,match_total,2.5,2.31,1.7,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-24,uruguay,south_korea,match_total,3.5,4.45,1.25,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-24,uruguay,south_korea,match_total,4.5,10.0,1.09,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-24,uruguay,south_korea,match_total,5.5,25.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-24,portugal,ghana,match_total,0.5,1.04,15.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-24,portugal,ghana,match_total,1.5,1.25,4.55,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-24,portugal,ghana,match_total,2.5,1.77,2.18,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-24,portugal,ghana,match_total,3.5,2.9,1.46,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-24,portugal,ghana,match_total,4.5,5.75,1.18,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-24,portugal,ghana,match_total,5.5,13.0,1.07,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-24,brazil,serbia,match_total,0.5,1.05,15.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-24,brazil,serbia,match_total,1.5,1.26,4.45,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-24,brazil,serbia,match_total,2.5,1.75,2.26,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-24,brazil,serbia,match_total,3.5,2.93,1.45,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-24,brazil,serbia,match_total,4.5,5.7,1.19,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-24,brazil,serbia,match_total,5.5,12.5,1.07,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-25,wales,iran,match_total,0.5,1.11,8.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-25,wales,iran,match_total,1.5,1.5,2.88,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-25,wales,iran,match_total,2.5,2.55,1.61,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-25,wales,iran,match_total,3.5,5.1,1.2,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-25,wales,iran,match_total,4.5,12.0,1.07,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-25,wales,iran,match_total,5.5,31.0,1.02,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-25,qatar,senegal,match_total,0.5,1.1,8.5,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-25,qatar,senegal,match_total,1.5,1.47,2.9,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-25,qatar,senegal,match_total,2.5,2.51,1.6,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-25,qatar,senegal,match_total,3.5,4.7,1.22,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-25,qatar,senegal,match_total,4.5,10.5,1.07,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-25,qatar,senegal,match_total,5.5,29.0,1.02,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-25,netherlands,ecuador,match_total,0.5,1.1,9.5,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-25,netherlands,ecuador,match_total,1.5,1.46,3.15,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-25,netherlands,ecuador,match_total,2.5,2.35,1.73,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-25,netherlands,ecuador,match_total,3.5,4.6,1.24,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-25,netherlands,ecuador,match_total,4.5,10.0,1.08,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-25,netherlands,ecuador,match_total,5.5,27.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-25,england,united_states,match_total,0.5,1.07,11.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-25,england,united_states,match_total,1.5,1.35,3.5,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-25,england,united_states,match_total,2.5,2.1,1.9,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-25,england,united_states,match_total,3.5,3.7,1.32,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-25,england,united_states,match_total,4.5,7.6,1.11,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-25,england,united_states,match_total,5.5,18.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-26,tunisia,australia,match_total,0.5,1.1,8.2,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-26,tunisia,australia,match_total,1.5,1.47,2.9,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-26,tunisia,australia,match_total,2.5,2.43,1.65,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-26,tunisia,australia,match_total,3.5,4.8,1.24,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-26,tunisia,australia,match_total,4.5,11.5,1.08,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-26,tunisia,australia,match_total,5.5,28.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-26,poland,saudi_arabia,match_total,0.5,1.09,8.5,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-26,poland,saudi_arabia,match_total,1.5,1.44,3.05,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-26,poland,saudi_arabia,match_total,2.5,2.31,1.67,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-26,poland,saudi_arabia,match_total,3.5,4.5,1.23,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-26,poland,saudi_arabia,match_total,4.5,10.5,1.08,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-26,poland,saudi_arabia,match_total,5.5,26.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-26,france,denmark,match_total,0.5,1.09,9.5,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-26,france,denmark,match_total,1.5,1.4,3.25,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-26,france,denmark,match_total,2.5,2.18,1.75,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-26,france,denmark,match_total,3.5,4.15,1.27,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-26,france,denmark,match_total,4.5,9.2,1.09,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-26,france,denmark,match_total,5.5,23.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-26,argentina,mexico,match_total,0.5,1.08,9.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-26,argentina,mexico,match_total,1.5,1.4,3.2,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-26,argentina,mexico,match_total,2.5,2.3,1.7,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-26,argentina,mexico,match_total,3.5,4.5,1.26,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-26,argentina,mexico,match_total,4.5,10.5,1.09,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-26,argentina,mexico,match_total,5.5,23.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-27,japan,costa_rica,match_total,0.5,1.08,11.5,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-27,japan,costa_rica,match_total,1.5,1.36,3.55,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-27,japan,costa_rica,match_total,2.5,2.08,1.86,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-27,japan,costa_rica,match_total,3.5,3.85,1.33,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-27,japan,costa_rica,match_total,4.5,8.3,1.11,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-27,japan,costa_rica,match_total,5.5,20.0,1.04,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-27,belgium,morocco,match_total,0.5,1.1,9.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-27,belgium,morocco,match_total,1.5,1.45,3.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-27,belgium,morocco,match_total,2.5,2.26,1.7,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-27,belgium,morocco,match_total,3.5,4.5,1.24,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-27,belgium,morocco,match_total,4.5,9.8,1.08,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-27,belgium,morocco,match_total,5.5,27.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-27,croatia,canada,match_total,0.5,1.09,9.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-27,croatia,canada,match_total,1.5,1.4,3.15,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-27,croatia,canada,match_total,2.5,2.25,1.73,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-27,croatia,canada,match_total,3.5,4.35,1.27,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-27,croatia,canada,match_total,4.5,10.0,1.09,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-27,croatia,canada,match_total,5.5,22.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-27,spain,germany,match_total,0.5,1.06,12.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-27,spain,germany,match_total,1.5,1.27,4.15,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-27,spain,germany,match_total,2.5,1.85,2.03,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-27,spain,germany,match_total,3.5,3.1,1.42,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-27,spain,germany,match_total,4.5,6.25,1.16,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-27,spain,germany,match_total,5.5,14.0,1.06,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-28,cameroon,serbia,match_total,0.5,1.07,10.5,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-28,cameroon,serbia,match_total,1.5,1.34,3.55,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-28,cameroon,serbia,match_total,2.5,2.13,1.85,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-28,cameroon,serbia,match_total,3.5,3.7,1.33,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-28,cameroon,serbia,match_total,4.5,7.9,1.11,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-28,cameroon,serbia,match_total,5.5,18.5,1.04,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-28,south_korea,ghana,match_total,0.5,1.11,7.6,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-28,south_korea,ghana,match_total,1.5,1.5,2.75,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-28,south_korea,ghana,match_total,2.5,2.59,1.57,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-28,south_korea,ghana,match_total,3.5,5.1,1.21,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-28,south_korea,ghana,match_total,4.5,12.0,1.07,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-28,south_korea,ghana,match_total,5.5,30.0,1.02,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-28,brazil,switzerland,match_total,0.5,1.07,10.5,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-28,brazil,switzerland,match_total,1.5,1.36,3.4,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-28,brazil,switzerland,match_total,2.5,2.1,1.87,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-28,brazil,switzerland,match_total,3.5,3.95,1.3,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-28,brazil,switzerland,match_total,4.5,8.7,1.11,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-28,brazil,switzerland,match_total,5.5,21.0,1.04,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-28,portugal,uruguay,match_total,0.5,1.1,9.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-28,portugal,uruguay,match_total,1.5,1.45,3.05,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-28,portugal,uruguay,match_total,2.5,2.31,1.68,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-28,portugal,uruguay,match_total,3.5,4.5,1.24,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-28,portugal,uruguay,match_total,4.5,9.8,1.09,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-28,portugal,uruguay,match_total,5.5,27.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-29,netherlands,qatar,match_total,0.5,1.03,24.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-29,netherlands,qatar,match_total,1.5,1.16,6.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-29,netherlands,qatar,match_total,2.5,1.5,2.75,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-29,netherlands,qatar,match_total,3.5,2.38,1.7,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-29,netherlands,qatar,match_total,4.5,3.95,1.31,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-29,netherlands,qatar,match_total,5.5,8.0,1.12,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-29,ecuador,senegal,match_total,0.5,1.13,7.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-29,ecuador,senegal,match_total,1.5,1.55,2.6,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-29,ecuador,senegal,match_total,2.5,2.7,1.6,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-29,ecuador,senegal,match_total,3.5,5.6,1.18,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-29,ecuador,senegal,match_total,4.5,13.0,1.06,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-29,ecuador,senegal,match_total,5.5,40.0,1.02,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-29,iran,united_states,match_total,0.5,1.09,9.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-29,iran,united_states,match_total,1.5,1.42,3.1,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-29,iran,united_states,match_total,2.5,2.33,1.67,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-29,iran,united_states,match_total,3.5,4.5,1.25,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-29,iran,united_states,match_total,4.5,10.5,1.09,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-29,iran,united_states,match_total,5.5,24.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-29,wales,england,match_total,0.5,1.07,11.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-29,wales,england,match_total,1.5,1.35,3.5,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-29,wales,england,match_total,2.5,2.05,1.85,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-29,wales,england,match_total,3.5,3.7,1.33,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-29,wales,england,match_total,4.5,7.5,1.12,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-29,wales,england,match_total,5.5,18.0,1.04,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-30,tunisia,france,match_total,0.5,1.08,10.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-30,tunisia,france,match_total,1.5,1.39,3.35,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-30,tunisia,france,match_total,2.5,2.15,1.8,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-30,tunisia,france,match_total,3.5,4.0,1.28,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-30,tunisia,france,match_total,4.5,8.4,1.1,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-30,tunisia,france,match_total,5.5,21.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-30,australia,denmark,match_total,0.5,1.06,12.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-30,australia,denmark,match_total,1.5,1.32,3.7,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-30,australia,denmark,match_total,2.5,2.0,1.96,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-30,australia,denmark,match_total,3.5,3.6,1.36,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-30,australia,denmark,match_total,4.5,7.5,1.13,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-30,australia,denmark,match_total,5.5,16.0,1.04,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-30,saudi_arabia,mexico,match_total,0.5,1.06,13.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-30,saudi_arabia,mexico,match_total,1.5,1.33,3.8,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-30,saudi_arabia,mexico,match_total,2.5,1.93,1.96,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-30,saudi_arabia,mexico,match_total,3.5,3.4,1.36,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-30,saudi_arabia,mexico,match_total,4.5,6.8,1.13,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-30,saudi_arabia,mexico,match_total,5.5,16.0,1.04,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-30,poland,argentina,match_total,0.5,1.07,11.5,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-30,poland,argentina,match_total,1.5,1.36,3.45,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-30,poland,argentina,match_total,2.5,2.13,1.83,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-30,poland,argentina,match_total,3.5,3.9,1.29,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-30,poland,argentina,match_total,4.5,8.5,1.1,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-11-30,poland,argentina,match_total,5.5,21.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-01,canada,morocco,match_total,0.5,1.1,8.6,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-01,canada,morocco,match_total,1.5,1.45,3.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-01,canada,morocco,match_total,2.5,2.3,1.73,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-01,canada,morocco,match_total,3.5,4.5,1.25,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-01,canada,morocco,match_total,4.5,10.5,1.08,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-01,canada,morocco,match_total,5.5,25.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-01,croatia,belgium,match_total,0.5,1.07,11.5,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-01,croatia,belgium,match_total,1.5,1.34,3.6,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-01,croatia,belgium,match_total,2.5,2.1,1.85,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-01,croatia,belgium,match_total,3.5,3.55,1.34,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-01,croatia,belgium,match_total,4.5,7.5,1.12,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-01,croatia,belgium,match_total,5.5,17.0,1.04,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-01,japan,spain,match_total,0.5,1.07,12.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-01,japan,spain,match_total,1.5,1.33,3.65,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-01,japan,spain,match_total,2.5,2.04,1.88,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-01,japan,spain,match_total,3.5,3.65,1.34,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-01,japan,spain,match_total,4.5,7.7,1.13,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-01,japan,spain,match_total,5.5,18.5,1.04,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-01,costa_rica,germany,match_total,0.5,1.02,28.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-01,costa_rica,germany,match_total,1.5,1.11,8.2,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-01,costa_rica,germany,match_total,2.5,1.36,3.4,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-01,costa_rica,germany,match_total,3.5,1.9,2.06,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-01,costa_rica,germany,match_total,4.5,3.1,1.47,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-01,costa_rica,germany,match_total,5.5,5.7,1.2,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-02,south_korea,portugal,match_total,0.5,1.07,12.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-02,south_korea,portugal,match_total,1.5,1.34,3.7,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-02,south_korea,portugal,match_total,2.5,2.0,1.91,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-02,south_korea,portugal,match_total,3.5,3.7,1.33,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-02,south_korea,portugal,match_total,4.5,8.0,1.12,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-02,south_korea,portugal,match_total,5.5,19.0,1.04,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-02,ghana,uruguay,match_total,0.5,1.07,11.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-02,ghana,uruguay,match_total,1.5,1.35,3.5,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-02,ghana,uruguay,match_total,2.5,2.1,1.82,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-02,ghana,uruguay,match_total,3.5,3.9,1.33,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-02,ghana,uruguay,match_total,4.5,8.5,1.12,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-02,ghana,uruguay,match_total,5.5,18.0,1.04,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-02,serbia,switzerland,match_total,0.5,1.07,11.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-02,serbia,switzerland,match_total,1.5,1.33,3.6,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-02,serbia,switzerland,match_total,2.5,1.99,1.9,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-02,serbia,switzerland,match_total,3.5,3.5,1.35,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-02,serbia,switzerland,match_total,4.5,7.2,1.14,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-02,serbia,switzerland,match_total,5.5,17.0,1.05,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-02,cameroon,brazil,match_total,0.5,1.04,16.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-02,cameroon,brazil,match_total,1.5,1.23,4.8,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-02,cameroon,brazil,match_total,2.5,1.77,2.25,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-02,cameroon,brazil,match_total,3.5,2.77,1.5,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-02,cameroon,brazil,match_total,4.5,5.3,1.19,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-02,cameroon,brazil,match_total,5.5,11.5,1.07,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-03,netherlands,united_states,match_total,0.5,1.1,8.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-03,netherlands,united_states,match_total,1.5,1.45,2.91,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-03,netherlands,united_states,match_total,2.5,2.42,1.65,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-03,netherlands,united_states,match_total,3.5,4.75,1.24,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-03,netherlands,united_states,match_total,4.5,11.0,1.09,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-03,netherlands,united_states,match_total,5.5,28.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-03,argentina,australia,match_total,0.5,1.05,14.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-03,argentina,australia,match_total,1.5,1.28,4.25,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-03,argentina,australia,match_total,2.5,1.84,2.1,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-03,argentina,australia,match_total,3.5,3.15,1.41,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-03,argentina,australia,match_total,4.5,6.2,1.15,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-03,argentina,australia,match_total,5.5,14.0,1.05,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-04,france,poland,match_total,0.5,1.05,15.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-04,france,poland,match_total,1.5,1.25,4.3,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-04,france,poland,match_total,2.5,1.75,2.18,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-04,france,poland,match_total,3.5,3.05,1.44,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-04,france,poland,match_total,4.5,6.1,1.18,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-04,france,poland,match_total,5.5,13.5,1.06,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-04,england,senegal,match_total,0.5,1.1,8.2,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-04,england,senegal,match_total,1.5,1.48,2.9,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-04,england,senegal,match_total,2.5,2.5,1.75,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-04,england,senegal,match_total,3.5,4.7,1.23,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-04,england,senegal,match_total,4.5,11.0,1.08,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-04,england,senegal,match_total,5.5,29.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-05,japan,croatia,match_total,0.5,1.1,8.5,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-05,japan,croatia,match_total,1.5,1.45,3.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-05,japan,croatia,match_total,2.5,2.3,1.7,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-05,japan,croatia,match_total,3.5,4.5,1.24,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-05,japan,croatia,match_total,4.5,10.0,1.08,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-05,japan,croatia,match_total,5.5,27.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-05,brazil,south_korea,match_total,0.5,1.04,16.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-05,brazil,south_korea,match_total,1.5,1.22,4.75,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-05,brazil,south_korea,match_total,2.5,1.75,2.2,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-05,brazil,south_korea,match_total,3.5,2.8,1.49,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-05,brazil,south_korea,match_total,4.5,5.3,1.2,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-05,brazil,south_korea,match_total,5.5,12.0,1.07,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-06,morocco,spain,match_total,0.5,1.08,9.4,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-06,morocco,spain,match_total,1.5,1.41,3.1,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-06,morocco,spain,match_total,2.5,2.23,1.8,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-06,morocco,spain,match_total,3.5,4.25,1.26,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-06,morocco,spain,match_total,4.5,9.5,1.09,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-06,morocco,spain,match_total,5.5,23.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-06,portugal,switzerland,match_total,0.5,1.06,11.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-06,portugal,switzerland,match_total,1.5,1.3,3.9,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-06,portugal,switzerland,match_total,2.5,2.17,1.95,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-06,portugal,switzerland,match_total,3.5,3.35,1.4,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-06,portugal,switzerland,match_total,4.5,7.0,1.14,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-06,portugal,switzerland,match_total,5.5,15.5,1.05,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-09,croatia,brazil,match_total,0.5,1.06,12.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-09,croatia,brazil,match_total,1.5,1.32,3.85,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-09,croatia,brazil,match_total,2.5,1.93,2.08,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-09,croatia,brazil,match_total,3.5,3.4,1.35,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-09,croatia,brazil,match_total,4.5,7.1,1.13,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-09,croatia,brazil,match_total,5.5,16.5,1.05,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-09,netherlands,argentina,match_total,0.5,1.11,7.5,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-09,netherlands,argentina,match_total,1.5,1.5,2.77,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-09,netherlands,argentina,match_total,2.5,2.5,1.58,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-09,netherlands,argentina,match_total,3.5,5.1,1.2,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-09,netherlands,argentina,match_total,4.5,12.0,1.07,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-09,netherlands,argentina,match_total,5.5,30.0,1.02,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-10,morocco,portugal,match_total,0.5,1.08,10.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-10,morocco,portugal,match_total,1.5,1.38,3.25,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-10,morocco,portugal,match_total,2.5,2.37,1.76,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-10,morocco,portugal,match_total,3.5,3.95,1.29,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-10,morocco,portugal,match_total,4.5,8.2,1.1,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-10,morocco,portugal,match_total,5.5,21.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-10,england,france,match_total,0.5,1.1,8.5,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-10,england,france,match_total,1.5,1.45,3.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-10,england,france,match_total,2.5,2.4,1.64,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-10,england,france,match_total,3.5,4.55,1.23,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-10,england,france,match_total,4.5,10.5,1.08,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-10,england,france,match_total,5.5,26.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-13,argentina,croatia,match_total,0.5,1.12,7.4,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-13,argentina,croatia,match_total,1.5,1.5,2.8,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-13,argentina,croatia,match_total,2.5,2.5,1.6,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-13,argentina,croatia,match_total,3.5,5.0,1.21,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-13,argentina,croatia,match_total,4.5,11.5,1.07,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-13,argentina,croatia,match_total,5.5,30.0,1.02,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-14,france,morocco,match_total,0.5,1.09,10.25,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-14,france,morocco,match_total,1.5,1.45,2.97,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-14,france,morocco,match_total,2.5,2.35,1.68,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-14,france,morocco,match_total,3.5,4.7,1.23,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-14,france,morocco,match_total,4.5,11.0,1.08,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-14,france,morocco,match_total,5.5,28.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-17,croatia,morocco,match_total,0.5,1.06,13.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-17,croatia,morocco,match_total,1.5,1.28,4.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-17,croatia,morocco,match_total,2.5,1.92,2.0,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-17,croatia,morocco,match_total,3.5,3.15,1.4,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-17,croatia,morocco,match_total,4.5,6.2,1.16,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-17,croatia,morocco,match_total,5.5,14.0,1.06,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-18,argentina,france,match_total,0.5,1.1,8.6,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-18,argentina,france,match_total,1.5,1.42,3.1,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-18,argentina,france,match_total,2.5,2.51,1.65,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-18,argentina,france,match_total,3.5,4.4,1.26,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-18,argentina,france,match_total,4.5,9.2,1.09,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/
+FIFA World Cup,2022-12-18,argentina,france,match_total,5.5,24.0,1.03,oddsportal_avg,True,https://www.oddsportal.com/football/world/world-cup-2022/results/

@@ -7,6 +7,31 @@ Every working session must add at least one entry under `[Unreleased]`.
 ## [Unreleased]
 
 ### Added
+- 2026-06-13 (g): backlog #3 DONE — historical prop-line eval (D036). Ingested
+    the user's hand-collected Euro 2024 (51) + WC 2022 (64) OddsPortal consensus
+    closes (1X2 + the full match O/U ladder 0.5..5.5) into
+    data/manual/historical_prop_lines.csv (688 rows) via
+    src/wc26/data/historical_prop_lines.py — a self-checking ingest that parses
+    the textutil'd source (kept under data/manual/sources/), applies a small
+    documented correction patch (3 spelling fixes, 2 decimal typos, 2 dropped
+    tail lines), and backfills canonical ids+dates from market_odds keyed by
+    (tournament, pair) — required because France v Poland recurs across WC22 +
+    Euro24 and Croatia v Morocco rematch within WC22. New
+    src/wc26/backtest/prop_lines.py + `wc26 eval-prop-lines` (rho=0, leak-free)
+    scores the consensus close on realized 90' results (extra-time 90'-total
+    patch, NINETY_MIN_TOTAL, tied to match_stats.extra_time by assertion).
+    VERDICTS (pinned, tests/test_prop_lines.py): (1) the consensus O2.5 close is
+    near-unpredictable at n=115 (corr 0.094, log-loss 0.6855 ~ naive 0.6867,
+    slope 0.64) — first independent-market vindication of the D019/D028
+    match-total quarantine; (2) the 1X2-anchored grid reproduces the
+    independent total close (corr 0.928, anchored LL 0.6850 ~ close 0.6855) —
+    first real-market confirmation of D028 anchoring; (3) #8 unblocked —
+    anchor-vs-close |edge| median 0.064, so the Phase-0 0.05 sits below the
+    median disagreement, but the disagreement edge is not bankable (0.03 corr
+    gap at n~100, flips negative past t=0.10). #8: keep 0.05 as a floor;
+    team-total threshold stays forward-derived from live CLV. 12 new tests
+    (244 total), lint clean. The user's 1X2 cross-checked market_odds at mean
+    0.0082 per-outcome, confirming near-closing quality.
 - 2026-06-13 (f): completed backlog #15 (settle auto-CLV) and #4 (WC scoring
     offset). (#15, D034) `wc26 settle` no longer needs a hand-captured prop
     close: the closing fair prob resolves prop-close -> --anchor-1x2 ->

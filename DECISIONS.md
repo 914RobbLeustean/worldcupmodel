@@ -538,3 +538,59 @@ gate i and gate ii to still pass on the full sample (the pooled estimate says
 they will) and match totals to stay quarantined unless the O2.5 slope enters
 [0.8, 1.2]. D030 permits this anytime since it is pre-2026-validated; the
 defer is deliberate, given (1).
+
+## D036 — 2026-06-13 — Historical prop-line eval: consensus match-total close (backlog #3/#8)
+The user hand-collected every Euro 2024 (51) + WC 2022 (64) match off
+OddsPortal — 1X2 plus the FULL match Over/Under ladder (0.5..5.5). Team totals
+are not carried by the site, so this is the STEP-0 FALLBACK path #3
+pre-registered: MATCH O/U is the new asset (the project had no market total
+baseline at all), collected as the consensus close.
+INGEST (src/wc26/data/historical_prop_lines.py -> data/manual/
+historical_prop_lines.csv, 688 rows / 115 matches): parses data/manual/
+sources/eur24wc22_odds.txt (textutil of the user's .rtf, kept for provenance),
+applies a small DOCUMENTED correction patch (raw left untouched) — 3 spelling
+fixes that block team resolution (SUA->USA, Saudia->Saudi x3, the one
+no-separator matchup), 2 decimal typos caught by de-vig+monotonicity
+(O5.5 over 1.400->14.0, 1.200->12.0), 2 malformed tail lines dropped — and
+backfills canonical ids + dates from market_odds.parquet keyed by
+(tournament, pair). That key is REQUIRED: a pair recurs across tournaments
+(France v Poland — WC22 R16 AND Euro24 Group D) and within one via a 3rd-place
+rematch (WC22 Croatia v Morocco, Group F); a frozenset-only key silently
+mis-dated them. The ingest is self-checking (must recover 51+64 and join).
+1X2 NOT stored: market_odds.parquet already has all 115 in canonical, leak-
+clean form (D015), used from there for anchoring. The user's own 1X2
+de-vigs to within mean 0.0082 / max 0.067 per-outcome of that source — i.e.
+these ARE near-closing consensus prices, not arbitrary quotes.
+EXTRA TIME (D012/D017): the O/U odds are 90'; results.parquet stores
+ET-INCLUSIVE knockout scores with NO flag in that table. Every extra_time
+match (10, from match_stats) is a 90' DRAW for 1X2; its 90' TOTAL comes from
+NINETY_MIN_TOTAL (verified; 4 of 10 differ from results — e.g. final 3-3->2-2,
+Spain-Germany 2-1->1-1 flips O2.5 to under). A two-way assertion ties the
+patch to the match_stats flag so a future ET match cannot be mis-scored.
+EVAL (src/wc26/backtest/prop_lines.py, `wc26 eval-prop-lines`, rho=0 leak-free;
+pinned by tests/test_prop_lines.py):
+1. CLOSE CALIBRATION — the consensus O2.5 close is NEAR-UNPREDICTABLE over
+   n=115: log-loss 0.6855 vs base-rate naive 0.6867 (skill +0.0013),
+   discrimination corr 0.094, slope 0.64 (overconfident). Match totals are a
+   coin-flip at the close at this n. First INDEPENDENT-MARKET vindication of
+   the D019/D028 match-total quarantine (not just our own engine).
+2. ANCHORING (D028) — the de-vigged-1X2-anchored grid REPRODUCES the
+   independent total close: corr 0.928, mean|Δ P(O2.5)| 0.067, anchored
+   log-loss 0.6850 ~ close 0.6855. First confirmation of anchoring against a
+   real, separately-sourced total price (D028 had only the engine eval).
+3. EDGE THRESHOLD (#8) — the live mechanism (D032) is edge = anchored_p -
+   prop_fair_p; on this sample |edge| has median 0.064 / p75 0.087, so the
+   Phase-0 0.05 sits BELOW the median disagreement (it flags normal noise, as
+   the review warned). Betting the anchor-vs-close disagreement is weakly
+   positive at moderate t (hit 58-61%, t<=0.07) but rests on a 0.03 corr gap
+   at n~100 and FLIPS negative by t=0.10 (the grid's extreme-disagreement
+   miscalibration) — NOT bankable.
+DECISION: backlog #3 DONE. #8 gets a data-grounded answer, NOT a live flip:
+keep edge_threshold 0.05 as a conservative FLOOR (it is not too high; if
+anything the supported direction is up toward p75~0.085, but the realized
+curve says the biggest edges are grid artifacts, so do not chase them). The
+TEAM-total threshold cannot be set from this sample (no team-total lines, and
+even the match-total close is too noisy to calibrate against) — it stays
+FORWARD-derived from live CLV vs the snapshot close (D033/D034), already
+running. LIMITATIONS (all recorded): consensus close, not Superbet's own;
+MATCH not TEAM totals; n=115, vig-free, rho=0. No new dependencies.
