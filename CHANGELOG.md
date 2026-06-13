@@ -7,6 +7,26 @@ Every working session must add at least one entry under `[Unreleased]`.
 ## [Unreleased]
 
 ### Added
+- 2026-06-13 (f): completed backlog #15 (settle auto-CLV) and #4 (WC scoring
+    offset). (#15, D034) `wc26 settle` no longer needs a hand-captured prop
+    close: the closing fair prob resolves prop-close -> --anchor-1x2 ->
+    latest odds snapshot (D033), on the SAME rho-consistent anchored grid
+    edges/log-bet price with; ledger.grade_bet is the new primitive; CLV
+    source stamped in the note. Closes the snapshot->price->bet->settle loop.
+    (#4, D035) WC scoring-environment offset built into the engine
+    (_estimate_finals_offset + predict_grid apply_finals_offset, default OFF)
+    and walk-forward validated (backtest/wc_offset.py, runs in `wc26
+    backtest`, pinned by tests/test_wc_offset.py): on the WC subset it
+    improves 1X2 LL 0.981->0.974, team-total 1.477->1.462, match-total
+    1.951->1.920, level 2.20->2.45 (real 2.66), holds gate i/ii (pooled),
+    but does NOT fix the calibration slope (level != spread, per D019).
+    Kept OFF — pricing is market-anchored so it has no edge value now;
+    activation belongs to the July-3 recalibration (D035). All prior gate
+    numbers byte-identical (offset is additive). 14 new tests, 232 total,
+    lint clean.
+
+
+### Added
 - 2026-06-13 (e): automated kickoff odds snapshots (D033, backlog #6) — the
     manual-capture single point of failure (which lost CLV this morning) is
     closed. New `wc26 snapshot-odds`: one budgeted Odds API request

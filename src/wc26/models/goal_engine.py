@@ -110,6 +110,12 @@ class GoalEngineParams:
     anchor_attack: tuple[float, float]  # (intercept, slope per Elo point)
     anchor_defence: tuple[float, float]
     teams: dict[str, TeamStrength]
+    # WC-finals scoring offset (D035/#4): log-ratio of realized to in-sample
+    # predicted total goals over pre-cutoff World Cup training matches. Applied
+    # to BOTH lambdas only for World Cup matches and only when a caller opts in
+    # (predict_grid apply_finals_offset=True). Default 0.0 = no correction, so
+    # old saved params (without the field) and non-WC predictions are unchanged.
+    finals_scoring_offset: float = 0.0
 
     @property
     def version(self) -> str:
@@ -225,6 +231,8 @@ def fit_goal_engine(
             eff_matches=round(n_eff, 3),
         )
 
+    finals_offset = _estimate_finals_offset(train, teams, fitted["home_advantage"])
+
     return GoalEngineParams(
         fitted_at=datetime.now(tz=UTC).isoformat(timespec="seconds"),
         git_sha=git_sha(),
@@ -238,7 +246,41 @@ def fit_goal_engine(
         anchor_attack=(att_icept, att_slope),
         anchor_defence=(def_icept, def_slope),
         teams=teams,
+        finals_scoring_offset=finals_offset,
     )
+
+
+MIN_WC_MATCHES_FOR_OFFSET = 20
+
+
+def _estimate_finals_offset(
+    train: pd.DataFrame, teams: dict[str, TeamStrength], home_advantage: float
+) -> float:
+    """log(Σ realized / Σ predicted) total goals over World Cup training rows.
+
+    Leak-free: uses only the (pre-cutoff) training slice. The prediction uses
+    the SAME blended-lambda composition as predict_grid, so the offset exactly
+    re-levels the engine's WC total to the realized WC total. Returns 0.0 when
+    there are too few WC rows to estimate (the offset then does nothing). ET
+    rows are already excluded upstream (D014).
+    """
+    wc = train[train["tier"] == "world_cup"]
+    if len(wc) < MIN_WC_MATCHES_FOR_OFFSET:
+        return 0.0
+    pred_total = 0.0
+    real_total = 0.0
+    for home, away, neutral, hs, as_ in zip(
+        wc["home_id"], wc["away_id"], wc["neutral"], wc["home_score"], wc["away_score"], strict=True
+    ):
+        if home not in teams or away not in teams:
+            continue
+        ha = 0.0 if bool(neutral) else home_advantage
+        pred_total += float(np.exp(teams[home].attack + teams[away].defence + ha))
+        pred_total += float(np.exp(teams[away].attack + teams[home].defence))
+        real_total += int(hs) + int(as_)
+    if pred_total <= 0.0 or real_total <= 0:
+        return 0.0
+    return float(np.log(real_total / pred_total))
 
 
 def predict_grid(
@@ -247,11 +289,17 @@ def predict_grid(
     away_id: str,
     neutral: bool,
     max_goals: int = 15,
+    apply_finals_offset: bool = False,
 ) -> FootballProbabilityGrid:
     """Full correct-score grid for one match (90 minutes, D004).
 
     Home advantage applies only when neutral=False — at WC26 that is host
     nations only (the fixtures table carries the flag).
+
+    `apply_finals_offset` (D035/#4): scale BOTH lambdas by
+    exp(params.finals_scoring_offset) — the WC-finals re-levelling. Opt-in and
+    off by default, so non-WC predictions and existing callers are unchanged;
+    a caller pricing a World Cup match passes True.
     """
     for team in (home_id, away_id):
         if team not in params.teams:
@@ -261,8 +309,9 @@ def predict_grid(
             )
     home, away = params.teams[home_id], params.teams[away_id]
     ha = 0.0 if neutral else params.home_advantage
-    lam_home = float(np.exp(home.attack + away.defence + ha))
-    lam_away = float(np.exp(away.attack + home.defence))
+    offset = params.finals_scoring_offset if apply_finals_offset else 0.0
+    lam_home = float(np.exp(home.attack + away.defence + ha + offset))
+    lam_away = float(np.exp(away.attack + home.defence + offset))
     grid: FootballProbabilityGrid = create_dixon_coles_grid(
         lam_home, lam_away, rho=params.rho, max_goals=max_goals
     )

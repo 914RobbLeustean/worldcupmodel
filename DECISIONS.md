@@ -496,3 +496,45 @@ reconstruction (fair 0.547/0.188); the rho-consistent path gives 0.578/0.211.
 Both negative CLV; those rows stand (append-only) and were flagged degraded.
 This closes the automation loop: snapshot -> price -> bet -> settle, no manual
 capture required (a consensus close, not Superbet's own — see D033).
+
+## D035 — 2026-06-13 — WC scoring-environment offset: built, validated, default OFF (backlog #4)
+D019 flagged the engine under-predicting World Cup scoring. Diagnosed precisely
+(props backtest WC subset, n=118): engine totals run 21% light (2.20 vs 2.66),
+roughly SYMMETRIC across favorite (x1.22) and underdog (x1.18); Euro24/Copa24
+are within ~4%. So the fix is a WC-ONLY multiplicative log-offset delta, not a
+finals-wide one (a finals-wide offset would wrongly inflate Euro/Copa).
+BUILT: goal_engine._estimate_finals_offset fits delta = log(sum realized /
+sum predicted) over pre-cutoff WC training rows (leak-free); stored in params
+(finals_scoring_offset, default 0.0 so old payloads load unchanged);
+predict_grid(apply_finals_offset=True) scales both lambdas by exp(delta).
+EXPERIMENT (backtest/wc_offset.py, runs in `wc26 backtest`, pinned by
+tests/test_wc_offset.py), walk-forward (WC22 offset from WC18, etc.):
+- WC 1X2 log-loss 0.9810 -> 0.9741 (improves); team-total count-LL
+  1.4774 -> 1.4619; match-total 1.9511 -> 1.9202; level 2.20 -> 2.45 (toward
+  2.66, UNDER-corrects because the walk-forward delta is 0.06-0.13 vs the true
+  ~0.19, an in-sample-estimation bias + WC18's weak prior).
+- Pooled gate impact (WC is 128/211): engine 1X2 LL moves ~-0.0042 to ~0.9911,
+  still 0.0205 WORSE than market (gate ii holds) and beats Elo (gate i holds).
+- Does NOT fix the calibration slope (team O1.5 0.77 -> 0.74; match O2.5
+  0.28 -> 0.15) — a level shift cannot fix a spread problem, exactly as D019
+  predicted. Match totals stay QUARANTINED (D019/D030 pre-registration met).
+DECISION: keep the engine default OFF (apply_finals_offset=False everywhere
+live). Rationale — this is a timing/risk choice, NOT cargo-cult:
+1. POST-PIVOT IRRELEVANCE: team-total PRICING is market-anchored (D028/D032)
+   and does not use the engine grid, so the offset has ZERO edge/CLV value
+   now. Its only value is auxiliary (simulator realism, gate-iii alignment,
+   corners features, the no-anchor fallback) — a modest accuracy gain.
+2. DISCIPLINE (gated model == live model): turning it on live means applying
+   it CONSISTENTLY across every predict_grid site (predict, sim, engine
+   context, corners features) AND the backtest's 1X2+props paths, then
+   re-running ALL gates on that basis. That is a coherent recalibration, not a
+   flag flip — it belongs with the July-3 engine recalibration (D030), where
+   it co-occurs with the corners/cards re-gate.
+3. SHARPER DELTA LATER: the walk-forward delta under-estimates now; WC26
+   group-stage matches at July-3 give a current-tournament estimate.
+ACTIVATION CRITERIA (July-3 or a focused pass): wire apply_finals_offset for
+WC matches through all predict_grid call sites + the backtest, then require
+gate i and gate ii to still pass on the full sample (the pooled estimate says
+they will) and match totals to stay quarantined unless the O2.5 slope enters
+[0.8, 1.2]. D030 permits this anytime since it is pre-2026-validated; the
+defer is deliberate, given (1).

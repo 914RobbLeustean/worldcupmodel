@@ -39,21 +39,20 @@ What exists now (Phase 6.1, on top of the full Phase 0–5 stack):
   the advancing team.
 
 ## Next task
-  1. **Resume betting under anchored pricing (D032 DONE)** — the daily loop is
-     now: enter the book's 1X2 in data/manual/anchors.csv AND the team-total
-     quotes in lines.csv (PLAYBOOK §3), then `wc26 edges` (anchored) →
-     `wc26 log-bet` (refuses any match with no anchor). First live anchored
-     bets pending the next match day's quotes.
-  2. **`wc26 settle` auto-CLV from the odds snapshot (backlog #15, D033)** —
-     now the highest-value small item: derive the anchored fair team-total
-     prob from the latest pre-kickoff snapshot (or --anchor-1x2) so settling
-     no longer needs a hand-captured prop close. Fully automates the CLV loop.
-  3. **WC scoring-environment engine fix (backlog #4, D019/D030)** — not
-     calendar-gated; harness-validated on pre-2026 data. Improves the engine
-     that still supplies rho + corners/cards features even under anchoring.
-  4. User: set ODDS_API_KEY (free at the-odds-api.com) so `wc26 snapshot-odds`
-     runs in the daily loop near kickoffs; collect the historical prop-line
-     sample (BACKLOG #3, feeds edge_threshold #8). Line shopping (#5) DEFERRED.
+  The full daily betting loop is now automated end to end (D032/D033/D034):
+  snapshot-odds (auto 1X2 anchor + closing) → edges (anchored) → log-bet
+  (no anchor, no bet) → settle (auto-CLV from snapshot). ODDS_API_KEY is set.
+  1. **Run the loop on the next match day** — enter Superbet's team-total
+     lines (and ideally its own 1X2) per PLAYBOOK §3-4; `wc26 snapshot-odds`
+     near each kickoff (cron-able). First live anchored bets pending quotes.
+  2. **Historical prop-line sample (backlog #3, USER)** — collect into
+     data/manual/historical_prop_lines.csv; unblocks the data-derived
+     edge_threshold (#8). Then the agent builds the eval script.
+  3. **Phase 6.2 recalibration checkpoint — ~2026-07-03** (D030): corners/cards
+     re-gate on ~72 WC26 matches (pre-registered: a second failure is
+     acceptable); ACTIVATE the WC scoring offset (backlog #4/D035 — built +
+     validated, default OFF; wire apply_finals_offset through all predict_grid
+     sites + re-run gates here); group-state cards stakes feature; bracket flip.
   5. **Phase 6.2 recalibration checkpoint — NEXT MILESTONE, ~2026-07-03**
    (after the 72 group matches; do NOT start early — pre-registered
    expectations in D030): compare predicted vs realized over the group
@@ -103,6 +102,21 @@ team-total lines (lines.csv) → `wc26 edges` →
     B0004 won; all 4 negative CLV. B0001 paper (lost). 0 open.
 
 ## Last session summary
+  - 2026-06-13 (f): finished the NOW automation backlog — #15 (settle
+    auto-CLV) + #4 (WC scoring offset). #15 (D034): `wc26 settle` resolves the
+    closing fair prob prop-close -> --anchor-1x2 -> latest odds snapshot, on
+    the same rho-consistent anchored grid pricing uses; ledger.grade_bet
+    primitive; CLV source stamped. The snapshot->price->bet->settle loop is
+    fully automatic (consensus close, not Superbet's own — D033). #4 (D035):
+    WC scoring-environment offset built into the engine (delta estimated
+    walk-forward from pre-cutoff WC rows, predict_grid apply_finals_offset,
+    default OFF) and validated (backtest/wc_offset.py): improves WC 1X2/team/
+    match log-loss + level (2.20->2.45), holds gate i/ii, does NOT fix the
+    slope (level!=spread). Kept OFF — pricing-irrelevant post-pivot; activation
+    deferred to the July-3 recalibration. Also: set ODDS_API_KEY in ~/.zshrc
+    (validated; eu region = 25 books incl Pinnacle, NO Superbet — the snapshot
+    is a consensus, see D033). 14 new tests, 232 total, lint clean, all prior
+    gate numbers byte-identical.
   - 2026-06-13 (e): automated kickoff odds snapshots (D033, backlog #6) —
     closes the manual-capture single point of failure that lost CLV this
     morning. New `wc26 snapshot-odds`: one budgeted Odds API call (h2h+totals,

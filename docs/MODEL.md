@@ -51,6 +51,19 @@ git SHA, data cutoff, n_matches, all hyperparameters, anchor coefficients and
 per-team blended strengths. `wc26 predict` prints the version line of the
 params file it used. Fits are deterministic (sorted input, no randomness).
 
+### WC scoring-environment offset (D035, #4) — built, default OFF
+`_estimate_finals_offset` fits a WC-only multiplicative log-offset
+δ = log(Σrealized/Σpredicted total goals) over pre-cutoff World Cup training
+rows (leak-free); `predict_grid(apply_finals_offset=True)` scales both lambdas
+by exp(δ). Diagnosis: the engine runs 21% light on WC totals (2.20 vs 2.66),
+symmetric across favorite/underdog; Euro24/Copa24 are within ~4%. Walk-forward
+experiment (`backtest/wc_offset.py`): the offset improves WC 1X2 log-loss
+(0.981→0.974), team-total (1.477→1.462) and match-total (1.951→1.920)
+log-loss and the level (2.20→2.45), holds gate i/ii (pooled), but does NOT fix
+the calibration slope (level≠spread). Shipped OFF by default — pricing is
+market-anchored (D028) so it has no edge value now; activation belongs to the
+July-3 engine recalibration (D035).
+
 ## Backtest reports
 
 ### 2026-06-12 — Phase 2 walk-forward, 211 matches (WC18, WC22, Euro24, Copa24)

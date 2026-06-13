@@ -974,6 +974,19 @@ def backtest() -> None:
         f"1X2 blend w*={blend['w_star']:.2f} LL {blend['log_loss_at_w_star']:.4f}"
     )
 
+    from wc26.backtest.wc_offset import run_wc_offset_experiment, write_wc_offset_artifact
+
+    wc_summary = run_wc_offset_experiment(settings, results, stats)
+    typer.echo(f"wrote {write_wc_offset_artifact(wc_summary)}")
+    wb, wo = wc_summary["base"], wc_summary["offset"]
+    typer.echo(
+        f"wc_offset n={wc_summary['n_wc_matches']}  WC 1X2-LL {wb['x1x2_log_loss']:.4f}"
+        f"->{wo['x1x2_log_loss']:.4f}  team-LL {wb['team_count_log_loss']:.4f}"
+        f"->{wo['team_count_log_loss']:.4f}  total {wb['pred_total_mean']:.2f}"
+        f"->{wo['pred_total_mean']:.2f} (real {wb['realized_total_mean']:.2f}); "
+        f"engine default OFF (D035)"
+    )
+
 
 def _sim_inputs() -> "SimInputs":
     """Load everything the simulator needs (the CLI owns all I/O)."""

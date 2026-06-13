@@ -55,7 +55,7 @@
      rows are bonus. Team names as shown on the site — the eval script
      resolves aliases.
 
-4. **WC scoring-environment offset in the engine** — [accuracy, modest edge] — **TODO**
+4. **WC scoring-environment offset in the engine** — [accuracy, modest edge] — **DONE 2026-06-13 (D035): built + walk-forward validated (improves WC 1X2/team/match log-loss, holds gates, doesn't fix slope). Default OFF — pricing-irrelevant post-pivot; activation at the July-3 recalibration.**
    - D019 documented the engine under-predicting WC scoring (2.20 vs 2.66
      goals/match, favorite-side) via anchor shrinkage; fix = a finals
      environment offset fit walk-forward on pre-cutoff WC rows. Validated by
