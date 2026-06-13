@@ -16,7 +16,7 @@
 
 ## NOW (before/while the group stage runs)
 
-1. **Market-anchored team-total pricing** — [both] — **EXPERIMENT DONE 2026-06-13, verdict PASS (D028); live wiring TODO, BLOCKED(user enters book 1X2/total quotes)**
+1. **Market-anchored team-total pricing** — [both] — **DONE 2026-06-13: experiment PASS (D028) + live wiring in edges/log-bet (D032). Betting un-paused. User now enters the book's 1X2 in anchors.csv per match.**
    - Hypothesis: team totals priced from a DC grid whose lambdas are solved to
      reproduce the de-vigged market 1X2 beat the engine's own grid
      out-of-sample; live edges then measure intra-book inconsistency, not

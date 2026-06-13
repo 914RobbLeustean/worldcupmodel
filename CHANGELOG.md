@@ -7,6 +7,30 @@ Every working session must add at least one entry under `[Unreleased]`.
 ## [Unreleased]
 
 ### Added
+- 2026-06-13 (d): live market-anchored pricing (D032, backlog #1) — betting
+    un-paused. New data/manual/anchors.csv carries the book's 1X2 per match
+    (markets/anchors.py: de-vig + orientation-flip to fixtures order + the
+    lines.py guards — one unplayed fixture, unknown team raises, >24h stale,
+    duplicate (match,book) refused). `wc26 edges` prices each team total from
+    the DC grid solved to reproduce the de-vigged anchor 1X2 (rho = latest
+    engine fit), edge = anchored_p - prop fair_p; engine P(over) is a context
+    column only; a match with no anchor is UNPRICEABLE and can't be a BET row.
+    `wc26 log-bet` REFUSES a bet whose match has no anchor (no anchor, no bet),
+    prices via the anchor, stamps model_version "anchor+<engine>", records a
+    cross-book anchor in the note. Validated end-to-end: on the real fit + the
+    recalled USA v Paraguay 1X2, anchored over-edge is NEGATIVE on B0004
+    (-0.7%) and B0005 (-2.8%) where the engine gave +9.4%/+7.2% — the wiring
+    refuses exactly the two bets that lost CLV. markets/lines.py grew a shared
+    resolve_fixture() (no behaviour change). 11 new tests (tests/test_anchors).
+
+### Changed
+- 2026-06-13 (d): clv-report splits REAL money from PAPER bets (backlog #14):
+    the paper B0001's 15-unit notional was distorting the headline ROI/CLV.
+    Real money now reports on a "TOTAL (real)" line (real-money CLV -12.4% on
+    4 bets), paper on its own excluded line. 1 new test. 222 tests total,
+    make lint clean.
+
+### Added
 - 2026-06-13 (c): USA v Paraguay 4-1 ingested; final 3 bets settled; Phase 4
     acceptance CLOSED. Daily routine ran clean (scrape/sync appended result
     49,408; refit @8678a8d, 9,504 matches, ha 0.235; backtest + 208 tests

@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     import pandas as pd
 
     from wc26.config import Settings
+    from wc26.markets.anchors import MatchAnchor
     from wc26.markets.lines import TwoWayLine
     from wc26.models.goal_engine import GoalEngineParams
     from wc26.sim.bracket import Bracket
@@ -159,25 +160,53 @@ def predict(date: str = typer.Option(None, help="YYYY-MM-DD, default today")) ->
     )
 
 
-def _model_p_over(quote: "TwoWayLine") -> tuple[float, str]:
-    """Model P(over) for a team-total quote + the model version that priced it.
+def _load_engine_params() -> "GoalEngineParams":
+    from wc26.models.goal_engine import GoalEngineParams, latest_params_path
 
-    Markets code never computes model probabilities (architecture rule);
-    this CLI-layer glue asks the goal engine and hands floats down.
-    """
-    from wc26.models.goal_engine import GoalEngineParams, latest_params_path, predict_grid
+    return GoalEngineParams.load(latest_params_path())
+
+
+def _engine_p_over(params: "GoalEngineParams", quote: "TwoWayLine") -> float:
+    """Engine-grid P(over) for a team-total quote (reference/context only now —
+    D028 retired the engine grid as the pricing source; w*=0.00 vs market)."""
+    from wc26.models.goal_engine import predict_grid
     from wc26.models.team_totals import goal_marginals, p_over
 
-    params = GoalEngineParams.load(latest_params_path())
     grid = predict_grid(params, quote.home_id, quote.away_id, neutral=quote.neutral)
     home_dist, away_dist = goal_marginals(grid)
     dist = home_dist if quote.team_id == quote.home_id else away_dist
-    return p_over(dist, quote.line), params.version
+    return p_over(dist, quote.line)
+
+
+def _anchored_p_over(
+    params: "GoalEngineParams", quote: "TwoWayLine", anchor: "MatchAnchor"
+) -> tuple[float, str]:
+    """Market-anchored P(over) for a team-total quote + the pricing version.
+
+    Prices off the DC grid solved to reproduce the book's de-vigged 1X2
+    (D028), with rho from the latest engine fit (versioned, second-order per
+    the experiment). Markets code never computes model probabilities; this
+    CLI-layer glue calls the solver and hands a float down.
+    """
+    from wc26.models.market_anchor import market_anchored_grid
+    from wc26.models.team_totals import goal_marginals, p_over
+
+    grid = market_anchored_grid(anchor.fair_p_home, anchor.fair_p_away, rho=params.rho)
+    home_dist, away_dist = goal_marginals(grid)
+    dist = home_dist if quote.team_id == quote.home_id else away_dist
+    return p_over(dist, quote.line), f"anchor+{params.version}"
 
 
 @app.command()
 def edges() -> None:
-    """Compare model vs data/manual/lines.csv and print +EV bets.
+    """Compare market-anchored pricing vs data/manual/lines.csv; print +EV bets.
+
+    Pricing is market-anchored (D028): each team total is priced from the DC
+    grid solved to reproduce the book's de-vigged 1X2 (data/manual/anchors.csv),
+    NOT the engine grid — the engine's 1X2 opinion earned blend weight w*=0.00
+    out-of-sample. A quote whose match has no anchor is UNPRICEABLE and cannot
+    be flagged a bet (no anchor, no bet). The engine P(over) is shown for
+    context only.
 
     Hard guards (refuse, never skip): quarantined/unknown markets, matches
     without a prediction, stale quotes (>24 h), unknown teams.
@@ -186,6 +215,7 @@ def edges() -> None:
 
     from wc26.config import load_settings
     from wc26.data.results import PROCESSED_DIR
+    from wc26.markets.anchors import ANCHORS_PATH, anchor_for, load_anchors
     from wc26.markets.edges import evaluate, rank
     from wc26.markets.lines import LINES_PATH, load_lines
 
@@ -195,32 +225,53 @@ def edges() -> None:
     if not quotes:
         typer.echo(f"no lines in {LINES_PATH} — enter today's book quotes first")
         raise typer.Exit(code=1)
+    anchors = load_anchors(fixtures)
+    params = _load_engine_params()
 
-    evaluated = []
-    version = ""
+    priceable = []  # (Edge, engine_p_over, cross_book)
+    unpriced = []  # quotes with no anchor
+    version = f"anchor+{params.version}"
     for quote in quotes:
-        p_over_model, version = _model_p_over(quote)
-        evaluated.append(evaluate(quote, p_over_model))
+        anchor = anchor_for(anchors, quote.match, quote.book)
+        eng_p = _engine_p_over(params, quote)
+        if anchor is None:
+            unpriced.append(quote)
+            continue
+        p_over_anchor, _ = _anchored_p_over(params, quote, anchor)
+        priceable.append((evaluate(quote, p_over_anchor), eng_p, anchor.book != quote.book))
 
     typer.echo(
-        f"model {version} | edge threshold {settings.edge_threshold:.0%} | "
+        f"pricing {version} | edge threshold {settings.edge_threshold:.0%} | "
         f"flat stake {settings.unit_stake:.2f} ({settings.unit_pct:.1%} of {settings.bankroll:.0f})"
     )
     typer.echo(
-        f"\n{'':4s}{'match':32s} {'market':22s} {'book':10s} "
-        f"{'odds':>6s} {'fair':>6s} {'model':>6s} {'edge':>7s} {'ev':>7s} {'stake':>6s}"
+        f"\n{'':4s}{'match':30s} {'market':20s} {'book':9s} "
+        f"{'odds':>6s} {'fair':>6s} {'anchor':>7s} {'eng':>6s} {'edge':>7s} "
+        f"{'ev':>7s} {'stake':>6s}"
     )
-    for e in rank(evaluated):
+    ranked = rank([e for e, _, _ in priceable])
+    ctx = {id(e): (eng_p, xb) for e, eng_p, xb in priceable}
+    for e in ranked:
+        eng_p, cross_book = ctx[id(e)]
         bet = e.edge >= settings.edge_threshold
         stake = f"{settings.unit_stake:.2f}" if bet else "-"
+        tag = "BET*" if bet and cross_book else ("BET " if bet else "    ")
         typer.echo(
-            f"{'BET ' if bet else '    '}{e.quote.match:32s} {e.market_label:22s} "
-            f"{e.quote.book:10s} {e.odds:6.2f} {e.fair_p:6.3f} {e.model_p:6.3f} "
+            f"{tag}{e.quote.match:30s} {e.market_label:20s} "
+            f"{e.quote.book:9s} {e.odds:6.2f} {e.fair_p:6.3f} {e.model_p:7.3f} "
+            f"{(eng_p if e.side == 'over' else 1 - eng_p):6.3f} "
             f"{e.edge:+7.3f} {e.ev:+7.3f} {stake:>6s}"
         )
+    for quote in unpriced:
+        typer.echo(
+            f"  · {quote.match:30s} {quote.team_id + ' ' + str(quote.line):20s} "
+            f"{quote.book:9s}   NO ANCHOR — enter the book's 1X2 in {ANCHORS_PATH.name} (D028)"
+        )
     typer.echo(
-        "\n(edge = model_p - de-vigged fair_p, D005/D022; flat stakes only — no "
-        "Kelly. Log every bet taken with `wc26 log-bet`.)"
+        "\n(edge = anchored model_p - de-vigged fair_p; 'anchor' = P(side) from "
+        "the book's 1X2, 'eng' = engine grid (context only, D028). BET* = anchor "
+        "is a different book than the quote. Flat stakes only — no Kelly. Log "
+        "every bet with `wc26 log-bet`.)"
     )
 
 
@@ -239,14 +290,16 @@ def log_bet(
 ) -> None:
     """Append a bet to the append-only ledger (D006).
 
-    The market must be present in data/manual/lines.csv with BOTH sides so the
-    logged edge uses the same de-vig as `wc26 edges`.
+    The market must be in data/manual/lines.csv (both sides) AND its match must
+    have a 1X2 anchor in data/manual/anchors.csv: pricing is market-anchored
+    (D028) and a bet without an anchor is refused — no anchor, no bet.
     """
     import pandas as pd
 
     from wc26.config import load_settings
     from wc26.data.results import PROCESSED_DIR
     from wc26.data.teams import registry
+    from wc26.markets.anchors import ANCHORS_PATH, anchor_for, load_anchors
     from wc26.markets.edges import evaluate
     from wc26.markets.ledger import (
         BetRow,
@@ -286,7 +339,15 @@ def log_bet(
         )
     quote = candidates[0]
 
-    p_over_model, version = _model_p_over(quote)
+    anchor = anchor_for(load_anchors(fixtures), quote.match, quote.book)
+    if anchor is None:
+        raise LineError(
+            f"no 1X2 anchor for {quote.match} in {ANCHORS_PATH.name} — pricing is "
+            f"market-anchored (D028) and betting is refused without one. Enter the "
+            f"book's home/draw/away odds for this match, then retry."
+        )
+    params = _load_engine_params()
+    p_over_model, version = _anchored_p_over(params, quote, anchor)
     evaluated = evaluate(quote, p_over_model)
     model_p = p_over_model if side == "over" else 1.0 - p_over_model
     fair_p = evaluated.fair_p_over if side == "over" else 1.0 - evaluated.fair_p_over
@@ -294,6 +355,8 @@ def log_bet(
         parse_odds(odds) if odds else (quote.over_odds if side == "over" else quote.under_odds)
     )
     edge = model_p - fair_p
+    if anchor.book != quote.book:
+        note = (note + " | " if note else "") + f"cross-book anchor ({anchor.book})"
 
     history = read_ledger()
     conflicts = open_market_conflicts(history, quote.match, quote.market)

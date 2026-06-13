@@ -93,24 +93,36 @@ def _parse_market(market: str, home_id: str, away_id: str) -> tuple[str, str]:
     return family, team_id
 
 
+def resolve_fixture(
+    a_id: str, b_id: str, fixtures: pd.DataFrame
+) -> tuple[pd.Timestamp, str, str, bool]:
+    """Two canonical ids -> (date, home_id, away_id, neutral) of their unique
+    unplayed WC26 fixture (orientation as stored in the fixtures table).
+
+    Shared by the line parser and the anchor parser (markets/anchors.py) so
+    both apply the identical 'must be one not-yet-played fixture' guard.
+    """
+    hit = fixtures[
+        ((fixtures["home_id"] == a_id) & (fixtures["away_id"] == b_id))
+        | ((fixtures["home_id"] == b_id) & (fixtures["away_id"] == a_id))
+    ]
+    if hit.empty:
+        raise LineError(f"no WC26 fixture for {a_id} v {b_id} — no model prediction exists for it")
+    if len(hit) > 1:
+        raise LineError(f"ambiguous fixture for {a_id} v {b_id} ({len(hit)} rows)")
+    row = hit.iloc[0]
+    if bool(row["played"]):
+        raise LineError(f"{a_id} v {b_id} is already played — refusing to price a finished match")
+    return pd.Timestamp(row["date"]), str(row["home_id"]), str(row["away_id"]), bool(row["neutral"])
+
+
 def _resolve_match(match: str, fixtures: pd.DataFrame) -> tuple[pd.Timestamp, str, str, bool]:
     """'A v B' -> (date, home_id, away_id, neutral) of its unique unplayed fixture."""
     parts = [p.strip() for p in match.split(" v ")]
     if len(parts) != 2 or not all(parts):
         raise LineError(f"match must be '<home> v <away>', got {match!r}")
     a, b = (registry().resolve(p) for p in parts)
-    hit = fixtures[
-        ((fixtures["home_id"] == a) & (fixtures["away_id"] == b))
-        | ((fixtures["home_id"] == b) & (fixtures["away_id"] == a))
-    ]
-    if hit.empty:
-        raise LineError(f"no WC26 fixture for {a} v {b} — no model prediction exists for it")
-    if len(hit) > 1:
-        raise LineError(f"ambiguous fixture for {a} v {b} ({len(hit)} rows)")
-    row = hit.iloc[0]
-    if bool(row["played"]):
-        raise LineError(f"{a} v {b} is already played — refusing to price a finished match")
-    return pd.Timestamp(row["date"]), str(row["home_id"]), str(row["away_id"]), bool(row["neutral"])
+    return resolve_fixture(a, b, fixtures)
 
 
 def load_lines(

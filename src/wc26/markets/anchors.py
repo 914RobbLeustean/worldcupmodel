@@ -1,0 +1,147 @@
+"""Parse data/manual/anchors.csv — the book's 1X2 quote per match (D028/D032).
+
+Market-anchored pricing (D028): team totals are priced from the Dixon-Coles
+grid solved to reproduce the book's de-vigged 1X2, not from the engine grid
+(the engine's 1X2 opinion earned blend weight w*=0.00 vs the market). This
+module parses the anchor quotes; the grid solve lives in
+models/market_anchor.py and the CLI glues them (markets never compute model
+probabilities — architecture rule).
+
+File format (one row per match; the THREE-way 1X2 the book is quoting):
+
+    ts_utc,match,home_odds,draw_odds,away_odds,book
+    2026-06-13T17:00:00,USA v Paraguay,2.12,3.30,4.09,superbet
+
+- ts_utc: when the quote was read (ISO 8601, UTC); stale (>24 h) is refused
+- match:  "<home> v <away>" — any registry alias; home_odds is the FIRST
+  team as typed, regardless of the fixtures table's orientation (a flipped
+  entry has its home/away probabilities swapped to fixture orientation here)
+- *_odds: decimal or signed American; de-vigged multiplicatively (D005)
+
+Same hard guards as lines.py (one unplayed WC26 fixture, unknown team raises,
+staleness). A team-total quote whose match has no anchor here is UNPRICEABLE
+(the CLI refuses to flag/log a bet for it) — that is the D028 discipline:
+no anchor, no bet.
+"""
+
+from dataclasses import dataclass
+from pathlib import Path
+
+import pandas as pd
+from penaltyblog.implied import calculate_implied
+
+from wc26.config import REPO_ROOT
+from wc26.data.teams import registry
+from wc26.markets.lines import MAX_AGE, LineError, resolve_fixture
+from wc26.markets.odds import parse_odds
+
+ANCHORS_PATH = REPO_ROOT / "data" / "manual" / "anchors.csv"
+_COLUMNS = ["ts_utc", "match", "home_odds", "draw_odds", "away_odds", "book"]
+
+
+@dataclass(frozen=True)
+class MatchAnchor:
+    """A book's de-vigged 1X2 for one match, in fixtures-table orientation."""
+
+    ts: pd.Timestamp
+    match_date: pd.Timestamp
+    home_id: str  # fixtures-table home side
+    away_id: str
+    neutral: bool
+    fair_p_home: float  # P(home_id wins, 90'), de-vigged
+    fair_p_draw: float
+    fair_p_away: float
+    book: str
+
+    @property
+    def match(self) -> str:
+        return f"{self.home_id} v {self.away_id}"
+
+
+def devig_1x2(home_odds: float, draw_odds: float, away_odds: float) -> tuple[float, float, float]:
+    """(fair home, draw, away) by multiplicative de-vig (D005), via penaltyblog."""
+    result = calculate_implied([home_odds, draw_odds, away_odds], method="multiplicative")
+    p_home, p_draw, p_away = (float(p) for p in result.probabilities)
+    return p_home, p_draw, p_away
+
+
+def load_anchors(
+    fixtures: pd.DataFrame,
+    path: Path = ANCHORS_PATH,
+    now: pd.Timestamp | None = None,
+) -> dict[tuple[str, str], MatchAnchor]:
+    """Parse anchors.csv into {(match_key, book): MatchAnchor}.
+
+    match_key is "<home_id> v <away_id>" in fixtures orientation, so a quote
+    typed in either orientation lands on the same key. A duplicate
+    (match, book) raises (which of two quotes is the anchor must be
+    unambiguous).
+    """
+    now = now if now is not None else pd.Timestamp.now(tz="UTC").tz_localize(None)
+    if not path.exists():
+        return {}
+    df = pd.read_csv(path, dtype=str, keep_default_na=False)
+    if list(df.columns) != _COLUMNS:
+        raise LineError(f"{path} columns must be {_COLUMNS}, got {list(df.columns)}")
+    if df.empty:
+        return {}
+
+    reg = registry()
+    out: dict[tuple[str, str], MatchAnchor] = {}
+    for i, row in enumerate(df.itertuples(index=False), start=2):
+        where = f"{path.name} row {i}"
+        ts = pd.Timestamp(str(row.ts_utc))
+        if ts.tzinfo is not None:
+            ts = ts.tz_convert("UTC").tz_localize(None)
+        age = now - ts
+        if age > MAX_AGE:
+            raise LineError(
+                f"{where}: anchor quote is stale ({age.components.days}d "
+                f"{age.components.hours}h old) — re-enter today's 1X2 and delete old rows"
+            )
+        parts = [p.strip() for p in str(row.match).split(" v ")]
+        if len(parts) != 2 or not all(parts):
+            raise LineError(f"{where}: match must be '<home> v <away>', got {row.match!r}")
+        typed_a, typed_b = (reg.resolve(p) for p in parts)
+        match_date, home_id, away_id, neutral = resolve_fixture(typed_a, typed_b, fixtures)
+
+        o_home, o_draw, o_away = (
+            parse_odds(str(row.home_odds)),
+            parse_odds(str(row.draw_odds)),
+            parse_odds(str(row.away_odds)),
+        )
+        fair_a, fair_draw, fair_b = devig_1x2(o_home, o_draw, o_away)
+        # Map the user's typed orientation (home_odds := typed_a) onto the
+        # fixtures-table orientation.
+        if typed_a == home_id:
+            fp_home, fp_away = fair_a, fair_b
+        else:
+            fp_home, fp_away = fair_b, fair_a
+
+        key = (f"{home_id} v {away_id}", str(row.book).strip())
+        if key in out:
+            raise LineError(f"{where}: duplicate anchor for {key[0]} at book {key[1]!r}")
+        out[key] = MatchAnchor(
+            ts=ts,
+            match_date=match_date,
+            home_id=home_id,
+            away_id=away_id,
+            neutral=neutral,
+            fair_p_home=fp_home,
+            fair_p_draw=fair_draw,
+            fair_p_away=fp_away,
+            book=str(row.book).strip(),
+        )
+    return out
+
+
+def anchor_for(
+    anchors: dict[tuple[str, str], MatchAnchor], match_key: str, book: str
+) -> MatchAnchor | None:
+    """The anchor to price a quote: same book preferred, else any book for
+    the match (cross-book anchoring is allowed but the caller flags it)."""
+    exact = anchors.get((match_key, book))
+    if exact is not None:
+        return exact
+    same_match = [a for (mk, _), a in anchors.items() if mk == match_key]
+    return same_match[0] if same_match else None

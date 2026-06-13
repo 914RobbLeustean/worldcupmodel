@@ -45,15 +45,31 @@ wc26 settle B0001 --closing-over 1.85 --closing-under 1.95
   append-only, D006): re-settling a settled bet is blocked, so append a
   correcting row manually with the same bet_id — never edit existing rows.
 
-## 3. Enter today's lines (user, from the sportsbook)
+## 3. Enter today's lines AND the 1X2 anchor (user, from the sportsbook)
 
-Edit `data/manual/lines.csv` — delete yesterday's rows, one row per quoted
+Pricing is market-anchored (D028): a team total is priced off the book's
+own 1X2, so you enter TWO files per match. Both are required — a team total
+with no 1X2 anchor is unpriceable and betting on it is refused.
+
+**3a. `data/manual/anchors.csv`** — the book's 1X2 (one row per match):
+
+```csv
+ts_utc,match,home_odds,draw_odds,away_odds,book
+2026-06-13T17:00:00,USA v Paraguay,2.12,3.30,4.09,superbet
+```
+
+- `home_odds` is for the FIRST team you type in `match` (typed either way;
+  it's mapped to fixture orientation automatically).
+- one row per (match, book); enter the SAME book you'll quote the props from
+  so the edge measures that book's prop-vs-1X2 inconsistency.
+
+**3b. `data/manual/lines.csv`** — the team-total quotes, one row per quoted
 side (both sides required, that's what de-vig needs):
 
 ```csv
 ts_utc,match,market,line,side,odds,book
-2026-06-12T07:45:00,USA v Paraguay,team_total:USA,1.5,over,2.60,bet365
-2026-06-12T07:45:00,USA v Paraguay,team_total:USA,1.5,under,1.50,bet365
+2026-06-13T17:00:00,USA v Paraguay,team_total:Paraguay,1.5,over,3.90,superbet
+2026-06-13T17:00:00,USA v Paraguay,team_total:Paraguay,1.5,under,1.23,superbet
 ```
 
 - `ts_utc`: when you read the quote (UTC). Quotes >24 h old are refused.
@@ -71,10 +87,13 @@ ts_utc,match,market,line,side,odds,book
 wc26 edges      # table sorted by edge; BET rows are >= the 5% threshold
 ```
 
-Reading the table: `fair` = de-vigged probability of the recommended side,
-`edge` = model_p − fair, `ev` = expected profit per unit at the quoted odds.
-Only bet `BET` rows; a positive edge with negative `ev` means the vig eats
-the edge — that's why the threshold exists.
+Reading the table: `anchor` = P(side) implied by the book's 1X2 (the pricing
+prob), `eng` = engine grid P(side) (context only — D028 retired it as the
+pricing source), `fair` = de-vigged prob of the recommended side from the
+prop quote, `edge` = anchor − fair, `ev` = expected profit per unit at the
+quoted odds. Only bet `BET` rows; `· NO ANCHOR` rows need a 1X2 in
+anchors.csv first; `BET*` means the anchor came from a different book than
+the quote. A positive edge with negative `ev` means the vig eats the edge.
 
 For every bet actually placed (at the book, or on paper), log it
 IMMEDIATELY with the odds you actually got:

@@ -419,3 +419,31 @@ kickoff snapshots/day ~= 240/month — inside the new cap with headroom. The
 hard charge-before-request counter (odds_api.py) is unchanged; prop CLOSES
 remain manual capture at the user's book (props are not on the free tier,
 D007). Snapshot automation itself lands with the next session's wiring.
+
+## D032 — 2026-06-13 — Live market-anchored pricing wired into edges/log-bet
+Implements the D028 pivot in the live path (backlog #1), lifting the betting
+pause. WHAT CHANGED:
+- New input data/manual/anchors.csv: the book's 1X2 per match
+  (ts,match,home/draw/away odds,book), parsed by markets/anchors.py with the
+  same guards as lines.py (one unplayed WC26 fixture, unknown team raises,
+  >24h stale refused, duplicate (match,book) refused). Orientation: home_odds
+  is the first typed team; mapped to fixtures orientation on load.
+- `wc26 edges` now prices each team total from the DC grid solved to
+  reproduce the de-vigged anchor 1X2 (rho = latest engine fit, second-order
+  per D028), NOT the engine grid. edge = anchored_p - de-vigged prop fair_p
+  (the book's prop-vs-own-1X2 inconsistency). The engine P(over) is shown as
+  a context column only. A quote with no anchor prints "NO ANCHOR" and CANNOT
+  be flagged BET. Cross-book anchors are allowed but tagged BET*.
+- `wc26 log-bet` REFUSES a bet whose match has no anchor ("no anchor, no
+  bet") and prices/stamps via the anchor (model_version "anchor+<engine
+  version>"); cross-book anchor is recorded in the note. Correlation guard
+  (D029) and all money rules unchanged.
+VALIDATION: end-to-end on the real engine fit + the user's recalled USA v
+Paraguay 1X2 (2.12/3.30/4.09), anchored pricing gives NEGATIVE over-edge on
+both lost bets (B0004 -0.7%, B0005 -2.8%) where the engine gave +9.4%/+7.2%
+— i.e. the wiring would have refused exactly the two bets that lost CLV.
+Pinned by tests/test_anchors.py (parse, orientation flip, guards, glue ==
+direct solve). The engine is retained for context, simulator, corners/cards
+features, and gate iii. CLAUDE.md's "markets never compute model
+probabilities" is respected: the grid solve lives in models/market_anchor.py,
+the CLI glues; anchors.py only parses and de-vigs.

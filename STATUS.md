@@ -6,9 +6,8 @@
 **Phase 6 — IN PROGRESS. 6.1 (knockout readiness) DONE 2026-06-12; Phase 4
 acceptance now CLOSED (2026-06-13: USA v Paraguay 4-1 settled all 5 bets,
 clv-report renders). The 6.2 recalibration checkpoint is calendar-gated
-(~2026-07-03, after the group stage).** Live betting is PAUSED pending the
-D028 market-anchored pricing wiring (raw engine edges are noise: blend
-w*=0.00).
+(~2026-07-03, after the group stage).** Live betting RESUMES under market-anchored
+pricing (D032 wired edges/log-bet to the book's 1X2; no anchor = no bet).
 
 What exists now (Phase 6.1, on top of the full Phase 0–5 stack):
 - KO-facts path: once knockout results land in fixtures.parquet, the
@@ -40,22 +39,22 @@ What exists now (Phase 6.1, on top of the full Phase 0–5 stack):
   the advancing team.
 
 ## Next task
-  1. **Wire market-anchored pricing into the live path (D028, backlog #1)** —
-     THE unblock for resuming betting. NEW BETS ARE PAUSED until this lands
-     (D028: blend w*=0.00 means raw engine edges are noise). Needs: lines.csv
-     schema extension for the book's 1X2 + match-total quotes (user types 2-3
-     extra rows per match), `wc26 edges`/`log-bet` computing the anchored
-     P(over) (rho from the latest engine fit) and flagging on anchored edge;
-     a hard betting-pause guard in `log-bet` until the wiring is in;
-     PLAYBOOK §3 update. The settle path proved the anchor works end-to-end
-     (B0004/B0005 CLV reconstructed from a remembered 1X2, engine-free).
+  1. **Resume betting under anchored pricing (D032 DONE)** — the daily loop is
+     now: enter the book's 1X2 in data/manual/anchors.csv AND the team-total
+     quotes in lines.csv (PLAYBOOK §3), then `wc26 edges` (anchored) →
+     `wc26 log-bet` (refuses any match with no anchor). First live anchored
+     bets pending the next match day's quotes.
   2. **Automated kickoff odds snapshot (backlog #6, Odds API cap now 400 /
      D031)** — so a missed manual capture (as happened 2026-06-13) no longer
      loses CLV: snapshot 1X2 + match-total at each kickoff as a fallback
-     anchor. The 2026-06-13 miss is exactly the failure this prevents.
-  3. User commitments (see docs/BACKLOG.md): collect the historical prop-line
-     sample into data/manual/historical_prop_lines.csv (instructions in
-     BACKLOG #3). Line shopping (#5) DEFERRED for now.
+     anchor (doubles as an auto-anchor source for #1). The 2026-06-13 miss is
+     exactly the failure this prevents. NEXT agent task.
+  3. **WC scoring-environment engine fix (backlog #4, D019/D030)** — not
+     calendar-gated; harness-validated on pre-2026 data. Improves the engine
+     that still supplies rho + corners/cards features even under anchoring.
+  4. User commitments (see docs/BACKLOG.md): collect the historical prop-line
+     sample into data/manual/historical_prop_lines.csv (BACKLOG #3) — feeds
+     the data-derived edge_threshold (#8). Line shopping (#5) DEFERRED.
   4. **Phase 6.2 recalibration checkpoint — NEXT MILESTONE, ~2026-07-03**
    (after the 72 group matches; do NOT start early — pre-registered
    expectations in D030): compare predicted vs realized over the group
@@ -69,17 +68,19 @@ What exists now (Phase 6.1, on top of the full Phase 0–5 stack):
    pre-2026 data, can ship any day.
 
 ## Blockers
-NEW BETS PAUSED until anchored pricing lands (D028; next task 1). 0 bets
-open — all 5 settled. Real-money CLV 4/4 NEGATIVE (mean ~-12%): B0002 -5.0%,
-B0003 -5.5% (captured close), B0004 -12.5%, B0005 -26.5% (T-2h 1X2 anchor,
-degraded — prop close missed at kickoff). n=4, but 4/4 is mechanism-
-consistent with the D028 adverse-selection finding, not just variance.
+None. Betting resumes under anchored pricing (D032). 0 bets open — all 5
+settled. Real-money CLV 4/4 NEGATIVE (mean -12.4%): B0002 -5.0%, B0003 -5.5%
+(captured close), B0004 -12.5%, B0005 -26.5% (T-2h 1X2 anchor, degraded —
+prop close missed at kickoff). n=4, but 4/4 is mechanism-consistent with the
+D028 adverse-selection finding — and anchored pricing would have refused the
+over side of all of them (validated end-to-end, D032).
 
 ## Daily during tournament (~10 min, see docs/PLAYBOOK.md for the full version)
 `uv run wc26 data scrape --tournament wc2026 && uv run wc26 data sync` →
 `wc26 data status` → `uv run wc26 refit` → `uv run wc26 backtest && uv run
 pytest` (re-check gates) → `uv run wc26 predict` → settle yesterday's open
-bets (closing quotes!) → user enters today's lines → `wc26 edges` →
+bets (closing quotes!) → user enters today's 1X2 anchors (anchors.csv) +
+team-total lines (lines.csv) → `wc26 edges` →
 `wc26 log-bet` each bet taken → `wc26 rankings --diff` (movement snapshot).
 
 ## Data inventory (all verified)
@@ -103,6 +104,21 @@ bets (closing quotes!) → user enters today's lines → `wc26 edges` →
     B0004 won; all 4 negative CLV. B0001 paper (lost). 0 open.
 
 ## Last session summary
+  - 2026-06-13 (d): wired market-anchored pricing into the live path (D032,
+    backlog #1) — betting un-paused. New data/manual/anchors.csv (book's 1X2
+    per match, markets/anchors.py parser, same guards as lines.py, orientation
+    flip handled). `wc26 edges` now prices team totals from the DC grid solved
+    to the de-vigged anchor 1X2 (rho from the latest engine fit), edge =
+    anchored_p - prop fair_p; engine P(over) shown as context only; no anchor
+    => unpriceable, can't be flagged BET. `wc26 log-bet` refuses a bet whose
+    match has no anchor ("no anchor, no bet") and stamps model_version
+    "anchor+<engine>". Validated end-to-end on the real fit + recalled USA v
+    Paraguay 1X2: anchored over-edge NEGATIVE on B0004 (-0.7%) and B0005
+    (-2.8%) where the engine said +9.4%/+7.2% — the wiring refuses exactly the
+    bets that lost CLV. Also shipped backlog #14 (clv-report splits real money
+    from paper — real CLV -12.4%, paper excluded). 14 new tests (222 total),
+    lint clean, all gates green. Next: auto kickoff-snapshot (#6), engine WC
+    offset (#4).
   - 2026-06-13 (c): USA v Paraguay finished 4-1 (results 49,408 -> scraped/
     synced; refit @8678a8d on 9,504 matches, ha 0.235; backtest + 208 tests
     green, all gate numbers unchanged). Settled the final 3 open bets: B0004
